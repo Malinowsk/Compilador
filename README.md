@@ -2,7 +2,9 @@
 
 Trabajo Practico Especial realizado en la materia de ´Diseño de Compiladores 1´ en la Facultad UNICEN (TANDIL) del año 2021 .
 
-DOCENTES:
+
+DOCENTES DE LA CATEDRA:
+
 	Marcela Ridao 
 		e-mail: marceridao::AT::gmail<.>com
 	José Massa
