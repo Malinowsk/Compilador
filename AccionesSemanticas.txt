@@ -1,0 +1,30 @@
+IDENTIFICADORES Y PALABRAS RESERVADAS:
+
+Accion Semantica 1 :
+			* Devuelvo el último carácter leido a la entrada.
+			* Verifico que el lexema no supere los 22 caracteres.
+			* Busco en la Tabla de Símbolo (se guarda las palabras reservadas en la tabla de simbolos) si el léxema ya existe, 
+			devuelvo el token correspondiente. Sino doy de alta y devuelvo el token. 
+			(recordar que si es una palabra reservada envio Token, miéntras que si es un identificador envio Token mas Clave del Hashmap) 
+			 
+Accion Semantica 2 :
+			* Inicializo una variable (String) donde voy actualizando el lexema que tengo hasta el momento.		
+			* Agrego caracter a la variable.
+
+Accion Semantica 3 :
+			* Agrego caracter a la variable.
+
+CONSTANTES: (Enteros Largos Sin Signo)
+
+Accion Semantica 2 :
+			* Inicializo una variable (String) donde voy actualizando el lexema que tengo hasta el momento.		
+			* Agrego caracter a la variable.
+
+Accion Semantica 3 :
+			* Agrego caracter a la variable.
+
+Accion Semantica 5 :
+			* Devuelvo el último carácter leido a la entrada.
+			* Verifico que el numero obtenido no supere el rango esperado.
+			* Busco en la Tabla de Símbolo si el léxema ya existe, 
+			devuelvo el token correspondiente. Sino, doy de alta y devuelvo el token.
