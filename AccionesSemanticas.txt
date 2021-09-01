@@ -28,3 +28,18 @@ Accion Semantica 5 :
 			* Verifico que el numero obtenido no supere el rango esperado.
 			* Busco en la Tabla de Símbolo si el léxema ya existe, 
 			devuelvo el token correspondiente. Sino, doy de alta y devuelvo el token.
+
+LITERALES:
+
+Acción Semántica 4:  *Reconocer literal y devolver Token
+
+
+OPERADORES LÓGICOS
+
+Revisar acciones semánticas
+
+OPERADOR ASIGNACIÓN
+
+Revisar acciones semánticas
+
+OPERADORES ARITMÉTICOS
