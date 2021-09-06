@@ -1,0 +1,14 @@
+ .3 (12,15) F ; .E (12,16)
+33 (13,13)   ; 3. (13,14) F 
+
+
+.E+ (12,16,17) ; .E- (12,16,17) ; .E3 (12,16,15) F
+
+
+Dudas: 
+
+-.
+-.E
+
+El autómata del Double lo tenemos que anexar sí o si al de
+las constantes enteras(ya que este lo tenemos por separado)
