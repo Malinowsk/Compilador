@@ -1,0 +1,81 @@
+0-1 Letra _ 
+0-2 Digito
+0-F / + - ( ) ,
+0-3 &
+0-4 |
+0-5 :
+0-6 <
+0-7 >
+0-8 =
+0-9 *
+0-12 .
+0-13 Digito
+0-19 %
+
+Todos los carateres que no arranquen con los anteriores, ERROR . Ejemplos : !,$,#...
+Tengo que unir ramas 2 y 13
+-------------------------------------
+1-F Caracter - {_ , Digito , Letra}
+-------------------------------------
+2-2 Digito
+2-3 Caracter - {Digito}
+-------------------------------------
+3-F & 
+Cualquier otro caracter da error
+-------------------------------------
+4-F |
+Cualquier otro caracter da error
+-------------------------------------
+5-F =
+Cualquier otro caracter da error
+-------------------------------------
+6-F Caracter - {= , > }
+    < =
+-------------------------------------
+7-F Caracter - {=}
+     =
+-------------------------------------
+8-F =
+Cualquier otro caracter da error
+-------------------------------------
+9-F Caracter - {*}
+9-10 *
+-------------------------------------
+10-10 Caracter - {NL}
+10-F NL
+-------------------------------------
+11-14 Digito
+11-15 E
+Cualquier caracter menos Digito y E dan error
+-------------------------------------
+12-12 Digito
+12-13 .
+Cualquier caracter menos Digito y . dan error
+-------------------------------------
+13-14 Digito
+13-15 E
+13-F Caracter -{Digito,E}
+-------------------------------------
+14-14 Digito
+14-15 E
+14-F Caracter - {Digito,E}
+-------------------------------------
+15-16 + -
+15-17 Digito
+Cualquier caracter menos Digito , + y - dan error
+-------------------------------------
+16-17 Digito
+Cualquier caracter menos Digito da error
+-------------------------------------
+17-F Caracter - {Digito}
+-------------------------------------
+18-F  %
+18-19 +
+Cualquier caracter menos % y + dan error
+-------------------------------------
+19-18 Caracter - {NL}
+19-20 NL
+19-F %
+-------------------------------------
+20-18 +
+Cualquier caracter menos + da error
