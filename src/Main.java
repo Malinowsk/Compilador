@@ -3,6 +3,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import static javax.print.attribute.standard.MediaSizeName.A;
+
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -19,6 +21,12 @@ public class Main {
                 System.out.print(a.charAt(i));
             System.out.println();
         }
+
+   //     char aux = 'D';
+
+     //   if (aux(int) == [A-Z] ){
+       //     System.out.println("sdfsdf");
+     //   }
 
     }
 
