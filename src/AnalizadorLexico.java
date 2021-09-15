@@ -1,11 +1,13 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class AnalizadorLexico {
 
     private Automata automata;
     //Tabla de Símbolos
+    private HashMap<Integer,String> tablaDeSimbolo = new HashMap<>();
 
     public AnalizadorLexico() throws FileNotFoundException {
         //Inicializar
