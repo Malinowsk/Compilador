@@ -25,7 +25,7 @@ CONSTANTES: (Enteros Largos Sin Signo)
 
 	Accion Semantica 5 :
 			* Devuelvo el último carácter leido a la entrada.
-			* Verifico que el numero obtenido no supere el rango esperado.
+			* Verifico que el numero obtenido no supere el rango de enteros esperado.
 			* Busco en la Tabla de Símbolo si el léxema ya existe, 
 			devuelvo el token correspondiente. Sino, doy de alta y devuelvo el token.
 
@@ -34,16 +34,52 @@ LITERALES:
 
 	Acción Semántica 4:  
 			*Reconocer literal y devolver Token
-
+	
 
 OPERADORES LÓGICOS
 
-			Revisar acciones semánticas
+	Acción Semántica 6:
+			*Devuelvo el token &&
+	Acción Semántica 7:
+			*Devuelvo el token ||
 
 OPERADOR ASIGNACIÓN
 
-			Revisar acciones semánticas
+	Acción Semántica 8:
+			*Seteo el caracter leído en caracterAnterior
+	Accion Semántica 9:
+			*Devuelvo caracterAnterior+"="
 
 OPERADORES ARITMÉTICOS
 
-			Revisar acciones semánticas
+	Accion Semántica 10:
+			*Devuelvo el último carácter leído a la entrada.
+			*Devuelvo el token <
+	Accion Semántica 11:
+			*Devuelvo el token <+caracter
+	Accion Semántica 12:
+			*Devuelvo el último carácter leído a la entrada.
+			*Devuelvo el token >
+	Accion Semántica 13:
+			*Devuelvo el token >+caracter
+
+
+MULTIPLICACIÓN
+	Acción Semántica 14:
+			* Inicializo una variable (String) con **
+	Acción Semántica 15: 
+			*Devuelvo el último carácter leído a la entrada.
+			*Devuelvo el token *
+
+
+DOUBLES:
+      Accion Semantica 2 :
+			* Inicializo una variable (String) donde voy actualizando el lexema que tengo hasta el momento.		
+			* Agrego caracter a la variable.
+      Accion Semantica 3 :
+			* Agrego caracter a la variable.	
+      Accion Semantica 16 :
+			* Devuelvo el último carácter leido a la entrada.
+			* Verifico que el numero obtenido no supere el rango de decimales esperado.
+			* Busco en la Tabla de Símbolo si el léxema ya existe, 
+			devuelvo el token correspondiente. Sino, doy de alta y devuelvo el token.

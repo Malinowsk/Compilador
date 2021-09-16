@@ -5,7 +5,7 @@ public class TablaSimbolo {
     private final int MIN_ID = 280;
     private HashMap<Integer,Dupla<Integer,String>> tablaDeSimbolo;
     private Integer autoincrementador;
-    
+
 
     public TablaSimbolo(){
         this.tablaDeSimbolo = new HashMap<>();
