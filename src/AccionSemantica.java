@@ -1,3 +1,4 @@
+//Clase que contiene todas las A.S. como metodos
 public class AccionSemantica {
 
     public static void accion1(){

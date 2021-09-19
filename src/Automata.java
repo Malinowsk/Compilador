@@ -1,3 +1,4 @@
+//Clase que hace del autómata para el analizador lexico
 public class Automata {
 
     private final int CANT_ESTADOS = 18;
@@ -19,11 +20,16 @@ public class Automata {
         return this.transiciones[estadoActual][columna].getPrimero();
     }
 
+    public int getAccionSemantica(int estadoActual,char caracter){
+        int columna = getColumna(caracter);
+        return this.transiciones[estadoActual][columna].getSegundo();
+    }
+
     private int getColumna(char caracter) {
 
         if( caracter == 32)
             return 0;
-        if( caracter == 0)//Considerar ver el tema de NL
+        if( caracter == 10)
             return 1;
         if( ( (caracter >= 65) && (caracter <= 68) )  || ( (caracter >=70) && (caracter <= 90) ) || ( (caracter >= 97) && (caracter <= 122) ) )
             return 2;
@@ -105,7 +111,6 @@ public class Automata {
         transiciones[1][17].setPrimero(-1);
         transiciones[1][18].setPrimero(-1);
 
-
         transiciones[2][0].setPrimero(-1);
         transiciones[2][1].setPrimero(-1);
         transiciones[2][2].setPrimero(-1);
@@ -125,7 +130,6 @@ public class Automata {
         transiciones[2][16].setPrimero(11);
         transiciones[2][17].setPrimero(-1);
         transiciones[2][18].setPrimero(-1);
-
 
         transiciones[3][0].setPrimero(-2);
         transiciones[3][1].setPrimero(-2);
@@ -147,7 +151,6 @@ public class Automata {
         transiciones[3][17].setPrimero(-2);
         transiciones[3][18].setPrimero(-2);
 
-
         transiciones[4][0].setPrimero(-2);
         transiciones[4][1].setPrimero(-2);
         transiciones[4][2].setPrimero(-2);
@@ -167,7 +170,6 @@ public class Automata {
         transiciones[4][16].setPrimero(-2);
         transiciones[4][17].setPrimero(-2);
         transiciones[4][18].setPrimero(-2);
-
 
         transiciones[5][0].setPrimero(-2);
         transiciones[5][1].setPrimero(-2);
@@ -493,7 +495,6 @@ public class Automata {
         transiciones[2][17].setSegundo(5);
         transiciones[2][18].setSegundo(5);
 
-
         transiciones[3][0].setSegundo(0);
         transiciones[3][1].setSegundo(0);
         transiciones[3][2].setSegundo(0);
@@ -513,7 +514,6 @@ public class Automata {
         transiciones[3][16].setSegundo(0);
         transiciones[3][17].setSegundo(0);
         transiciones[3][18].setSegundo(0);
-
 
         transiciones[4][0].setSegundo(0);
         transiciones[4][1].setSegundo(0);

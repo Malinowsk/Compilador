@@ -1,5 +1,6 @@
 import java.util.HashMap;
 
+//Clase que hace de la tabla de simbolos
 public class TablaSimbolo {
 
     private final int MIN_ID = 280;
