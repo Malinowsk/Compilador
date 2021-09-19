@@ -9,8 +9,7 @@ import java.util.Scanner;
 public class AnalizadorLexico {
 
     private Automata automata;
-    //Tabla de Símbolos
-    private HashMap<Integer,String> tablaDeSimbolo;
+    private HashMap<Integer,String> tablaDeSimbolo;//Tabla de Símbolos
     private AccionSemantica accionSemantica;
 
     private ArrayList<String> tokens; //Lista donde se guardaran los tokens obtenidos del codigo
@@ -25,7 +24,7 @@ public class AnalizadorLexico {
     public void leerNuevoArchivo(String path) throws FileNotFoundException {
     Scanner scannan = new Scanner(new File(path));
     ArrayList<String> lineas = new ArrayList<>();
-        while(scannan.hasNext()){
+    while(scannan.hasNext()){
         lineas.add(scannan.nextLine());
     }
 
@@ -36,7 +35,7 @@ public class AnalizadorLexico {
         for (int i = 0; i < linea.length(); i++) {
             char caracter = linea.charAt(i);
             int proximoEstado = automata.getProximoEstado(estadoActual, caracter);
-            if (proximoEstado == -1) {
+            if (proximoEstado == -2) {
                 //Genero error
                 return;
             } else {
@@ -48,7 +47,7 @@ public class AnalizadorLexico {
         ///VER SI ES NECESARIO LO SIGUIENTE
         char nl= 10;
         int proximoEstado = automata.getProximoEstado(estadoActual, nl);
-        if (proximoEstado == -1) {
+        if (proximoEstado == -2) {
             //Genero error
             return;
         } else {
@@ -77,6 +76,7 @@ public class AnalizadorLexico {
             case 13: accionSemantica.accion13();
             case 14: accionSemantica.accion14();
             case 15: accionSemantica.accion15();
+            case 16: accionSemantica.accion16();
         }
     }
 
