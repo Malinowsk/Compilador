@@ -46,28 +46,26 @@ OPERADORES LÓGICOS
 OPERADOR ASIGNACIÓN
 
 	Acción Semántica 8:
-			*Seteo el caracter leído en caracterAnterior
-	Accion Semántica 9:
-			*Devuelvo caracterAnterior+"="
+			*Devuelvo el token :=
 
 OPERADORES ARITMÉTICOS
 
+	Accion Semántica 9:
+			*Devuelvo el token ==
 	Accion Semántica 10:
 			*Devuelvo el último carácter leído a la entrada.
 			*Devuelvo el token <
 	Accion Semántica 11:
-			*Devuelvo el token <+caracter
+			*Devuelvo el token <=
 	Accion Semántica 12:
 			*Devuelvo el último carácter leído a la entrada.
 			*Devuelvo el token >
 	Accion Semántica 13:
-			*Devuelvo el token >+caracter
+			*Devuelvo el token >=
 
 
 MULTIPLICACIÓN
-	Acción Semántica 14:
-			* Inicializo una variable (String) con **
-	Acción Semántica 15: 
+	Acción Semántica 14: 
 			*Devuelvo el último carácter leído a la entrada.
 			*Devuelvo el token *
 
@@ -78,7 +76,7 @@ DOUBLES:
 			* Agrego caracter a la variable.
       Accion Semantica 3 :
 			* Agrego caracter a la variable.	
-      Accion Semantica 16 :
+      Accion Semantica 15 :
 			* Devuelvo el último carácter leido a la entrada.
 			* Verifico que el numero obtenido no supere el rango de decimales esperado.
 			* Busco en la Tabla de Símbolo si el léxema ya existe, 

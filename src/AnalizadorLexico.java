@@ -12,12 +12,12 @@ public class AnalizadorLexico {
     private HashMap<Integer,String> tablaDeSimbolo;//Tabla de Símbolos
     private AccionSemantica accionSemantica;
 
-    private ArrayList<String> tokens; //Lista donde se guardaran los tokens obtenidos del codigo
+    private ArrayList<Integer> tokens; //Lista donde se guardaran los tokens obtenidos del codigo
 
     //Constructor
     public AnalizadorLexico() throws FileNotFoundException {
         tablaDeSimbolo = new HashMap<>();
-        tokens = new ArrayList<>();
+        tokens = new ArrayList<Integer>();
     }
 
     //Metodo que lee un codigo para generar la lista de tokens respectiva
@@ -33,16 +33,18 @@ public class AnalizadorLexico {
     for ( String linea : lineas ) { //Leo hasta el final del archivo
         // String linea = read(archivo) ;   // Obtengo la línea       ->linea = "ULONG PEPE := 3"
         for (int i = 0; i < linea.length(); i++) {
-            char caracter = linea.charAt(i);
-            int proximoEstado = automata.getProximoEstado(estadoActual, caracter);
-            if (proximoEstado == -2) {
-                //Genero error
-                return;
-            } else {
-                this.ejecutarAS(automata.getAccionSemantica(estadoActual, caracter));
-                estadoActual = proximoEstado;
+            boolean reutilizarCaracter = true;
+            while (reutilizarCaracter) {
+                char caracter = linea.charAt(i);
+                int proximoEstado = automata.getProximoEstado(estadoActual, caracter);
+                if (proximoEstado == -2) {
+                    //Genero error
+                    return;
+                } else {
+                    reutilizarCaracter = this.ejecutarAS(automata.getAccionSemantica(estadoActual, caracter));
+                    estadoActual = proximoEstado;
+                }
             }
-
         }
         ///VER SI ES NECESARIO LO SIGUIENTE
         char nl= 10;
@@ -59,29 +61,29 @@ public class AnalizadorLexico {
     }
 
     //Metodo que ejecuta la accion semantica indicada por el parametro
-    private void ejecutarAS(int AS){
+    private boolean ejecutarAS(int AS){
         switch(AS){
-            case 1: accionSemantica.accion1();
-            case 2: accionSemantica.accion2();
-            case 3: accionSemantica.accion3();
-            case 4: accionSemantica.accion4();
-            case 5: accionSemantica.accion5();
-            case 6: accionSemantica.accion6();
-            case 7: accionSemantica.accion7();
-            case 8: accionSemantica.accion8();
-            case 9: accionSemantica.accion9();
-            case 10: accionSemantica.accion10();
-            case 11: accionSemantica.accion11();
-            case 12: accionSemantica.accion12();
-            case 13: accionSemantica.accion13();
-            case 14: accionSemantica.accion14();
-            case 15: accionSemantica.accion15();
-            case 16: accionSemantica.accion16();
+            case 1: return accionSemantica.accion1();
+            case 2: return accionSemantica.accion2();
+            case 3: return accionSemantica.accion3();
+            case 4: return accionSemantica.accion4();
+            case 5: return accionSemantica.accion5();
+            case 6: return accionSemantica.accion6(this.tokens);
+            case 7: return accionSemantica.accion7(this.tokens);
+            case 8: return accionSemantica.accion8(this.tokens);
+            case 9: return accionSemantica.accion9(this.tokens);
+            case 10: return accionSemantica.accion10(this.tokens);
+            case 11: return accionSemantica.accion11(this.tokens);
+            case 12: return accionSemantica.accion12(this.tokens);
+            case 13: return accionSemantica.accion13(this.tokens);
+            case 14: return accionSemantica.accion14(this.tokens);
+            case 15: return accionSemantica.accion15();
+            default: return false;
         }
     }
 
     //Metodo para obtener el token siguiente de la lista
-    public String getToken(){
-        return "token";
+    public int getToken(){
+        return 0;
     }
 }

@@ -24,6 +24,8 @@ public class TablaSimbolo {
         tablaDeSimbolo.put(45,new Dupla<Integer, String>(45,"-"));
         tablaDeSimbolo.put(47,new Dupla<Integer, String>(47,"/"));
         tablaDeSimbolo.put(59,new Dupla<Integer, String>(59,";"));
+        tablaDeSimbolo.put(60,new Dupla<Integer, String>(60,"<"));
+        tablaDeSimbolo.put(62,new Dupla<Integer, String>(62,">"));
 
         tablaDeSimbolo.put(256,new Dupla<Integer, String>(256,"IF"));
         tablaDeSimbolo.put(257,new Dupla<Integer, String>(257,"THEN"));
