@@ -1,16 +1,17 @@
 //Clase que hace del autómata para el analizador lexico
 public class Automata {
 
-    private final int CANT_ESTADOS = 18;
+    private final int CANT_ESTADOS = 19;
     private final int CANT_SIMBOLOS = 19;
     private final int ERROR = -2;
-    private final int ESTADO_FINAL = -1;
+    private final int ESTADO_FINAL = 0;
     private Dupla<Integer,Integer> [][] transiciones; // Matriz de transiciones
 
 
     public Automata (){
         transiciones= new Dupla[CANT_ESTADOS][CANT_SIMBOLOS];
         // ACA SE VAN A CARGAR LAS TRANSICIONES
+        this.inicializarMatriz();
         this.cargarTransiciones();
         this.cargarAccionesSemanticas();
     }
@@ -68,9 +69,15 @@ public class Automata {
 
     }
 
+    public void inicializarMatriz(){
+        for(int i=0; i<CANT_ESTADOS; i++){
+            for(int j=0; j<CANT_SIMBOLOS; j++){
+                transiciones[i][j] = new Dupla<Integer, Integer>(-10,-10);
+            }
+        }
+    }
 
     public void cargarTransiciones(){
-
         transiciones[0][0].setPrimero(0);
         transiciones[0][1].setPrimero(0);
         transiciones[0][2].setPrimero(1);
@@ -471,7 +478,7 @@ public class Automata {
         transiciones[0][14].setSegundo(0);
         transiciones[0][15].setSegundo(0);
         transiciones[0][16].setSegundo(2);
-        transiciones[0][17].setSegundo(0);
+        transiciones[0][17].setSegundo(2);
         transiciones[0][18].setSegundo(0);
 
         transiciones[1][0].setSegundo(1);
@@ -754,45 +761,45 @@ public class Automata {
         transiciones[14][17].setSegundo(15);
         transiciones[14][18].setSegundo(15);
 
-        transiciones[15][0].setSegundo(0);
-        transiciones[15][1].setSegundo(0);
-        transiciones[15][2].setSegundo(0);
-        transiciones[15][3].setSegundo(0);
-        transiciones[15][4].setSegundo(0);
-        transiciones[15][5].setSegundo(0);
-        transiciones[15][6].setSegundo(0);
-        transiciones[15][7].setSegundo(0);
+        transiciones[15][0].setSegundo(3);
+        transiciones[15][1].setSegundo(3);
+        transiciones[15][2].setSegundo(3);
+        transiciones[15][3].setSegundo(3);
+        transiciones[15][4].setSegundo(3);
+        transiciones[15][5].setSegundo(3);
+        transiciones[15][6].setSegundo(3);
+        transiciones[15][7].setSegundo(3);
         transiciones[15][8].setSegundo(0);
-        transiciones[15][9].setSegundo(0);
-        transiciones[15][10].setSegundo(0);
-        transiciones[15][11].setSegundo(0);
-        transiciones[15][12].setSegundo(0);
-        transiciones[15][13].setSegundo(0);
-        transiciones[15][14].setSegundo(0);
-        transiciones[15][15].setSegundo(0);
-        transiciones[15][16].setSegundo(0);
-        transiciones[15][17].setSegundo(0);
-        transiciones[15][18].setSegundo(0);
+        transiciones[15][9].setSegundo(3);
+        transiciones[15][10].setSegundo(3);
+        transiciones[15][11].setSegundo(3);
+        transiciones[15][12].setSegundo(3);
+        transiciones[15][13].setSegundo(3);
+        transiciones[15][14].setSegundo(3);
+        transiciones[15][15].setSegundo(3);
+        transiciones[15][16].setSegundo(3);
+        transiciones[15][17].setSegundo(17);
+        transiciones[15][18].setSegundo(3);
 
-        transiciones[16][0].setSegundo(0);
+        transiciones[16][0].setSegundo(16);
         transiciones[16][1].setSegundo(0);
-        transiciones[16][2].setSegundo(0);
-        transiciones[16][3].setSegundo(0);
-        transiciones[16][4].setSegundo(0);
-        transiciones[16][5].setSegundo(0);
-        transiciones[16][6].setSegundo(0);
-        transiciones[16][7].setSegundo(0);
-        transiciones[16][8].setSegundo(0);
-        transiciones[16][9].setSegundo(0);
-        transiciones[16][10].setSegundo(0);
-        transiciones[16][11].setSegundo(0);
-        transiciones[16][12].setSegundo(0);
-        transiciones[16][13].setSegundo(0);
-        transiciones[16][14].setSegundo(0);
-        transiciones[16][15].setSegundo(0);
-        transiciones[16][16].setSegundo(0);
-        transiciones[16][17].setSegundo(0);
-        transiciones[16][18].setSegundo(0);
+        transiciones[16][2].setSegundo(16);
+        transiciones[16][3].setSegundo(16);
+        transiciones[16][4].setSegundo(16);
+        transiciones[16][5].setSegundo(16);
+        transiciones[16][6].setSegundo(16);
+        transiciones[16][7].setSegundo(16);
+        transiciones[16][8].setSegundo(16);
+        transiciones[16][9].setSegundo(16);
+        transiciones[16][10].setSegundo(16);
+        transiciones[16][11].setSegundo(16);
+        transiciones[16][12].setSegundo(16);
+        transiciones[16][13].setSegundo(16);
+        transiciones[16][14].setSegundo(16);
+        transiciones[16][15].setSegundo(16);
+        transiciones[16][16].setSegundo(16);
+        transiciones[16][17].setSegundo(17);
+        transiciones[16][18].setSegundo(16);
 
         transiciones[17][0].setSegundo(0);
         transiciones[17][1].setSegundo(0);

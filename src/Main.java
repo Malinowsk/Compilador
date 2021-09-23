@@ -8,9 +8,12 @@ import static javax.print.attribute.standard.MediaSizeName.A;
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
+        AnalizadorLexico a = new AnalizadorLexico();
+        a.leerNuevoArchivo("TPE-DisenioDeCompiladores/cosas/Codigo.txt");
+        a.imprimirLista();
 
             //Inicializar
-            Scanner scannan = new Scanner(new File("./cosas/Acc.txt"));
+            /*Scanner scannan = new Scanner(new File("./cosas/Acc.txt"));
             ArrayList<String> lineas = new ArrayList<>();
             while(scannan.hasNext()){
                 lineas.add(scannan.nextLine());
@@ -21,7 +24,7 @@ public class Main {
                     System.out.print(a.charAt(i));
                 System.out.println();
             }
-
+            */
     }
 
 

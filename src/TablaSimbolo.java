@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Set;
 
 //Clase que hace de la tabla de simbolos
 public class TablaSimbolo {
@@ -38,7 +39,7 @@ public class TablaSimbolo {
         tablaDeSimbolo.put(264,new Dupla<Integer, String>(264,"END"));
         tablaDeSimbolo.put(265,new Dupla<Integer, String>(265,"BREAK"));
         tablaDeSimbolo.put(266,new Dupla<Integer, String>(266,"ULONG"));
-        tablaDeSimbolo.put(267,new Dupla<Integer, String>(267,"DOBLE"));
+        tablaDeSimbolo.put(267,new Dupla<Integer, String>(267,"DOUBLE"));
         tablaDeSimbolo.put(268,new Dupla<Integer, String>(268,"WHILE"));
         tablaDeSimbolo.put(269,new Dupla<Integer, String>(269,"DO"));
         tablaDeSimbolo.put(270,new Dupla<Integer, String>(270,">="));
@@ -47,7 +48,10 @@ public class TablaSimbolo {
         tablaDeSimbolo.put(273,new Dupla<Integer, String>(273,"=="));
         tablaDeSimbolo.put(274,new Dupla<Integer, String>(274,"&&"));
         tablaDeSimbolo.put(275,new Dupla<Integer, String>(275,"||"));
-
+        //identificadores con clave = 276
+        //constantes con clave = 277
+        //double con clave = 278
+        //cadena con clave = 279
     }
 
 
@@ -57,6 +61,16 @@ public class TablaSimbolo {
 
     public boolean existeToken(String s){
         return tablaDeSimbolo.containsValue(new Dupla<Integer,String>(null,s));
+    }
+
+    public int obtenerNumeroToken(String s){
+        Set<Integer> claves =tablaDeSimbolo.keySet();
+        for(Integer clave: claves){
+            if(tablaDeSimbolo.get(clave).getSegundo().equals(s)){
+                return clave;
+            }
+        }
+        return -1;
     }
 
 }
