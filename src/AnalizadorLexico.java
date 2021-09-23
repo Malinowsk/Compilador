@@ -39,10 +39,10 @@ public class AnalizadorLexico {
             while (reutilizarCaracter) {
                 int proximoEstado = automata.getProximoEstado(estadoActual, caracter);
                 if (proximoEstado == -2) {
-                    //Genero error
+                    System.out.println("Error lexico en la linea " + nroLinea + ", caracter invalido:"+ caracter);
                     return;
                 } else {
-                    reutilizarCaracter = this.ejecutarAS(automata.getAccionSemantica(estadoActual, caracter), caracter);
+                    reutilizarCaracter = this.ejecutarAS(automata.getAccionSemantica(estadoActual, caracter), caracter, nroLinea);
                     estadoActual = proximoEstado;
                 }
             }
@@ -51,24 +51,26 @@ public class AnalizadorLexico {
         char nl= 10;
         int proximoEstado = automata.getProximoEstado(estadoActual, nl);
         if (proximoEstado == -2) {
-            //Genero error
+            System.out.println("Error lexico en la linea " + nroLinea + ", caracter invalido:"+ nl);
             return;
         } else {
-            this.ejecutarAS(automata.getAccionSemantica(estadoActual, nl), nl);
+            this.ejecutarAS(automata.getAccionSemantica(estadoActual, nl), nl, nroLinea);
             estadoActual = proximoEstado;
         }
+
+        nroLinea++;
     }
 
     }
 
     //Metodo que ejecuta la accion semantica indicada por el parametro
-    private boolean ejecutarAS(int AS, char caracter){
+    private boolean ejecutarAS(int AS, char caracter, int nroLinea){
         switch(AS){
-            case 1: return AccionSemantica.accion1(this.tokens, tablaDeSimbolo);
+            case 1: return AccionSemantica.accion1(this.tokens, tablaDeSimbolo, nroLinea);
             case 2: return AccionSemantica.accion2(caracter);
             case 3: return AccionSemantica.accion3(caracter);
             case 4: return AccionSemantica.accion4(this.tokens, caracter);
-            case 5: return AccionSemantica.accion5(this.tokens, tablaDeSimbolo);
+            case 5: return AccionSemantica.accion5(this.tokens, tablaDeSimbolo, nroLinea);
             case 6: return AccionSemantica.accion6(this.tokens);
             case 7: return AccionSemantica.accion7(this.tokens);
             case 8: return AccionSemantica.accion8(this.tokens);
@@ -78,9 +80,10 @@ public class AnalizadorLexico {
             case 12: return AccionSemantica.accion12(this.tokens);
             case 13: return AccionSemantica.accion13(this.tokens);
             case 14: return AccionSemantica.accion14(this.tokens);
-            case 15: return AccionSemantica.accion15(this.tokens, tablaDeSimbolo);
+            case 15: return AccionSemantica.accion15(this.tokens, tablaDeSimbolo, nroLinea);
             case 16: return AccionSemantica.accion16(this.tokens, caracter);
             case 17: return AccionSemantica.accion17(this.tokens, tablaDeSimbolo);
+            case 18: return AccionSemantica.accion18(this.tokens, tablaDeSimbolo);
             default: return false;
         }
     }
@@ -90,6 +93,7 @@ public class AnalizadorLexico {
         return tokens.get(indiceToken++);
     }
 
+    //Metodo para ver la lista (PRUEBA)
     public void imprimirLista(){
         for(Dupla<Integer, Integer> d: this.tokens){
             System.out.println(d.getPrimero() + ", " + d.getSegundo());

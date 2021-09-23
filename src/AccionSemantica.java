@@ -30,7 +30,7 @@ private static final Integer MULTIPLICACION = 42;
 devuelvo el token correspondiente. Sino doy de alta y devuelvo el token.
 (recordar que si es una palabra reservada envio Token, miéntras que si es un identificador envio Token mas Clave del Hashmap)
  */
-public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo){
+public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, int nroLinea){
     if (auxiliar.length() <= 22){
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_IDENTIFICADOR);//se agrega identificador a la tabla
@@ -46,7 +46,7 @@ public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, Tabla
             }
         }
     }else{
-        //Genero error
+        System.out.println("Error lexico en la linea " + nroLinea + ", Identificador fuera de rango:"+ auxiliar);
     }
     return true;//se reutiliza el caracter
 }
@@ -65,7 +65,7 @@ public static boolean accion2(char caracter){
 Agrego caracter a la variable.
  */
 public static boolean accion3(char caracter){
-    auxiliar+= caracter;//inicia el lexema
+    auxiliar+= caracter;//agrega al lexema
     return false; //no se reutiliza el caracter
 }
 
@@ -83,14 +83,14 @@ public static boolean accion4(ArrayList< Dupla<Integer, Integer> > tokens, int c
 - Busco en la Tabla de Símbolo si el léxema ya existe,
 devuelvo el token correspondiente. Sino, doy de alta y devuelvo el token.
  */
-public static boolean accion5(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo){
+public static boolean accion5(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, int nroLinea){
     if (Integer.valueOf(auxiliar) <= (Math.pow(2.0, 32.0 )-1)  && (Integer.valueOf(auxiliar)>=0) ){
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CONSTANTE);//se agrega identificador a la tabla
         }
     tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CONSTANTE, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
     }else{
-        //Genero error
+        System.out.println("Error lexico en la linea " + nroLinea + ", ULong fuera de rango:"+ auxiliar);
     }
     return true;//se reutiliza el caracter
 }
@@ -176,7 +176,7 @@ public static boolean accion14(ArrayList< Dupla<Integer, Integer> > tokens){
 - Busco en la Tabla de Símbolo si el léxema ya existe,
 devuelvo el token correspondiente. Sino, doy de alta y devuelvo el token.
  */
-public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo){
+public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, int nroLinea){
     if ((Math.pow(2.2250738585072014,-308)<Double.valueOf(auxiliar))  && (Double.valueOf(auxiliar)<Math.pow(1.7976931348623157,308))
         || (Math.pow(-1.7976931348623157,308)<Double.valueOf(auxiliar))  && (Double.valueOf(auxiliar)<Math.pow(-2.2250738585072014,-308))
         || (Double.valueOf(auxiliar)==0.0) ){
@@ -185,24 +185,44 @@ public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
         }
         tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_DOUBLE, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
     }else{
-        //Genero error
+        System.out.println("Error lexico en la linea " + nroLinea + ", Double fuera de rango:"+ auxiliar);
     }
     return true;//se reutiliza el caracter
 }
 
-///accion 16, agrega + y luego agrega caracter
+/*
+- Agrega +
+- Agrega caracter
+ */
 public static boolean accion16(ArrayList< Dupla<Integer, Integer> > tokens, char caracter){
     auxiliar += '+';
     auxiliar += caracter;
     return false;//se reutiliza el caracter
 }
 
-
-///accion 17, agrega la variable a la lista de token. agrega auxiliar a tabla de simbolos si no existe
-
+/*
+- Agrega %
+- Agrega a la tabla de simbolos si no existe
+- Agrega la variable a lista de token
+ */
 public static boolean accion17(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo){
-    if(auxiliar.charAt(auxiliar.length()-1) == '+')
-        auxiliar += '+';
+    auxiliar += '%';
+    if(!tablaDeSimbolo.existeToken(auxiliar)){
+        tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CADENA);//se agrega identificador a la tabla
+    }
+    tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CADENA, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
+    return false;//se reutiliza el caracter
+}
+
+/*
+- Agrega +
+- Agrega %
+- Agrega a la tabla de simbolos si no existe
+- Agrega la variable a lista de token
+ */
+///accion 18, agrega la variable a la lista de token. agrega auxiliar a tabla de simbolos si no existe
+public static boolean accion18(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo){
+    auxiliar += '+';
     auxiliar += '%';
     if(!tablaDeSimbolo.existeToken(auxiliar)){
         tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CADENA);//se agrega identificador a la tabla

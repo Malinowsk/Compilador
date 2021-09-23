@@ -798,7 +798,7 @@ public class Automata {
         transiciones[16][14].setSegundo(16);
         transiciones[16][15].setSegundo(16);
         transiciones[16][16].setSegundo(16);
-        transiciones[16][17].setSegundo(17);
+        transiciones[16][17].setSegundo(18);
         transiciones[16][18].setSegundo(16);
 
         transiciones[17][0].setSegundo(0);
