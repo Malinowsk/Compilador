@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Dupla<X,Y> {
 
     private X primero;
@@ -20,4 +22,11 @@ public class Dupla<X,Y> {
     public void setSegundo(Y segundo) {
         this.segundo = segundo;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        Dupla retorno = (Dupla) o;
+        return this.segundo.equals(retorno.getSegundo());
+    }
+
 }
