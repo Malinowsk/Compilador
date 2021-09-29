@@ -84,6 +84,7 @@ public class AnalizadorLexico {
             case 16: return AccionSemantica.accion16(this.tokens, caracter);
             case 17: return AccionSemantica.accion17(this.tokens, tablaDeSimbolo);
             case 18: return AccionSemantica.accion18(this.tokens, tablaDeSimbolo);
+            case 19: return AccionSemantica.accion19(this.tokens);
             default: return false;
         }
     }
@@ -100,4 +101,12 @@ public class AnalizadorLexico {
         }
 
     }
+
+    //Metodo para el parser yacc
+    public int yylex(){
+        Dupla<Integer, Integer> tokenActual = this.getSiguienteToken();
+        // ParserVal(tokenActual.getSegundo()); //yylval
+        return tokenActual.getPrimero();
+    }
+
 }

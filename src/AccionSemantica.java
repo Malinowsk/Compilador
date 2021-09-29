@@ -5,23 +5,24 @@ public class AccionSemantica {
 
 private static String auxiliar;
 
-private static final Integer CLAVE_TOKEN_IDENTIFICADOR = 276;
-private static final Integer CLAVE_TOKEN_CONSTANTE = 277;
-private static final Integer CLAVE_TOKEN_DOUBLE = 278;
-private static final Integer CLAVE_TOKEN_CADENA = 279;
+private static final Integer CLAVE_TOKEN_IDENTIFICADOR = 277;
+private static final Integer CLAVE_TOKEN_CONSTANTE = 278;
+private static final Integer CLAVE_TOKEN_DOUBLE = 279;
+private static final Integer CLAVE_TOKEN_CADENA = 280;
 
-private static final Integer PRIMER_PALABRA_RESERVADA = 256;
-private static final Integer ULTIMA_PALABRA_RESERVADA = 269;
+private static final Integer PRIMER_PALABRA_RESERVADA = 257;
+private static final Integer ULTIMA_PALABRA_RESERVADA = 270;
 
-private static final Integer AND = 274;
-private static final Integer OR = 275;
-private static final Integer ASIGNACION = 272;
-private static final Integer IGUAL = 273;
+private static final Integer AND = 275;
+private static final Integer OR = 276;
+private static final Integer ASIGNACION = 273;
+private static final Integer IGUAL = 274;
 private static final Integer MENOR = 60;
-private static final Integer MENORIGUAL = 271;
+private static final Integer MENORIGUAL = 272;
 private static final Integer MAYOR = 62;
-private static final Integer MAYORIGUAL = 270;
+private static final Integer MAYORIGUAL = 271;
 private static final Integer MULTIPLICACION = 42;
+private static final Integer DOS_PUNTOS = 42;
 
 /*
 - Devuelvo el último carácter leido a la entrada.
@@ -197,7 +198,7 @@ public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
 public static boolean accion16(ArrayList< Dupla<Integer, Integer> > tokens, char caracter){
     auxiliar += '+';
     auxiliar += caracter;
-    return false;//se reutiliza el caracter
+    return false;//no se reutiliza el caracter
 }
 
 /*
@@ -211,7 +212,7 @@ public static boolean accion17(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
         tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CADENA);//se agrega identificador a la tabla
     }
     tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CADENA, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
-    return false;//se reutiliza el caracter
+    return false;//no se reutiliza el caracter
 }
 
 /*
@@ -228,7 +229,16 @@ public static boolean accion18(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
         tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CADENA);//se agrega identificador a la tabla
     }
     tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CADENA, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
-    return false;//se reutiliza el caracter
+    return false;//no se reutiliza el caracter
+}
+
+/*
+- Devuelvo el último carácter leído a la entrada.
+- Devuelvo el token :
+ */
+public static boolean accion19(ArrayList< Dupla<Integer, Integer> > tokens){
+    tokens.add(new Dupla<Integer, Integer>(DOS_PUNTOS, null));
+    return true;//se reutiliza el caracter
 }
 
 }

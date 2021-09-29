@@ -4,7 +4,7 @@ import java.util.Set;
 //Clase que hace de la tabla de simbolos
 public class TablaSimbolo {
 
-    private final int MIN_ID = 280;
+    private final int MIN_ID = 284;
     private HashMap<Integer,Dupla<Integer,String>> tablaDeSimbolo;
     private Integer autoincrementador;
 
@@ -27,31 +27,35 @@ public class TablaSimbolo {
         tablaDeSimbolo.put(59,new Dupla<Integer, String>(59,";"));
         tablaDeSimbolo.put(60,new Dupla<Integer, String>(60,"<"));
         tablaDeSimbolo.put(62,new Dupla<Integer, String>(62,">"));
+        tablaDeSimbolo.put(58,new Dupla<Integer, String>(58,":"));
 
-        tablaDeSimbolo.put(256,new Dupla<Integer, String>(256,"IF"));
-        tablaDeSimbolo.put(257,new Dupla<Integer, String>(257,"THEN"));
-        tablaDeSimbolo.put(258,new Dupla<Integer, String>(258,"ELSE"));
-        tablaDeSimbolo.put(259,new Dupla<Integer, String>(259,"ENDIF"));
-        tablaDeSimbolo.put(260,new Dupla<Integer, String>(260,"PRINT"));
-        tablaDeSimbolo.put(261,new Dupla<Integer, String>(261,"FUNC"));
-        tablaDeSimbolo.put(262,new Dupla<Integer, String>(262,"RETURN"));
-        tablaDeSimbolo.put(263,new Dupla<Integer, String>(263,"BEGIN"));
-        tablaDeSimbolo.put(264,new Dupla<Integer, String>(264,"END"));
-        tablaDeSimbolo.put(265,new Dupla<Integer, String>(265,"BREAK"));
-        tablaDeSimbolo.put(266,new Dupla<Integer, String>(266,"ULONG"));
-        tablaDeSimbolo.put(267,new Dupla<Integer, String>(267,"DOUBLE"));
-        tablaDeSimbolo.put(268,new Dupla<Integer, String>(268,"WHILE"));
-        tablaDeSimbolo.put(269,new Dupla<Integer, String>(269,"DO"));
-        tablaDeSimbolo.put(270,new Dupla<Integer, String>(270,">="));
-        tablaDeSimbolo.put(271,new Dupla<Integer, String>(271,"<="));
-        tablaDeSimbolo.put(272,new Dupla<Integer, String>(272,":="));
-        tablaDeSimbolo.put(273,new Dupla<Integer, String>(273,"=="));
-        tablaDeSimbolo.put(274,new Dupla<Integer, String>(274,"&&"));
-        tablaDeSimbolo.put(275,new Dupla<Integer, String>(275,"||"));
-        //identificadores con clave = 276
-        //constantes con clave = 277
-        //double con clave = 278
-        //cadena con clave = 279
+        tablaDeSimbolo.put(257,new Dupla<Integer, String>(257,"IF"));
+        tablaDeSimbolo.put(258,new Dupla<Integer, String>(258,"THEN"));
+        tablaDeSimbolo.put(259,new Dupla<Integer, String>(259,"ELSE"));
+        tablaDeSimbolo.put(260,new Dupla<Integer, String>(260,"ENDIF"));
+        tablaDeSimbolo.put(261,new Dupla<Integer, String>(261,"PRINT"));
+        tablaDeSimbolo.put(262,new Dupla<Integer, String>(262,"FUNC"));
+        tablaDeSimbolo.put(263,new Dupla<Integer, String>(263,"RETURN"));
+        tablaDeSimbolo.put(264,new Dupla<Integer, String>(264,"BEGIN"));
+        tablaDeSimbolo.put(265,new Dupla<Integer, String>(265,"END"));
+        tablaDeSimbolo.put(266,new Dupla<Integer, String>(266,"BREAK"));
+        tablaDeSimbolo.put(267,new Dupla<Integer, String>(267,"ULONG"));
+        tablaDeSimbolo.put(268,new Dupla<Integer, String>(268,"DOUBLE"));
+        tablaDeSimbolo.put(269,new Dupla<Integer, String>(269,"WHILE"));
+        tablaDeSimbolo.put(270,new Dupla<Integer, String>(270,"DO"));
+        tablaDeSimbolo.put(271,new Dupla<Integer, String>(271,">="));
+        tablaDeSimbolo.put(272,new Dupla<Integer, String>(272,"<="));
+        tablaDeSimbolo.put(273,new Dupla<Integer, String>(273,":="));
+        tablaDeSimbolo.put(274,new Dupla<Integer, String>(274,"=="));
+        tablaDeSimbolo.put(275,new Dupla<Integer, String>(275,"&&"));
+        tablaDeSimbolo.put(276,new Dupla<Integer, String>(276,"||"));
+        //identificadores con clave = 277
+        //constantes con clave = 278
+        //double con clave = 279
+        //cadena con clave = 280
+        tablaDeSimbolo.put(281,new Dupla<Integer, String>(281,"POST"));
+        tablaDeSimbolo.put(282,new Dupla<Integer, String>(282,"TRY"));
+        tablaDeSimbolo.put(283,new Dupla<Integer, String>(283,"CATCH"));
     }
 
 
