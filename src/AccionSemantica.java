@@ -23,6 +23,7 @@ private static final Integer MAYOR = 62;
 private static final Integer MAYORIGUAL = 271;
 private static final Integer MULTIPLICACION = 42;
 private static final Integer DOS_PUNTOS = 42;
+private static final Integer DISTINTO = 284;
 
 /*
 - Devuelvo el último carácter leido a la entrada.
@@ -138,10 +139,14 @@ public static boolean accion10(ArrayList< Dupla<Integer, Integer> > tokens){
 }
 
 /*
-Devuelvo el token <=
+- Consulta si el caracter es > y devuelve el token <>
+- Sino devuelve el token <=
  */
-public static boolean accion11(ArrayList< Dupla<Integer, Integer> > tokens){
-    tokens.add(new Dupla<Integer, Integer>(MENORIGUAL, null));
+public static boolean accion11(ArrayList< Dupla<Integer, Integer> > tokens, int caracter){
+    if(caracter == MAYOR) //token <>
+        tokens.add(new Dupla<Integer, Integer>(DISTINTO, null));
+    else //token <=
+        tokens.add(new Dupla<Integer, Integer>(MENORIGUAL, null));
     return false; //no se reutiliza el caracter
 }
 

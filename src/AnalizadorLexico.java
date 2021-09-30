@@ -14,7 +14,7 @@ public class AnalizadorLexico {
     private ArrayList< Dupla<Integer, Integer> > tokens; //Lista donde se guardaran los tokens obtenidos del codigo, (Numero de token, Clave en tabla)
     private int indiceToken;
     //Constructor
-    public AnalizadorLexico() throws FileNotFoundException {
+    public AnalizadorLexico() {
         automata = new Automata();
         tablaDeSimbolo = new TablaSimbolo();
         tokens = new ArrayList< Dupla<Integer, Integer> >();
@@ -64,29 +64,29 @@ public class AnalizadorLexico {
     }
 
     //Metodo que ejecuta la accion semantica indicada por el parametro
-    private boolean ejecutarAS(int AS, char caracter, int nroLinea){
-        switch(AS){
-            case 1: return AccionSemantica.accion1(this.tokens, tablaDeSimbolo, nroLinea);
-            case 2: return AccionSemantica.accion2(caracter);
-            case 3: return AccionSemantica.accion3(caracter);
-            case 4: return AccionSemantica.accion4(this.tokens, caracter);
-            case 5: return AccionSemantica.accion5(this.tokens, tablaDeSimbolo, nroLinea);
-            case 6: return AccionSemantica.accion6(this.tokens);
-            case 7: return AccionSemantica.accion7(this.tokens);
-            case 8: return AccionSemantica.accion8(this.tokens);
-            case 9: return AccionSemantica.accion9(this.tokens);
-            case 10: return AccionSemantica.accion10(this.tokens);
-            case 11: return AccionSemantica.accion11(this.tokens);
-            case 12: return AccionSemantica.accion12(this.tokens);
-            case 13: return AccionSemantica.accion13(this.tokens);
-            case 14: return AccionSemantica.accion14(this.tokens);
-            case 15: return AccionSemantica.accion15(this.tokens, tablaDeSimbolo, nroLinea);
-            case 16: return AccionSemantica.accion16(this.tokens, caracter);
-            case 17: return AccionSemantica.accion17(this.tokens, tablaDeSimbolo);
-            case 18: return AccionSemantica.accion18(this.tokens, tablaDeSimbolo);
-            case 19: return AccionSemantica.accion19(this.tokens);
-            default: return false;
-        }
+    private boolean ejecutarAS(int AS, char caracter, int nroLinea){w
+        return switch (AS) {
+            case 1 -> AccionSemantica.accion1(this.tokens, tablaDeSimbolo, nroLinea);
+            case 2 -> AccionSemantica.accion2(caracter);
+            case 3 -> AccionSemantica.accion3(caracter);
+            case 4 -> AccionSemantica.accion4(this.tokens, caracter);
+            case 5 -> AccionSemantica.accion5(this.tokens, tablaDeSimbolo, nroLinea);
+            case 6 -> AccionSemantica.accion6(this.tokens);
+            case 7 -> AccionSemantica.accion7(this.tokens);
+            case 8 -> AccionSemantica.accion8(this.tokens);
+            case 9 -> AccionSemantica.accion9(this.tokens);
+            case 10 -> AccionSemantica.accion10(this.tokens);
+            case 11 -> AccionSemantica.accion11(this.tokens, caracter);
+            case 12 -> AccionSemantica.accion12(this.tokens);
+            case 13 -> AccionSemantica.accion13(this.tokens);
+            case 14 -> AccionSemantica.accion14(this.tokens);
+            case 15 -> AccionSemantica.accion15(this.tokens, tablaDeSimbolo, nroLinea);
+            case 16 -> AccionSemantica.accion16(this.tokens, caracter);
+            case 17 -> AccionSemantica.accion17(this.tokens, tablaDeSimbolo);
+            case 18 -> AccionSemantica.accion18(this.tokens, tablaDeSimbolo);
+            case 19 -> AccionSemantica.accion19(this.tokens);
+            default -> false;
+        };
     }
 
     //Metodo para obtener el token siguiente de la lista
@@ -105,7 +105,7 @@ public class AnalizadorLexico {
     //Metodo para el parser yacc
     public int yylex(){
         Dupla<Integer, Integer> tokenActual = this.getSiguienteToken();
-        // ParserVal(tokenActual.getSegundo()); //yylval
+        //yylval = ParserVal(tokenActual.getSegundo());
         return tokenActual.getPrimero();
     }
 

@@ -4,7 +4,7 @@ import java.util.Set;
 //Clase que hace de la tabla de simbolos
 public class TablaSimbolo {
 
-    private final int MIN_ID = 284;
+    private final int MIN_ID = 285;
     private HashMap<Integer,Dupla<Integer,String>> tablaDeSimbolo;
     private Integer autoincrementador;
 
@@ -56,6 +56,7 @@ public class TablaSimbolo {
         tablaDeSimbolo.put(281,new Dupla<Integer, String>(281,"POST"));
         tablaDeSimbolo.put(282,new Dupla<Integer, String>(282,"TRY"));
         tablaDeSimbolo.put(283,new Dupla<Integer, String>(283,"CATCH"));
+        tablaDeSimbolo.put(284,new Dupla<Integer, String>(284,"<>"));
     }
 
 
