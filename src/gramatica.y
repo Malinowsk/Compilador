@@ -84,7 +84,6 @@
  ;
 
  sentencia_condicional : IF '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF
-                       | IF '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF
                        | IF '(' condicion ')' THEN bloque_ejecutable_condicional ELSE bloque_ejecutable_condicional ENDIF
  ;
  
@@ -140,6 +139,7 @@
  ;
 
  sentencia_conversion : DOUBLE '(' expresion_aritmetica ')'
+ 		      | error ';' {}
  ;
 
  sentencia_try_catch : TRY sentencia_ejecutable_con_anidamiento CATCH bloque_ejecutable
@@ -156,11 +156,11 @@
  expresion_aritmetica : expresion_aritmetica '+' termino
            | expresion_aritmetica '-' termino
            | termino
-           | /*Tema paréntesis*/
  ;
 
  termino : termino '*' factor
          | termino '/' factor
+         | '-' termino {$$ = -1 * $2}
          | factor
  ;
 
@@ -170,3 +170,22 @@
  ;
 
 %%
+
+///CODIGO JAVA
+
+private AnalizadorLexico analizadorLexico;
+
+public void setAnalizadorLexico(AnalizadorLexico l){
+	this.analizadorLexico = l;
+}
+
+private int yylex(){
+	Dupla<Integer, Integer> tokenActual = analizadorLexico.getSiguienteToken();
+	if(tokenActual.getSegundo() != null)
+		yylval = new ParserVal(tokenActual.getSegundo());
+	return tokenActual.getPrimero();
+}
+
+private void yyerror(String s){
+
+}

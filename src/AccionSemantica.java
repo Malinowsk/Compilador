@@ -32,11 +32,12 @@ private static final Integer DISTINTO = 284;
 devuelvo el token correspondiente. Sino doy de alta y devuelvo el token.
 (recordar que si es una palabra reservada envio Token, miéntras que si es un identificador envio Token mas Clave del Hashmap)
  */
-public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, int nroLinea){
+public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea){
     if (auxiliar.length() <= 22){
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_IDENTIFICADOR);//se agrega identificador a la tabla
             tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_IDENTIFICADOR, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
+            lineas.add(nroLinea);
         }
         else{
             int numeroClaveTabla= tablaDeSimbolo.obtenerNumeroToken(auxiliar);

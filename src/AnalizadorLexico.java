@@ -12,12 +12,15 @@ public class AnalizadorLexico {
     private TablaSimbolo tablaDeSimbolo;
 
     private ArrayList< Dupla<Integer, Integer> > tokens; //Lista donde se guardaran los tokens obtenidos del codigo, (Numero de token, Clave en tabla)
+    private ArrayList< Integer > lineas; //Lista donde se guardaran los nro de lineas correspondiente a cada token generado
     private int indiceToken;
+
     //Constructor
     public AnalizadorLexico() {
         automata = new Automata();
         tablaDeSimbolo = new TablaSimbolo();
         tokens = new ArrayList< Dupla<Integer, Integer> >();
+        lineas = new ArrayList<Integer>();
         indiceToken = 0;
     }
 
@@ -64,9 +67,9 @@ public class AnalizadorLexico {
     }
 
     //Metodo que ejecuta la accion semantica indicada por el parametro
-    private boolean ejecutarAS(int AS, char caracter, int nroLinea){w
+    private boolean ejecutarAS(int AS, char caracter, int nroLinea){
         return switch (AS) {
-            case 1 -> AccionSemantica.accion1(this.tokens, tablaDeSimbolo, nroLinea);
+            case 1 -> AccionSemantica.accion1(this.tokens, tablaDeSimbolo, this.lineas, nroLinea);
             case 2 -> AccionSemantica.accion2(caracter);
             case 3 -> AccionSemantica.accion3(caracter);
             case 4 -> AccionSemantica.accion4(this.tokens, caracter);
@@ -95,18 +98,18 @@ public class AnalizadorLexico {
     }
 
     //Metodo para ver la lista (PRUEBA)
-    public void imprimirLista(){
+    public void imprimirTokens(){
         for(Dupla<Integer, Integer> d: this.tokens){
             System.out.println(d.getPrimero() + ", " + d.getSegundo());
         }
 
     }
 
-    //Metodo para el parser yacc
+    /*Metodo para el parser yacc
     public int yylex(){
         Dupla<Integer, Integer> tokenActual = this.getSiguienteToken();
         //yylval = ParserVal(tokenActual.getSegundo());
         return tokenActual.getPrimero();
-    }
+    }*/
 
 }

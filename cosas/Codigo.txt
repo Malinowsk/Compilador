@@ -1,3 +1,4 @@
 DOUBLE aux := 2.4E+5 ;
 if ( aux >= .5E4 ) THEN BEGIN
-    PRINT("MAINQUEEEEEE!");
+    PRINT(%MAINQUEEEEEE! +
++ EEEEEEEE %);
