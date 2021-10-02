@@ -1,4 +1,9 @@
-DOUBLE aux := 2.4E+5 ;
+programa ;
+DOUBLE aux;
+BEGIN
+aux := 2.4E+5 ;
 if ( aux >= .5E4 ) THEN BEGIN
     PRINT(%MAINQUEEEEEE! +
 + EEEEEEEE %);
+ENDIF
+END

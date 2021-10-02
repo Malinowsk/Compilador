@@ -1,4 +1,6 @@
-
+%{
+import java.util.ArrayList;
+%}
 
 %token
     IF THEN ELSE ENDIF PRINT FUNC RETURN BEGIN END BREAK ULONG DOUBLE WHILE DO
@@ -8,11 +10,11 @@
 
 %start programa
 
-%% /*Por qué no se pone azul*/
+%%
  programa : cabecera_programa bloque_declarativo bloque_ejecutable
  ;
 
- cabecera_programa : ID ';'
+ cabecera_programa : ID ';' { System.out.println("leyo la cabecera"); addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
  
  bloque_declarativo : sentencias_declarativas 
@@ -22,8 +24,8 @@
                          | sentencia_declarativa ';'
  ;
  
- sentencia_declarativa : tipo lista_variables
-                       | tipo FUNC '(' tipo ')' lista_variables 
+ sentencia_declarativa : tipo lista_variables { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+                       | tipo FUNC '(' tipo ')' lista_variables { estructuras.add( "Declaracion de funciones como variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
                        | sentencia_declarativa_funcion
  ; 
 
@@ -31,7 +33,7 @@
                                | cabecera_funcion bloque_declarativo_funcion BEGIN bloque_ejecutable retorno_funcion postcondicion END
  ;
 
- cabecera_funcion : tipo FUNC ID  '('parametro ')'
+ cabecera_funcion : tipo FUNC ID  '('parametro ')' { addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
  parametro : tipo ID
@@ -44,13 +46,13 @@
                                  | sentencia_declarativa_en_funcion ';'
  ;
  
- sentencia_declarativa_en_funcion : tipo lista_variables                      
+ sentencia_declarativa_en_funcion : tipo lista_variables { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;    
  
- retorno_funcion : RETURN '(' expresion_aritmetica ')'
+ retorno_funcion : RETURN '(' expresion_aritmetica ')' { addEstructura( "Sentencia RETURN, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
- postcondicion : POST ':' '('condicion ')' ';'
+ postcondicion : POST ':' '('condicion ')' ';' { addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
  tipo : ULONG
@@ -77,14 +79,14 @@
                       | sentencia_try_catch
  ; 
 
- sentencia_asignacion : ID ASIG expresion_aritmetica
+ sentencia_asignacion : ID ASIG expresion_aritmetica { addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
- sentencia_llamado_funcion : ID '('expresion_aritmetica ')'
+ sentencia_llamado_funcion : ID '('expresion_aritmetica ')'{ addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
- sentencia_condicional : IF '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF
-                       | IF '(' condicion ')' THEN bloque_ejecutable_condicional ELSE bloque_ejecutable_condicional ENDIF
+ sentencia_condicional : IF '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF { addEstructura( "Sentencia IF, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+                       | IF '(' condicion ')' THEN bloque_ejecutable_condicional ELSE bloque_ejecutable_condicional ENDIF { addEstructura( "Sentencia IF con ELSE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
  
  condicion : expresion_booleana operacion_booleana condicion
@@ -111,10 +113,10 @@
                                | sentencia_ejecutable
  ;
 
- sentencia_imprimir : PRINT '(' CADENA ')'
+ sentencia_imprimir : PRINT '(' CADENA ')' { addEstructura( "Sentencia PRINT, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ; 
 
- sentencia_iterativa : WHILE '(' condicion ')' DO bloque_ejecutable_iterativo
+ sentencia_iterativa : WHILE '(' condicion ')' DO bloque_ejecutable_iterativo { addEstructura( "Sentencia WHILE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
 
@@ -135,14 +137,14 @@
                                 | sentencia_break
  ; 
 
- sentencia_break : BREAK 
+ sentencia_break : BREAK { addEstructura( "Sentencia BREAK, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
- sentencia_conversion : DOUBLE '(' expresion_aritmetica ')'
+ sentencia_conversion : DOUBLE '(' expresion_aritmetica ')' { addEstructura( "Sentencia de conversion a DOUBLE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  		      | error ';' {}
  ;
 
- sentencia_try_catch : TRY sentencia_ejecutable_con_anidamiento CATCH bloque_ejecutable
+ sentencia_try_catch : TRY sentencia_ejecutable_con_anidamiento CATCH bloque_ejecutable { addEstructura( "Sentencia TRY CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
  sentencia_ejecutable_con_anidamiento  : sentencia_asignacion
@@ -160,7 +162,7 @@
 
  termino : termino '*' factor
          | termino '/' factor
-         | '-' termino {$$ = -1 * $2}
+         | '-' termino {/*$$ = -1 * $2*/}
          | factor
  ;
 
@@ -174,9 +176,21 @@
 ///CODIGO JAVA
 
 private AnalizadorLexico analizadorLexico;
+private ArrayList<String> estructuras = new ArrayList<String>();
 
-public void setAnalizadorLexico(AnalizadorLexico l){
-	this.analizadorLexico = l;
+
+public void setAnalizadorLexico(AnalizadorLexico al){
+	this.analizadorLexico = al;
+}
+
+private void addEstructura(String e){
+	estructuras.add(e);
+}
+
+public void imprimirEstructuras(){
+	System.out.println("Cantidad de estructuras detectadas: " + estructuras.size());
+	for(String e : estructuras)
+		System.out.println(e);
 }
 
 private int yylex(){

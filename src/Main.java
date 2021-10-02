@@ -31,8 +31,8 @@ public class Main {
             System.out.flush();
             switch (opcion) {
                 case 1 -> al.imprimirTokens();
-                case 2 -> System.out.println("Fin de la ejecución.");//p.listarEstructuras();
-                case 3 -> System.out.println("Fin de la ejecución.");//p.mostrarErrores();
+                case 2 -> p.imprimirEstructuras();
+                case 3 -> System.out.println("Fin de la ejecución.");//p.imprimirErrores();
                 case 4 -> {System.out.println("Fin de la ejecución.");
                             break;}
             }
