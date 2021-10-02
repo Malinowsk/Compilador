@@ -483,13 +483,14 @@ private int yylex(){
 	Dupla<Integer, Integer> tokenActual = analizadorLexico.getSiguienteToken();
 	if(tokenActual.getSegundo() != null)
 		yylval = new ParserVal(tokenActual.getSegundo());
+	//System.out.println("Token devuelto por yylex: " + tokenActual.getPrimero() );
 	return tokenActual.getPrimero();
 }
 
 private void yyerror(String s){
 
 }
-//#line 421 "Parser.java"
+//#line 422 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -645,7 +646,7 @@ boolean doaction;
 //########## USER-SUPPLIED ACTIONS ##########
 case 2:
 //#line 17 "gramatica.y"
-{ System.out.println("leyo la cabecera"); addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+{ addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 6:
 //#line 27 "gramatica.y"
@@ -715,7 +716,7 @@ case 79:
 //#line 165 "gramatica.y"
 {/*$$ = -1 * $2*/}
 break;
-//#line 642 "Parser.java"
+//#line 643 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

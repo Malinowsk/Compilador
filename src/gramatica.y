@@ -14,7 +14,7 @@ import java.util.ArrayList;
  programa : cabecera_programa bloque_declarativo bloque_ejecutable
  ;
 
- cabecera_programa : ID ';' { System.out.println("leyo la cabecera"); addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ cabecera_programa : ID ';' { addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
  
  bloque_declarativo : sentencias_declarativas 
@@ -197,6 +197,7 @@ private int yylex(){
 	Dupla<Integer, Integer> tokenActual = analizadorLexico.getSiguienteToken();
 	if(tokenActual.getSegundo() != null)
 		yylval = new ParserVal(tokenActual.getSegundo());
+	//System.out.println("Token devuelto por yylex: " + tokenActual.getPrimero() );
 	return tokenActual.getPrimero();
 }
 

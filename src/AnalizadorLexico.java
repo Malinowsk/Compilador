@@ -34,7 +34,7 @@ public class AnalizadorLexico {
         }
 
         int estadoActual = 0; //Comienza en el estado inicial
-        int nroLinea = 1;
+        int nroLinea = 0;
         for ( String linea : lineas ) { //Leo hasta el final del archivo
             for (int i = 0; i < linea.length(); i++) {
                 char caracter = linea.charAt(i);
@@ -94,23 +94,19 @@ public class AnalizadorLexico {
 
     //Metodo para obtener el token siguiente de la lista
     public Dupla<Integer, Integer> getSiguienteToken(){
+        if (indiceToken== tokens.size())
+            return new Dupla<Integer, Integer>(0, null); // se devuelve 0 porque se termino el codigo
         return tokens.get(indiceToken++);
     }
 
     //Metodo para obtener el nro de linea del token actual
-    public int getNroLineaToken() {return nroLineas.get(indiceToken);}
+    public int getNroLineaToken() {return nroLineas.get(indiceToken-1);} // se usa indice menos 1 ya que previamente se utiliza getSiguienteToken(), el cual suma uno al indice
 
     //Metodo para ver la lista (PRUEBA)
     public void imprimirTokens(){
-        for(Dupla<Integer, Integer> d: this.tokens)
-            System.out.println(d.getPrimero() + ", " + d.getSegundo());
+        for(int i=0; i < tokens.size(); i++){
+            System.out.println("En la linea " + nroLineas.get(i) + ": " +tokens.get(i).getPrimero() + ", " + tokens.get(i).getSegundo());
+        }
     }
-
-    /*Metodo para el parser yacc
-    public int yylex(){
-        Dupla<Integer, Integer> tokenActual = this.getSiguienteToken();
-        //yylval = ParserVal(tokenActual.getSegundo());
-        return tokenActual.getPrimero();
-    }*/
 
 }

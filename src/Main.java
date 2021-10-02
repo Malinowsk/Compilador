@@ -14,6 +14,7 @@ public class Main {
         //al.leerNuevoArchivo(args[0]);
         al.leerNuevoArchivo("TPE-DisenioDeCompiladores/cosas/Codigo.txt");
         parser.setAnalizadorLexico(al);
+        parser.yyparse();
         menu(al, parser);
     }
 

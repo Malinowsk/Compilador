@@ -1,8 +1,8 @@
-programa ;
+programa;
 DOUBLE aux;
 BEGIN
 aux := 2.4E+5 ;
-if ( aux >= .5E4 ) THEN BEGIN
+IF ( aux >= .5E4 ) THEN
     PRINT(%MAINQUEEEEEE! +
 + EEEEEEEE %);
 ENDIF
