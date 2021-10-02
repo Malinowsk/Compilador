@@ -78,4 +78,11 @@ public class TablaSimbolo {
         return -1;
     }
 
+    public String obtenerValor(Integer i){
+        if (tablaDeSimbolo.get(i)!=null)
+            return tablaDeSimbolo.get(i).getSegundo();
+        return null;
+    }
+
+
 }

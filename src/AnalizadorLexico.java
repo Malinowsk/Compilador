@@ -106,6 +106,10 @@ public class AnalizadorLexico {
     public void imprimirTokens(){
         for(int i=0; i < tokens.size(); i++){
             System.out.println("En la linea " + nroLineas.get(i) + ": " +tokens.get(i).getPrimero() + ", " + tokens.get(i).getSegundo());
+            if (tokens.get(i).getSegundo()!=null)
+                System.out.println(tablaDeSimbolo.obtenerValor(tokens.get(i).getSegundo()));
+            else
+                System.out.println(tablaDeSimbolo.obtenerValor(tokens.get(i).getPrimero()));
         }
     }
 

@@ -12,7 +12,7 @@ public class Main {
         Parser parser = new Parser();
         AnalizadorLexico al = new AnalizadorLexico();
         //al.leerNuevoArchivo(args[0]);
-        al.leerNuevoArchivo("TPE-DisenioDeCompiladores/cosas/Codigo.txt");
+        al.leerNuevoArchivo("E:/Git/TPE-DisenioDeCompiladores/cosas/Codigo2.txt");
         parser.setAnalizadorLexico(al);
         parser.yyparse();
         menu(al, parser);

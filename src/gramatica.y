@@ -25,12 +25,12 @@ import java.util.ArrayList;
  ;
  
  sentencia_declarativa : tipo lista_variables { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
-                       | tipo FUNC '(' tipo ')' lista_variables { estructuras.add( "Declaracion de funciones como variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+                       | tipo FUNC '(' tipo ')' lista_variables { addEstructura( "Declaracion de funciones como variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
                        | sentencia_declarativa_funcion
  ; 
 
- sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo_funcion BEGIN bloque_ejecutable retorno_funcion END
-                               | cabecera_funcion bloque_declarativo_funcion BEGIN bloque_ejecutable retorno_funcion postcondicion END
+ sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo_funcion BEGIN bloque_ejecutable_funcion retorno_funcion END
+                               | cabecera_funcion bloque_declarativo_funcion BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END
  ;
 
  cabecera_funcion : tipo FUNC ID  '('parametro ')' { addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
@@ -49,7 +49,7 @@ import java.util.ArrayList;
  sentencia_declarativa_en_funcion : tipo lista_variables { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;    
  
- retorno_funcion : RETURN '(' expresion_aritmetica ')' { addEstructura( "Sentencia RETURN, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ retorno_funcion : RETURN '(' expresion_aritmetica ')' ';' { addEstructura( "Sentencia RETURN, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
  postcondicion : POST ':' '('condicion ')' ';' { addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); }
@@ -65,6 +65,9 @@ import java.util.ArrayList;
 
  bloque_ejecutable : BEGIN sentencias_ejecutables END
  ;
+
+  bloque_ejecutable_funcion : sentencias_ejecutables
+  ;
  
  sentencias_ejecutables : sentencia_ejecutable ';' sentencias_ejecutables
                         | sentencia_ejecutable ';'

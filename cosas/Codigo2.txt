@@ -1,0 +1,19 @@
+programa;
+ULONG aux;
+ULONG FUNC (ULONG) f2 ;
+
+DOUBLE FUNC f1 ( ULONG y )
+ULONG Z;
+BEGIN
+Z := y;
+RETURN (Z);
+END;
+
+
+BEGIN
+aux := 2.4E+5 ;
+IF ( aux >= .5E4 ) THEN
+    PRINT(%MAINQUEEEEEE! +
++ EEEEEEEE %);
+ENDIF
+END
