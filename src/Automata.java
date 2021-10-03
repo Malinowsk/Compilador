@@ -379,7 +379,7 @@ public class Automata {
         transiciones[14][18].setPrimero(0);
 
         transiciones[15][0].setPrimero(15);
-        transiciones[15][1].setPrimero(15);
+        transiciones[15][1].setPrimero(-1);
         transiciones[15][2].setPrimero(15);
         transiciones[15][3].setPrimero(15);
         transiciones[15][4].setPrimero(15);
@@ -762,7 +762,7 @@ public class Automata {
         transiciones[14][18].setSegundo(15);
 
         transiciones[15][0].setSegundo(3);
-        transiciones[15][1].setSegundo(3);
+        transiciones[15][1].setSegundo(0);
         transiciones[15][2].setSegundo(3);
         transiciones[15][3].setSegundo(3);
         transiciones[15][4].setSegundo(3);

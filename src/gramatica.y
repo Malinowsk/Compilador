@@ -15,7 +15,6 @@ import java.util.ArrayList;
  ;
 
  cabecera_programa : ID ';' { addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() );}
- 		   //| ID { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta ;"); }
  		   | error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador de programa no valido"); }
  ;
  
@@ -80,12 +79,10 @@ import java.util.ArrayList;
 
  tipo : ULONG
       | DOUBLE
-      ///VER SI AGREGAR TAMBIEN ERROR
  ;
  
  lista_variables : ID ',' lista_variables
                  | ID
-                 ///VER SI AGREGAR error ',' lista_variables
  ;
 
  bloque_ejecutable : BEGIN sentencias_ejecutables END
@@ -108,7 +105,7 @@ import java.util.ArrayList;
  ; 
 
  sentencia_asignacion : ID ASIG expresion_aritmetica { addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
- 		      | ID expresion_aritmetica { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta :="); }
+ 		      //| ID expresion_aritmetica { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta :="); }
  		      | error ASIG expresion_aritmetica { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador no valido"); }
  ;
 
@@ -228,7 +225,7 @@ import java.util.ArrayList;
 
  termino : termino '*' factor
          | termino '/' factor
-         | '-' termino {/*$$ = -1 * $2*/}
+         | '-' factor
          | factor
  ;
 

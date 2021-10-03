@@ -1,18 +1,18 @@
 programa
 INT aux;
-ULONG FUNC (ULONG) f2 ;
+ULONG func (string) f2 ;
 
-DOUBLE FUNC f1 ( ULONG y )
+DOUBLE FUNC f1 ( ULONG )
 ULONG Z;
 BEGIN
-Z := y;
-RETURN (Z);
+Z  y;
+RETURN (Z;
 END;
 
 
 BEGIN
 aux := 2.4E+5 ;
-IF ( aux >= .5E4 ) THEN
+"IF ( aux >= .5E4 ) THEN
     PRINT(%MAINQUEEEEEE! +
 + EEEEEEEE %);
 ENDIF;

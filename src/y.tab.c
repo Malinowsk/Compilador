@@ -1,191 +1,40 @@
-//### This file created by BYACC 1.8(/Java extension  1.15)
-//### Java capabilities added 7 Jan 97, Bob Jamison
-//### Updated : 27 Nov 97  -- Bob Jamison, Joe Nieten
-//###           01 Jan 98  -- Bob Jamison -- fixed generic semantic constructor
-//###           01 Jun 99  -- Bob Jamison -- added Runnable support
-//###           06 Aug 00  -- Bob Jamison -- made state variables class-global
-//###           03 Jan 01  -- Bob Jamison -- improved flags, tracing
-//###           16 May 01  -- Bob Jamison -- added custom stack sizing
-//###           04 Mar 02  -- Yuval Oren  -- improved java performance, added options
-//###           14 Mar 02  -- Tomas Hurka -- -d support, static initializer workaround
-//### Please send bug reports to tom@hukatronic.cz
-//### static char yysccsid[] = "@(#)yaccpar	1.8 (Berkeley) 01/20/90";
-
-
-
-
-
-
-//#line 2 "gramatica.y"
+#ifndef lint
+static char yysccsid[] = "@(#)yaccpar	1.8 (Berkeley) 01/20/90";
+#endif
+#define YYBYACC 1
+#line 2 "gramatica.y"
 import java.util.ArrayList;
-//#line 19 "Parser.java"
-
-
-
-
-public class Parser
-{
-
-boolean yydebug;        //do I want debug output?
-int yynerrs;            //number of errors so far
-int yyerrflag;          //was there an error?
-int yychar;             //the current working character
-
-//########## MESSAGES ##########
-//###############################################################
-// method: debug
-//###############################################################
-void debug(String msg)
-{
-  if (yydebug)
-    System.out.println(msg);
-}
-
-//########## STATE STACK ##########
-final static int YYSTACKSIZE = 500;  //maximum stack size
-int statestk[] = new int[YYSTACKSIZE]; //state stack
-int stateptr;
-int stateptrmax;                     //highest index of stackptr
-int statemax;                        //state when highest index reached
-//###############################################################
-// methods: state stack push,pop,drop,peek
-//###############################################################
-final void state_push(int state)
-{
-  try {
-		stateptr++;
-		statestk[stateptr]=state;
-	 }
-	 catch (ArrayIndexOutOfBoundsException e) {
-     int oldsize = statestk.length;
-     int newsize = oldsize * 2;
-     int[] newstack = new int[newsize];
-     System.arraycopy(statestk,0,newstack,0,oldsize);
-     statestk = newstack;
-     statestk[stateptr]=state;
-  }
-}
-final int state_pop()
-{
-  return statestk[stateptr--];
-}
-final void state_drop(int cnt)
-{
-  stateptr -= cnt; 
-}
-final int state_peek(int relative)
-{
-  return statestk[stateptr-relative];
-}
-//###############################################################
-// method: init_stacks : allocate and prepare stacks
-//###############################################################
-final boolean init_stacks()
-{
-  stateptr = -1;
-  val_init();
-  return true;
-}
-//###############################################################
-// method: dump_stacks : show n levels of the stacks
-//###############################################################
-void dump_stacks(int count)
-{
-int i;
-  System.out.println("=index==state====value=     s:"+stateptr+"  v:"+valptr);
-  for (i=0;i<count;i++)
-    System.out.println(" "+i+"    "+statestk[i]+"      "+valstk[i]);
-  System.out.println("======================");
-}
-
-
-//########## SEMANTIC VALUES ##########
-//public class ParserVal is defined in ParserVal.java
-
-
-String   yytext;//user variable to return contextual strings
-ParserVal yyval; //used to return semantic vals from action routines
-ParserVal yylval;//the 'lval' (result) I got from yylex()
-ParserVal valstk[];
-int valptr;
-//###############################################################
-// methods: value stack push,pop,drop,peek.
-//###############################################################
-void val_init()
-{
-  valstk=new ParserVal[YYSTACKSIZE];
-  yyval=new ParserVal();
-  yylval=new ParserVal();
-  valptr=-1;
-}
-void val_push(ParserVal val)
-{
-  if (valptr>=YYSTACKSIZE)
-    return;
-  valstk[++valptr]=val;
-}
-ParserVal val_pop()
-{
-  if (valptr<0)
-    return new ParserVal();
-  return valstk[valptr--];
-}
-void val_drop(int cnt)
-{
-int ptr;
-  ptr=valptr-cnt;
-  if (ptr<0)
-    return;
-  valptr = ptr;
-}
-ParserVal val_peek(int relative)
-{
-int ptr;
-  ptr=valptr-relative;
-  if (ptr<0)
-    return new ParserVal();
-  return valstk[ptr];
-}
-final ParserVal dup_yyval(ParserVal val)
-{
-  ParserVal dup = new ParserVal();
-  dup.ival = val.ival;
-  dup.dval = val.dval;
-  dup.sval = val.sval;
-  dup.obj = val.obj;
-  return dup;
-}
-//#### end semantic value section ####
-public final static short IF=257;
-public final static short THEN=258;
-public final static short ELSE=259;
-public final static short ENDIF=260;
-public final static short PRINT=261;
-public final static short FUNC=262;
-public final static short RETURN=263;
-public final static short BEGIN=264;
-public final static short END=265;
-public final static short BREAK=266;
-public final static short ULONG=267;
-public final static short DOUBLE=268;
-public final static short WHILE=269;
-public final static short DO=270;
-public final static short COMP_MAYOR_IGUAL=271;
-public final static short COMP_MENOR_IGUAL=272;
-public final static short ASIG=273;
-public final static short COMP_IGUAL=274;
-public final static short AND=275;
-public final static short OR=276;
-public final static short ID=277;
-public final static short CTE_ULONG=278;
-public final static short CTE_DOUBLE=279;
-public final static short CADENA=280;
-public final static short POST=281;
-public final static short TRY=282;
-public final static short CATCH=283;
-public final static short COMP_DISTINTO=284;
-public final static short YYERRCODE=256;
-final static short yylhs[] = {                           -1,
+#line 8 "y.tab.c"
+#define IF 257
+#define THEN 258
+#define ELSE 259
+#define ENDIF 260
+#define PRINT 261
+#define FUNC 262
+#define RETURN 263
+#define BEGIN 264
+#define END 265
+#define BREAK 266
+#define ULONG 267
+#define DOUBLE 268
+#define WHILE 269
+#define DO 270
+#define COMP_MAYOR_IGUAL 271
+#define COMP_MENOR_IGUAL 272
+#define ASIG 273
+#define COMP_IGUAL 274
+#define AND 275
+#define OR 276
+#define ID 277
+#define CTE_ULONG 278
+#define CTE_DOUBLE 279
+#define CADENA 280
+#define POST 281
+#define TRY 282
+#define CATCH 283
+#define COMP_DISTINTO 284
+#define YYERRCODE 256
+short yylhs[] = {                                        -1,
     0,    1,    1,    2,    4,    4,    5,    5,    5,    5,
     5,    5,    5,    5,    8,    8,    9,    9,    9,    9,
     9,    9,   14,   10,   15,   15,   16,   12,   12,   12,
@@ -201,7 +50,7 @@ final static short yylhs[] = {                           -1,
    40,   40,   40,   40,   17,   17,   17,   41,   41,   41,
    41,   42,   42,   42,
 };
-final static short yylen[] = {                            2,
+short yylen[] = {                                         2,
     3,    2,    2,    1,    3,    2,    2,    6,    1,    2,
     3,    5,    6,    5,    6,    7,    6,    6,    6,    6,
     5,    5,    2,    1,    3,    2,    2,    5,    5,    4,
@@ -217,7 +66,7 @@ final static short yylen[] = {                            2,
     1,    1,    1,    1,    3,    3,    1,    3,    3,    2,
     1,    1,    1,    1,
 };
-final static short yydefred[] = {                         0,
+short yydefred[] = {                                      0,
     0,    0,    0,    0,    3,    2,    0,   39,   40,    0,
     4,    0,    0,    9,    0,    0,   10,    0,    1,    0,
     0,    0,    7,    0,    0,   24,    0,    0,    0,   67,
@@ -247,14 +96,14 @@ final static short yydefred[] = {                         0,
    96,    0,   29,   28,   37,    0,    0,    0,   36,    0,
    98,   35,    0,    0,   62,   34,   33,
 };
-final static short yydgoto[] = {                          3,
+short yydgoto[] = {                                       3,
     4,   10,   19,   11,   12,   96,   17,   14,   15,   25,
   101,  156,  198,   97,   26,   27,   78,   79,   36,  206,
    38,   39,   40,   41,   42,   43,   44,   45,  207,   80,
   134,  130,   46,   47,  220,  244,  221,  222,   48,   92,
    70,   71,
 };
-final static short yysindex[] = {                      -228,
+short yysindex[] = {                                   -228,
    -2,   42,    0, -124,    0,    0, -265,    0,    0, -192,
     0,   45, -167,    0, -236,  -21,    0,  266,    0, -124,
  -164,   63,    0, -265, -147,    0,   64, -265,  -29,    0,
@@ -284,7 +133,7 @@ final static short yysindex[] = {                      -228,
     0,  264,    0,    0,    0,  404,  413,  423,    0,  206,
     0,    0,  412,  414,    0,    0,    0,
 };
-final static short yyrindex[] = {                         0,
+short yyrindex[] = {                                      0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,  418,    0,    0,    0,  214,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -314,18 +163,15 @@ final static short yyrindex[] = {                         0,
     0,  219,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,
 };
-final static short yygindex[] = {                         0,
+short yygindex[] = {                                      0,
     0,    0,   13,  465,    0,   38,  361,    0,    0,    0,
     0,    0,    0,  302,  428,    0,  352,  331,  -47,  -10,
   -42,  210,  221,  246,  257,  293,  -75,    0, -106,    0,
     0,    0,    0,    0,  -63,  225, -177,    0,    0,    0,
   190,  -48,
 };
-final static int YYTABLESIZE=585;
-static short yytable[];
-static { yytable();}
-static void yytable(){
-yytable = new short[]{                        127,
+#define YYTABLESIZE 585
+short yytable[] = {                                     127,
    82,  127,  182,  127,  174,   86,   69,   37,  231,  102,
    63,   16,  151,   68,  136,   55,   63,  127,  127,  111,
   127,  125,   28,  125,   69,  125,  232,    1,  121,   62,
@@ -386,11 +232,7 @@ yytable = new short[]{                        127,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,  268,
 };
-}
-static short yycheck[];
-static { yycheck(); }
-static void yycheck() {
-yycheck = new short[] {                         41,
+short yycheck[] = {                                      41,
    40,   43,   41,   45,   41,   48,   41,   18,   40,   57,
    40,  277,   41,   45,  256,   59,   40,   59,   60,   68,
    62,   41,   44,   43,   59,   45,   58,  256,   76,   59,
@@ -451,32 +293,26 @@ yycheck = new short[] {                         41,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,  254,
 };
-}
-final static short YYFINAL=3;
-final static short YYMAXTOKEN=284;
-final static String yyname[] = {
-"end-of-file",null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,"'('","')'","'*'","'+'","','",
-"'-'",null,"'/'",null,null,null,null,null,null,null,null,null,null,"':'","';'",
-"'<'",null,"'>'",null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-null,null,null,null,null,null,"IF","THEN","ELSE","ENDIF","PRINT","FUNC",
-"RETURN","BEGIN","END","BREAK","ULONG","DOUBLE","WHILE","DO","COMP_MAYOR_IGUAL",
-"COMP_MENOR_IGUAL","ASIG","COMP_IGUAL","AND","OR","ID","CTE_ULONG","CTE_DOUBLE",
-"CADENA","POST","TRY","CATCH","COMP_DISTINTO",
+#define YYFINAL 3
+#ifndef YYDEBUG
+#define YYDEBUG 0
+#endif
+#define YYMAXTOKEN 284
+#if YYDEBUG
+char *yyname[] = {
+"end-of-file",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,"'('","')'","'*'","'+'","','","'-'",0,"'/'",0,0,0,0,0,0,0,0,0,0,
+"':'","';'","'<'",0,"'>'",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,"IF","THEN","ELSE","ENDIF","PRINT","FUNC","RETURN","BEGIN","END",
+"BREAK","ULONG","DOUBLE","WHILE","DO","COMP_MAYOR_IGUAL","COMP_MENOR_IGUAL",
+"ASIG","COMP_IGUAL","AND","OR","ID","CTE_ULONG","CTE_DOUBLE","CADENA","POST",
+"TRY","CATCH","COMP_DISTINTO",
 };
-final static String yyrule[] = {
+char *yyrule[] = {
 "$accept : programa",
 "programa : cabecera_programa bloque_declarativo bloque_ejecutable",
 "cabecera_programa : ID ';'",
@@ -613,8 +449,36 @@ final static String yyrule[] = {
 "factor : CTE_ULONG",
 "factor : CTE_DOUBLE",
 };
-
-//#line 238 "gramatica.y"
+#endif
+#ifndef YYSTYPE
+typedef int YYSTYPE;
+#endif
+#define yyclearin (yychar=(-1))
+#define yyerrok (yyerrflag=0)
+#ifdef YYSTACKSIZE
+#ifndef YYMAXDEPTH
+#define YYMAXDEPTH YYSTACKSIZE
+#endif
+#else
+#ifdef YYMAXDEPTH
+#define YYSTACKSIZE YYMAXDEPTH
+#else
+#define YYSTACKSIZE 500
+#define YYMAXDEPTH 500
+#endif
+#endif
+int yydebug;
+int yynerrs;
+int yyerrflag;
+int yychar;
+short *yyssp;
+YYSTYPE *yyvsp;
+YYSTYPE yyval;
+YYSTYPE yylval;
+short yyss[YYSTACKSIZE];
+YYSTYPE yyvs[YYSTACKSIZE];
+#define yystacksize YYSTACKSIZE
+#line 238 "gramatica.y"
 
 ///CODIGO JAVA
 
@@ -658,484 +522,444 @@ private int yylex(){
 private void yyerror(String s){
 
 }
-//#line 590 "Parser.java"
-//###############################################################
-// method: yylexdebug : check lexer state
-//###############################################################
-void yylexdebug(int state,int ch)
+#line 526 "y.tab.c"
+#define YYABORT goto yyabort
+#define YYACCEPT goto yyaccept
+#define YYERROR goto yyerrlab
+int
+yyparse()
 {
-String s=null;
-  if (ch < 0) ch=0;
-  if (ch <= YYMAXTOKEN) //check index bounds
-     s = yyname[ch];    //now get it
-  if (s==null)
-    s = "illegal-symbol";
-  debug("state "+state+", reading "+ch+" ("+s+")");
-}
+    register int yym, yyn, yystate;
+#if YYDEBUG
+    register char *yys;
+    extern char *getenv();
 
-
-
-
-
-//The following are now global, to aid in error reporting
-int yyn;       //next next thing to do
-int yym;       //
-int yystate;   //current parsing state from state table
-String yys;    //current token string
-
-
-//###############################################################
-// method: yyparse : parse input and execute indicated items
-//###############################################################
-int yyparse()
-{
-boolean doaction;
-  init_stacks();
-  yynerrs = 0;
-  yyerrflag = 0;
-  yychar = -1;          //impossible char forces a read
-  yystate=0;            //initial state
-  state_push(yystate);  //save it
-  val_push(yylval);     //save empty value
-  while (true) //until parsing is done, either correctly, or w/error
+    if (yys = getenv("YYDEBUG"))
     {
-    doaction=true;
-    if (yydebug) debug("loop"); 
-    //#### NEXT ACTION (from reduction table)
-    for (yyn=yydefred[yystate];yyn==0;yyn=yydefred[yystate])
-      {
-      if (yydebug) debug("yyn:"+yyn+"  state:"+yystate+"  yychar:"+yychar);
-      if (yychar < 0)      //we want a char?
-        {
-        yychar = yylex();  //get next token
-        if (yydebug) debug(" next yychar:"+yychar);
-        //#### ERROR CHECK ####
-        if (yychar < 0)    //it it didn't work/error
-          {
-          yychar = 0;      //change it to default string (no -1!)
-          if (yydebug)
-            yylexdebug(yystate,yychar);
-          }
-        }//yychar<0
-      yyn = yysindex[yystate];  //get amount to shift by (shift index)
-      if ((yyn != 0) && (yyn += yychar) >= 0 &&
-          yyn <= YYTABLESIZE && yycheck[yyn] == yychar)
-        {
-        if (yydebug)
-          debug("state "+yystate+", shifting to state "+yytable[yyn]);
-        //#### NEXT STATE ####
-        yystate = yytable[yyn];//we are in a new state
-        state_push(yystate);   //save it
-        val_push(yylval);      //push our lval as the input for next rule
-        yychar = -1;           //since we have 'eaten' a token, say we need another
-        if (yyerrflag > 0)     //have we recovered an error?
-           --yyerrflag;        //give ourselves credit
-        doaction=false;        //but don't process yet
-        break;   //quit the yyn=0 loop
-        }
+        yyn = *yys;
+        if (yyn >= '0' && yyn <= '9')
+            yydebug = yyn - '0';
+    }
+#endif
 
-    yyn = yyrindex[yystate];  //reduce
-    if ((yyn !=0 ) && (yyn += yychar) >= 0 &&
-            yyn <= YYTABLESIZE && yycheck[yyn] == yychar)
-      {   //we reduced!
-      if (yydebug) debug("reduce");
-      yyn = yytable[yyn];
-      doaction=true; //get ready to execute
-      break;         //drop down to actions
-      }
-    else //ERROR RECOVERY
-      {
-      if (yyerrflag==0)
+    yynerrs = 0;
+    yyerrflag = 0;
+    yychar = (-1);
+
+    yyssp = yyss;
+    yyvsp = yyvs;
+    *yyssp = yystate = 0;
+
+yyloop:
+    if (yyn = yydefred[yystate]) goto yyreduce;
+    if (yychar < 0)
+    {
+        if ((yychar = yylex()) < 0) yychar = 0;
+#if YYDEBUG
+        if (yydebug)
         {
-        yyerror("syntax error");
-        yynerrs++;
+            yys = 0;
+            if (yychar <= YYMAXTOKEN) yys = yyname[yychar];
+            if (!yys) yys = "illegal-symbol";
+            printf("yydebug: state %d, reading %d (%s)\n", yystate,
+                    yychar, yys);
         }
-      if (yyerrflag < 3) //low error count?
+#endif
+    }
+    if ((yyn = yysindex[yystate]) && (yyn += yychar) >= 0 &&
+            yyn <= YYTABLESIZE && yycheck[yyn] == yychar)
+    {
+#if YYDEBUG
+        if (yydebug)
+            printf("yydebug: state %d, shifting to state %d (%s)\n",
+                    yystate, yytable[yyn],yyrule[yyn]);
+#endif
+        if (yyssp >= yyss + yystacksize - 1)
         {
+            goto yyoverflow;
+        }
+        *++yyssp = yystate = yytable[yyn];
+        *++yyvsp = yylval;
+        yychar = (-1);
+        if (yyerrflag > 0)  --yyerrflag;
+        goto yyloop;
+    }
+    if ((yyn = yyrindex[yystate]) && (yyn += yychar) >= 0 &&
+            yyn <= YYTABLESIZE && yycheck[yyn] == yychar)
+    {
+        yyn = yytable[yyn];
+        goto yyreduce;
+    }
+    if (yyerrflag) goto yyinrecovery;
+#ifdef lint
+    goto yynewerror;
+#endif
+yynewerror:
+    yyerror("syntax error");
+#ifdef lint
+    goto yyerrlab;
+#endif
+yyerrlab:
+    ++yynerrs;
+yyinrecovery:
+    if (yyerrflag < 3)
+    {
         yyerrflag = 3;
-        while (true)   //do until break
-          {
-          if (stateptr<0)   //check for under & overflow here
-            {
-            yyerror("stack underflow. aborting...");  //note lower case 's'
-            return 1;
-            }
-          yyn = yysindex[state_peek(0)];
-          if ((yyn != 0) && (yyn += YYERRCODE) >= 0 &&
+        for (;;)
+        {
+            if ((yyn = yysindex[*yyssp]) && (yyn += YYERRCODE) >= 0 &&
                     yyn <= YYTABLESIZE && yycheck[yyn] == YYERRCODE)
             {
-            if (yydebug)
-              debug("state "+state_peek(0)+", error recovery shifting to state "+yytable[yyn]+" ");
-            yystate = yytable[yyn];
-            state_push(yystate);
-            val_push(yylval);
-            doaction=false;
-            break;
+#if YYDEBUG
+                if (yydebug)
+                    printf("yydebug: state %d, error recovery shifting\
+ to state %d\n", *yyssp, yytable[yyn]);
+#endif
+                if (yyssp >= yyss + yystacksize - 1)
+                {
+                    goto yyoverflow;
+                }
+                *++yyssp = yystate = yytable[yyn];
+                *++yyvsp = yylval;
+                goto yyloop;
             }
-          else
+            else
             {
-            if (yydebug)
-              debug("error recovery discarding state "+state_peek(0)+" ");
-            if (stateptr<0)   //check for under & overflow here
-              {
-              yyerror("Stack underflow. aborting...");  //capital 'S'
-              return 1;
-              }
-            state_pop();
-            val_pop();
+#if YYDEBUG
+                if (yydebug)
+                    printf("yydebug: error recovery discarding state %d\n",
+                            *yyssp);
+#endif
+                if (yyssp <= yyss) goto yyabort;
+                --yyssp;
+                --yyvsp;
             }
-          }
         }
-      else            //discard this token
-        {
-        if (yychar == 0)
-          return 1; //yyabort
+    }
+    else
+    {
+        if (yychar == 0) goto yyabort;
+#if YYDEBUG
         if (yydebug)
-          {
-          yys = null;
-          if (yychar <= YYMAXTOKEN) yys = yyname[yychar];
-          if (yys == null) yys = "illegal-symbol";
-          debug("state "+yystate+", error recovery discards token "+yychar+" ("+yys+")");
-          }
-        yychar = -1;  //read another
+        {
+            yys = 0;
+            if (yychar <= YYMAXTOKEN) yys = yyname[yychar];
+            if (!yys) yys = "illegal-symbol";
+            printf("yydebug: state %d, error recovery discards token %d (%s)\n",
+                    yystate, yychar, yys);
         }
-      }//end error recovery
-    }//yyn=0 loop
-    if (!doaction)   //any reason not to proceed?
-      continue;      //skip action
-    yym = yylen[yyn];          //get count of terminals on rhs
+#endif
+        yychar = (-1);
+        goto yyloop;
+    }
+yyreduce:
+#if YYDEBUG
     if (yydebug)
-      debug("state "+yystate+", reducing "+yym+" by rule "+yyn+" ("+yyrule[yyn]+")");
-    if (yym>0)                 //if count of rhs not 'nil'
-      yyval = val_peek(yym-1); //get current semantic value
-    yyval = dup_yyval(yyval); //duplicate yyval if ParserVal is used as semantic value
-    switch(yyn)
-      {
-//########## USER-SUPPLIED ACTIONS ##########
+        printf("yydebug: state %d, reducing by rule %d (%s)\n",
+                yystate, yyn, yyrule[yyn]);
+#endif
+    yym = yylen[yyn];
+    yyval = yyvsp[1-yym];
+    switch (yyn)
+    {
 case 2:
-//#line 17 "gramatica.y"
+#line 17 "gramatica.y"
 { addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() );}
 break;
 case 3:
-//#line 18 "gramatica.y"
+#line 18 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador de programa no valido"); }
 break;
 case 7:
-//#line 28 "gramatica.y"
+#line 28 "gramatica.y"
 { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 8:
-//#line 29 "gramatica.y"
+#line 29 "gramatica.y"
 { addEstructura( "Declaracion de funciones como variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 10:
-//#line 31 "gramatica.y"
+#line 31 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable no valido"); }
 break;
 case 11:
-//#line 32 "gramatica.y"
+#line 32 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida"); }
 break;
 case 12:
-//#line 33 "gramatica.y"
+#line 33 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 13:
-//#line 34 "gramatica.y"
+#line 34 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", error en la condicion"); }
 break;
 case 14:
-//#line 35 "gramatica.y"
+#line 35 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 17:
-//#line 44 "gramatica.y"
+#line 44 "gramatica.y"
 { addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 18:
-//#line 45 "gramatica.y"
+#line 45 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida"); }
 break;
 case 19:
-//#line 46 "gramatica.y"
+#line 46 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador no valido"); }
 break;
 case 20:
-//#line 47 "gramatica.y"
+#line 47 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", parametro no valido"); }
 break;
 case 21:
-//#line 48 "gramatica.y"
+#line 48 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 22:
-//#line 49 "gramatica.y"
+#line 49 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 27:
-//#line 62 "gramatica.y"
+#line 62 "gramatica.y"
 { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 28:
-//#line 65 "gramatica.y"
+#line 65 "gramatica.y"
 { addEstructura( "Sentencia RETURN, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 29:
-//#line 66 "gramatica.y"
+#line 66 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
 break;
 case 30:
-//#line 67 "gramatica.y"
+#line 67 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 31:
-//#line 68 "gramatica.y"
+#line 68 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 32:
-//#line 69 "gramatica.y"
+#line 69 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 33:
-//#line 72 "gramatica.y"
+#line 72 "gramatica.y"
 { addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 34:
-//#line 73 "gramatica.y"
+#line 73 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
 break;
 case 35:
-//#line 74 "gramatica.y"
+#line 74 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta :"); }
 break;
 case 36:
-//#line 75 "gramatica.y"
+#line 75 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 37:
-//#line 76 "gramatica.y"
+#line 76 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 38:
-//#line 77 "gramatica.y"
+#line 77 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 54:
-//#line 107 "gramatica.y"
+#line 107 "gramatica.y"
 { addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 55:
-//#line 109 "gramatica.y"
+#line 109 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador no valido"); }
 break;
 case 56:
-//#line 112 "gramatica.y"
+#line 112 "gramatica.y"
 { addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 57:
-//#line 113 "gramatica.y"
+#line 113 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
 break;
 case 58:
-//#line 114 "gramatica.y"
+#line 114 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 59:
-//#line 115 "gramatica.y"
+#line 115 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 60:
-//#line 116 "gramatica.y"
+#line 116 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 63:
-//#line 121 "gramatica.y"
+#line 121 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion no valida"); }
 break;
 case 64:
-//#line 122 "gramatica.y"
+#line 122 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 65:
-//#line 123 "gramatica.y"
+#line 123 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 66:
-//#line 124 "gramatica.y"
+#line 124 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 67:
-//#line 127 "gramatica.y"
+#line 127 "gramatica.y"
 {addEstructura( "Sentencia IF, en la linea: " + analizadorLexico.getNroLineaToken() );}
 break;
 case 83:
-//#line 155 "gramatica.y"
+#line 155 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", cadena no valida"); }
 break;
 case 84:
-//#line 156 "gramatica.y"
+#line 156 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 85:
-//#line 157 "gramatica.y"
+#line 157 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 86:
-//#line 158 "gramatica.y"
+#line 158 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 87:
-//#line 161 "gramatica.y"
+#line 161 "gramatica.y"
 { addEstructura( "Sentencia PRINT, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 89:
-//#line 165 "gramatica.y"
+#line 165 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 90:
-//#line 166 "gramatica.y"
+#line 166 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 91:
-//#line 167 "gramatica.y"
+#line 167 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion no valida"); }
 break;
 case 92:
-//#line 168 "gramatica.y"
+#line 168 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 93:
-//#line 169 "gramatica.y"
+#line 169 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 94:
-//#line 170 "gramatica.y"
+#line 170 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 95:
-//#line 173 "gramatica.y"
+#line 173 "gramatica.y"
 { addEstructura( "Sentencia WHILE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 108:
-//#line 194 "gramatica.y"
+#line 194 "gramatica.y"
 { addEstructura( "Sentencia BREAK, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 109:
-//#line 197 "gramatica.y"
+#line 197 "gramatica.y"
 { addEstructura( "Sentencia de conversion a DOUBLE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 110:
-//#line 198 "gramatica.y"
+#line 198 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica no valida"); }
 break;
 case 111:
-//#line 199 "gramatica.y"
+#line 199 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 112:
-//#line 200 "gramatica.y"
+#line 200 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 113:
-//#line 201 "gramatica.y"
+#line 201 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 115:
-//#line 205 "gramatica.y"
+#line 205 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 116:
-//#line 206 "gramatica.y"
+#line 206 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 117:
-//#line 207 "gramatica.y"
+#line 207 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 118:
-//#line 210 "gramatica.y"
+#line 210 "gramatica.y"
 { addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
-//#line 983 "Parser.java"
-//########## END OF USER-SUPPLIED ACTIONS ##########
-    }//switch
-    //#### Now let's reduce... ####
-    if (yydebug) debug("reduce");
-    state_drop(yym);             //we just reduced yylen states
-    yystate = state_peek(0);     //get new state
-    val_drop(yym);               //corresponding value drop
-    yym = yylhs[yyn];            //select next TERMINAL(on lhs)
-    if (yystate == 0 && yym == 0)//done? 'rest' state and at first TERMINAL
-      {
-      if (yydebug) debug("After reduction, shifting from state 0 to state "+YYFINAL+"");
-      yystate = YYFINAL;         //explicitly say we're done
-      state_push(YYFINAL);       //and save it
-      val_push(yyval);           //also save the semantic value of parsing
-      if (yychar < 0)            //we want another character?
-        {
-        yychar = yylex();        //get next character
-        if (yychar<0) yychar=0;  //clean, if necessary
+#line 910 "y.tab.c"
+    }
+    yyssp -= yym;
+    yystate = *yyssp;
+    yyvsp -= yym;
+    yym = yylhs[yyn];
+    if (yystate == 0 && yym == 0)
+    {
+#if YYDEBUG
         if (yydebug)
-          yylexdebug(yystate,yychar);
+            printf("yydebug: after reduction, shifting from state 0 to\
+ state %d\n", YYFINAL);
+#endif
+        yystate = YYFINAL;
+        *++yyssp = YYFINAL;
+        *++yyvsp = yyval;
+        if (yychar < 0)
+        {
+            if ((yychar = yylex()) < 0) yychar = 0;
+#if YYDEBUG
+            if (yydebug)
+            {
+                yys = 0;
+                if (yychar <= YYMAXTOKEN) yys = yyname[yychar];
+                if (!yys) yys = "illegal-symbol";
+                printf("yydebug: state %d, reading %d (%s)\n",
+                        YYFINAL, yychar, yys);
+            }
+#endif
         }
-      if (yychar == 0)          //Good exit (if lex returns 0 ;-)
-         break;                 //quit the loop--all DONE
-      }//if yystate
-    else                        //else not done yet
-      {                         //get next state and push, for next yydefred[]
-      yyn = yygindex[yym];      //find out where to go
-      if ((yyn != 0) && (yyn += yystate) >= 0 &&
+        if (yychar == 0) goto yyaccept;
+        goto yyloop;
+    }
+    if ((yyn = yygindex[yym]) && (yyn += yystate) >= 0 &&
             yyn <= YYTABLESIZE && yycheck[yyn] == yystate)
-        yystate = yytable[yyn]; //get new state
-      else
-        yystate = yydgoto[yym]; //else go to new defred
-      if (yydebug) debug("after reduction, shifting from state "+state_peek(0)+" to state "+yystate+"");
-      state_push(yystate);     //going again, so push state & val...
-      val_push(yyval);         //for next action
-      }
-    }//main loop
-  return 0;//yyaccept!!
+        yystate = yytable[yyn];
+    else
+        yystate = yydgoto[yym];
+#if YYDEBUG
+    if (yydebug)
+        printf("yydebug: after reduction, shifting from state %d \
+to state %d\n", *yyssp, yystate);
+#endif
+    if (yyssp >= yyss + yystacksize - 1)
+    {
+        goto yyoverflow;
+    }
+    *++yyssp = yystate;
+    *++yyvsp = yyval;
+    goto yyloop;
+yyoverflow:
+    yyerror("yacc stack overflow");
+yyabort:
+    return (1);
+yyaccept:
+    return (0);
 }
-//## end of method parse() ######################################
-
-
-
-//## run() --- for Thread #######################################
-/**
- * A default run method, used for operating this parser
- * object in the background.  It is intended for extending Thread
- * or implementing Runnable.  Turn off with -Jnorun .
- */
-public void run()
-{
-  yyparse();
-}
-//## end of method run() ########################################
-
-
-
-//## Constructors ###############################################
-/**
- * Default constructor.  Turn off with -Jnoconstruct .
-
- */
-public Parser()
-{
-  //nothing to do
-}
-
-
-/**
- * Create a parser, setting the debug to true or false.
- * @param debugMe true for debugging, false for no debug.
- */
-public Parser(boolean debugMe)
-{
-  yydebug=debugMe;
-}
-//###############################################################
-
-
-
-}
-//################### END OF CLASS ##############################
