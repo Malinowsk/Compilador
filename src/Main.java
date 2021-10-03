@@ -12,7 +12,7 @@ public class Main {
         Parser parser = new Parser();
         AnalizadorLexico al = new AnalizadorLexico();
         //al.leerNuevoArchivo(args[0]);
-        al.leerNuevoArchivo("E:/Git/TPE-DisenioDeCompiladores/cosas/Codigo2.txt");
+        al.leerNuevoArchivo("C:\\Users\\Mainque\\Documents\\Uni\\4toAño\\2c\\Diseño de Compiladores\\Proyecto\\TPE-DisenioDeCompiladores\\cosas\\Codigo2.txt");
         parser.setAnalizadorLexico(al);
         parser.yyparse();
         menu(al, parser);
@@ -33,7 +33,8 @@ public class Main {
             switch (opcion) {
                 case 1 -> al.imprimirTokens();
                 case 2 -> p.imprimirEstructuras();
-                case 3 -> System.out.println("Fin de la ejecución.");//p.imprimirErrores();
+                case 3 -> {al.imprimirErroresLexicos();
+                            p.imprimirErroresSintacticos();}
                 case 4 -> {System.out.println("Fin de la ejecución.");
                             break;}
             }

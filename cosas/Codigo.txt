@@ -5,5 +5,5 @@ aux := 2.4E+5 ;
 IF ( aux >= .5E4 ) THEN
     PRINT(%MAINQUEEEEEE! +
 + EEEEEEEE %);
-ENDIF
+ENDIF;
 END

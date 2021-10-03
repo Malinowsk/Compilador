@@ -1,5 +1,5 @@
-programa;
-ULONG aux;
+programa
+INT aux;
 ULONG FUNC (ULONG) f2 ;
 
 DOUBLE FUNC f1 ( ULONG y )
@@ -15,5 +15,5 @@ aux := 2.4E+5 ;
 IF ( aux >= .5E4 ) THEN
     PRINT(%MAINQUEEEEEE! +
 + EEEEEEEE %);
-ENDIF
+ENDIF;
 END

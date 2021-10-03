@@ -34,7 +34,7 @@ private static final Integer DISTINTO = 284;
 devuelvo el token correspondiente. Sino doy de alta y devuelvo el token.
 (recordar que si es una palabra reservada envio Token, miéntras que si es un identificador envio Token mas Clave del Hashmap)
  */
-public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea){
+public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea, ArrayList< String > errores){
     if (auxiliar.length() <= 22){
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_IDENTIFICADOR);//se agrega identificador a la tabla
@@ -52,7 +52,7 @@ public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, Tabla
         }
         lineas.add(nroLinea);
     }else{
-        System.out.println("Error lexico en la linea " + nroLinea + ", Identificador fuera de rango:"+ auxiliar);
+        errores.add("Linea " + nroLinea + ", Identificador fuera de rango:"+ auxiliar);
     }
     return true;//se reutiliza el caracter
 }
@@ -90,7 +90,7 @@ public static boolean accion4(ArrayList< Dupla<Integer, Integer> > tokens, int c
 - Busco en la Tabla de Símbolo si el léxema ya existe,
 devuelvo el token correspondiente. Sino, doy de alta y devuelvo el token.
  */
-public static boolean accion5(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea){
+public static boolean accion5(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea, ArrayList< String > errores){
     if (Integer.valueOf(auxiliar) <= (Math.pow(2.0, 32.0 )-1)  && (Integer.valueOf(auxiliar)>=0) ){
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CONSTANTE);//se agrega identificador a la tabla
@@ -98,7 +98,7 @@ public static boolean accion5(ArrayList< Dupla<Integer, Integer> > tokens, Tabla
     tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CONSTANTE, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
     lineas.add(nroLinea);
     }else{
-        System.out.println("Error lexico en la linea " + nroLinea + ", ULong fuera de rango:"+ auxiliar);
+        errores.add("Linea " + nroLinea + ", ULong fuera de rango:"+ auxiliar);
     }
     return true;//se reutiliza el caracter
 }
@@ -197,7 +197,7 @@ public static boolean accion14(ArrayList< Dupla<Integer, Integer> > tokens, Arra
 - Busco en la Tabla de Símbolo si el léxema ya existe,
 devuelvo el token correspondiente. Sino, doy de alta y devuelvo el token.
  */
-public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea){
+public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea, ArrayList< String > errores){
     if ((Math.pow(2.2250738585072014,-308)<Double.valueOf(auxiliar))  && (Double.valueOf(auxiliar)<Math.pow(1.7976931348623157,308))
         || (Math.pow(-1.7976931348623157,308)<Double.valueOf(auxiliar))  && (Double.valueOf(auxiliar)<Math.pow(-2.2250738585072014,-308))
         || (Double.valueOf(auxiliar)==0.0) ){
@@ -207,7 +207,7 @@ public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
         tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_DOUBLE, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
         lineas.add(nroLinea);
     }else{
-        System.out.println("Error lexico en la linea " + nroLinea + ", Double fuera de rango:"+ auxiliar);
+        errores.add("Linea " + nroLinea + ", Double fuera de rango:"+ auxiliar);
     }
     return true;//se reutiliza el caracter
 }

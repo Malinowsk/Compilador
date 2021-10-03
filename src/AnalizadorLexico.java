@@ -14,6 +14,7 @@ public class AnalizadorLexico {
     private ArrayList< Dupla<Integer, Integer> > tokens; //Lista donde se guardaran los tokens obtenidos del codigo, (Numero de token, Clave en tabla)
     private ArrayList< Integer > nroLineas; //Lista donde se guardaran los nro de lineas correspondiente a cada token generado
     private int indiceToken;
+    private ArrayList< String > errores;
 
     //Constructor
     public AnalizadorLexico() {
@@ -22,6 +23,7 @@ public class AnalizadorLexico {
         tokens = new ArrayList< Dupla<Integer, Integer> >();
         nroLineas = new ArrayList<Integer>();
         indiceToken = 0;
+        errores = new ArrayList< String >();
     }
 
     //Metodo que lee un codigo para generar la lista de tokens respectiva
@@ -42,7 +44,7 @@ public class AnalizadorLexico {
                 while (reutilizarCaracter) {
                     int proximoEstado = automata.getProximoEstado(estadoActual, caracter);
                     if (proximoEstado == -1) {
-                        System.out.println("Error lexico en la linea " + nroLinea + ", caracter invalido:"+ caracter);
+                        this.errores.add("Linea " + nroLinea + ", caracter invalido:"+ caracter);
                         return;
                     } else {
                         reutilizarCaracter = this.ejecutarAS(automata.getAccionSemantica(estadoActual, caracter), caracter, nroLinea);
@@ -54,7 +56,7 @@ public class AnalizadorLexico {
             char nl= 10;
             int proximoEstado = automata.getProximoEstado(estadoActual, nl);
             if (proximoEstado == -1) {
-                System.out.println("Error lexico en la linea " + nroLinea + ", caracter invalido:"+ nl);
+                this.errores.add("Linea " + nroLinea + ", caracter invalido:"+ nl);
                 return;
             } else {
                 this.ejecutarAS(automata.getAccionSemantica(estadoActual, nl), nl, nroLinea);
@@ -69,11 +71,11 @@ public class AnalizadorLexico {
     //Metodo que ejecuta la accion semantica indicada por el parametro y el cual indicará si el token debe ser reutilizado
     private boolean ejecutarAS(int AS, char caracter, int nroLinea){
         return switch (AS) {
-            case 1 -> AccionSemantica.accion1(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea);
+            case 1 -> AccionSemantica.accion1(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea, this.errores);
             case 2 -> AccionSemantica.accion2(caracter);
             case 3 -> AccionSemantica.accion3(caracter);
             case 4 -> AccionSemantica.accion4(this.tokens, caracter, this.nroLineas, nroLinea);
-            case 5 -> AccionSemantica.accion5(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea);
+            case 5 -> AccionSemantica.accion5(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea, this.errores);
             case 6 -> AccionSemantica.accion6(this.tokens, this.nroLineas, nroLinea);
             case 7 -> AccionSemantica.accion7(this.tokens, this.nroLineas, nroLinea);
             case 8 -> AccionSemantica.accion8(this.tokens, this.nroLineas, nroLinea);
@@ -83,7 +85,7 @@ public class AnalizadorLexico {
             case 12 -> AccionSemantica.accion12(this.tokens, this.nroLineas, nroLinea);
             case 13 -> AccionSemantica.accion13(this.tokens, this.nroLineas, nroLinea);
             case 14 -> AccionSemantica.accion14(this.tokens, this.nroLineas, nroLinea);
-            case 15 -> AccionSemantica.accion15(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea);
+            case 15 -> AccionSemantica.accion15(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea, this.errores);
             case 16 -> AccionSemantica.accion16(caracter);
             case 17 -> AccionSemantica.accion17(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea);
             case 18 -> AccionSemantica.accion18(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea);
@@ -105,11 +107,17 @@ public class AnalizadorLexico {
     //Metodo para ver la lista (PRUEBA)
     public void imprimirTokens(){
         for(int i=0; i < tokens.size(); i++){
-            System.out.println("En la linea " + nroLineas.get(i) + ": " +tokens.get(i).getPrimero() + ", " + tokens.get(i).getSegundo());
             if (tokens.get(i).getSegundo()!=null)
-                System.out.println(tablaDeSimbolo.obtenerValor(tokens.get(i).getSegundo()));
+                System.out.println("En la linea " + nroLineas.get(i) + ", token nro= " +tokens.get(i).getPrimero() + ", ref= " + tokens.get(i).getSegundo() + ", lexema= " + tablaDeSimbolo.obtenerValor(tokens.get(i).getSegundo()));
             else
-                System.out.println(tablaDeSimbolo.obtenerValor(tokens.get(i).getPrimero()));
+                System.out.println("En la linea " + nroLineas.get(i) + ", token nro= " +tokens.get(i).getPrimero() + ", ref= " + tokens.get(i).getSegundo() + ", lexema= " + tablaDeSimbolo.obtenerValor(tokens.get(i).getPrimero()));
+        }
+    }
+
+    public void imprimirErroresLexicos(){
+        System.out.println("Se encontraron " + this.errores.size() + " errores lexicos en el codigo:");
+        for(String e: this.errores){
+            System.out.println(" - " + e);
         }
     }
 

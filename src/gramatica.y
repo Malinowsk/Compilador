@@ -14,7 +14,9 @@ import java.util.ArrayList;
  programa : cabecera_programa bloque_declarativo bloque_ejecutable
  ;
 
- cabecera_programa : ID ';' { addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ cabecera_programa : ID ';' { addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() );}
+ 		   //| ID { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta ;"); }
+ 		   | error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador de programa no valido"); }
  ;
  
  bloque_declarativo : sentencias_declarativas 
@@ -27,40 +29,63 @@ import java.util.ArrayList;
  sentencia_declarativa : tipo lista_variables { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
                        | tipo FUNC '(' tipo ')' lista_variables { addEstructura( "Declaracion de funciones como variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
                        | sentencia_declarativa_funcion
+                       | error lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable no valido"); }
+                       | tipo error lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida"); }
+                       | tipo FUNC tipo ')' lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+                       | tipo FUNC '(' error ')' lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", error en la condicion"); }
+                       | tipo FUNC '(' tipo  lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+
+
  ; 
 
  sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo_funcion BEGIN bloque_ejecutable_funcion retorno_funcion END
                                | cabecera_funcion bloque_declarativo_funcion BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END
  ;
 
- cabecera_funcion : tipo FUNC ID  '('parametro ')' { addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ cabecera_funcion : tipo FUNC ID '(' parametro ')' { addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ 		  | tipo error ID '(' parametro ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida"); }
+ 		  | tipo FUNC error '(' parametro ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador no valido"); }
+ 		  | tipo FUNC ID '(' error ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", parametro no valido"); }
+ 		  | tipo FUNC ID parametro ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ 		  | tipo FUNC ID '(' parametro { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
  ;
 
- parametro : tipo ID
+ parametro : tipo ID ///VER SI NO ES NECESARIO MARCAR EL ERROR ACA (EN ESE CASO VER QUE PASA CON CABECERA_FUNCION)
  ;
 
  bloque_declarativo_funcion : sentencias_declarativas_en_funcion 
  ;
  
  sentencias_declarativas_en_funcion : sentencia_declarativa_en_funcion ';' sentencias_declarativas_en_funcion
-                                 | sentencia_declarativa_en_funcion ';'
+                                    | sentencia_declarativa_en_funcion ';'
  ;
  
  sentencia_declarativa_en_funcion : tipo lista_variables { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;    
  
  retorno_funcion : RETURN '(' expresion_aritmetica ')' ';' { addEstructura( "Sentencia RETURN, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ 		 | RETURN '(' error ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
+ 		 | RETURN '(' expresion_aritmetica ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+ 		 | RETURN expresion_aritmetica ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ 		 | error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
- postcondicion : POST ':' '('condicion ')' ';' { addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ postcondicion : POST ':' '(' condicion ')' ';' { addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+	       | POST ':' '(' error ')' ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
+	       | POST '(' condicion ')' ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta :"); }
+	       | POST condicion ')' ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+	       | POST '(' condicion ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+	       | error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
  tipo : ULONG
       | DOUBLE
+      ///VER SI AGREGAR TAMBIEN ERROR
  ;
  
  lista_variables : ID ',' lista_variables
                  | ID
+                 ///VER SI AGREGAR error ',' lista_variables
  ;
 
  bloque_ejecutable : BEGIN sentencias_ejecutables END
@@ -83,15 +108,28 @@ import java.util.ArrayList;
  ; 
 
  sentencia_asignacion : ID ASIG expresion_aritmetica { addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ 		      | ID expresion_aritmetica { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta :="); }
+ 		      | error ASIG expresion_aritmetica { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador no valido"); }
  ;
 
  sentencia_llamado_funcion : ID '('expresion_aritmetica ')'{ addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+			   | ID '(' error ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
+			   | ID '(' expresion_aritmetica ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+			   | ID expresion_aritmetica ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+			   | error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
- sentencia_condicional : IF '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF { addEstructura( "Sentencia IF, en la linea: " + analizadorLexico.getNroLineaToken() ); }
-                       | IF '(' condicion ')' THEN bloque_ejecutable_condicional ELSE bloque_ejecutable_condicional ENDIF { addEstructura( "Sentencia IF con ELSE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ sentencia_condicional : if '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF
+                       | if '(' condicion ')' THEN bloque_ejecutable_condicional ELSE bloque_ejecutable_condicional ENDIF
+                       | if '(' error ')' THEN bloque_ejecutable_condicional ENDIF { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion no valida"); }
+                       | if '(' condicion THEN bloque_ejecutable_condicional ENDIF  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+                       | if condicion ')' THEN bloque_ejecutable_condicional ENDIF  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+                       | error '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
- 
+
+ if : IF {addEstructura( "Sentencia IF, en la linea: " + analizadorLexico.getNroLineaToken() );}
+ ;
+
  condicion : expresion_booleana operacion_booleana condicion
            | expresion_booleana
  ;
@@ -113,17 +151,33 @@ import java.util.ArrayList;
  ;
 
  bloque_ejecutable_condicional : BEGIN sentencias_ejecutables END
-                               | sentencia_ejecutable
+                               | sentencia_ejecutable ';'
  ;
 
- sentencia_imprimir : PRINT '(' CADENA ')' { addEstructura( "Sentencia PRINT, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ sentencia_imprimir : print '(' CADENA ')'
+ 		    | print '(' error ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", cadena no valida"); }
+ 		    | print '(' CADENA { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+ 		    | print CADENA ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ 		    | error '(' CADENA ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ; 
 
- sentencia_iterativa : WHILE '(' condicion ')' DO bloque_ejecutable_iterativo { addEstructura( "Sentencia WHILE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ print : PRINT { addEstructura( "Sentencia PRINT, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
+ sentencia_iterativa : while '(' condicion ')' DO bloque_ejecutable_iterativo
+ 		     | while '(' condicion ')' bloque_ejecutable_iterativo { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
+ 		     | while '(' condicion ')' error bloque_ejecutable_iterativo { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
+ 		     | while '(' error ')' DO bloque_ejecutable_iterativo { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion no valida"); }
+ 		     | error '(' condicion ')' DO bloque_ejecutable_iterativo { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
+ 		     | while '(' condicion DO bloque_ejecutable_iterativo { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+ 		     | while condicion ')' DO bloque_ejecutable_iterativo { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ ;
+
+ while : WHILE { addEstructura( "Sentencia WHILE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ ;
 
  bloque_ejecutable_iterativo : BEGIN sentencias_ejecutables_iterativas END
+ 			     | sentencia_ejecutable_iterativa ';'
  ;
  
  sentencias_ejecutables_iterativas : sentencia_ejecutable_iterativa ';' sentencias_ejecutables_iterativas
@@ -144,10 +198,19 @@ import java.util.ArrayList;
  ;
 
  sentencia_conversion : DOUBLE '(' expresion_aritmetica ')' { addEstructura( "Sentencia de conversion a DOUBLE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
- 		      | error ';' {}
+ 		      | DOUBLE '(' error ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica no valida"); }
+ 		      | error '(' expresion_aritmetica ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
+ 		      | DOUBLE '(' expresion_aritmetica ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+ 		      | DOUBLE expresion_aritmetica ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
  ;
 
- sentencia_try_catch : TRY sentencia_ejecutable_con_anidamiento CATCH bloque_ejecutable { addEstructura( "Sentencia TRY CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ sentencia_try_catch : try sentencia_ejecutable_con_anidamiento CATCH bloque_ejecutable
+ 		     | try sentencia_ejecutable_con_anidamiento error bloque_ejecutable { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
+ 		     | try sentencia_ejecutable_con_anidamiento bloque_ejecutable { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
+ 		     | error CATCH bloque_ejecutable{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
+ ;
+
+ try : TRY { addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
  sentencia_ejecutable_con_anidamiento  : sentencia_asignacion
@@ -180,7 +243,7 @@ import java.util.ArrayList;
 
 private AnalizadorLexico analizadorLexico;
 private ArrayList<String> estructuras = new ArrayList<String>();
-
+private ArrayList<String> errores = new ArrayList<String>();
 
 public void setAnalizadorLexico(AnalizadorLexico al){
 	this.analizadorLexico = al;
@@ -194,6 +257,17 @@ public void imprimirEstructuras(){
 	System.out.println("Cantidad de estructuras detectadas: " + estructuras.size());
 	for(String e : estructuras)
 		System.out.println(e);
+}
+
+private void addError(String e){
+	errores.add(e);
+}
+
+public void imprimirErroresSintacticos(){
+        System.out.println("Se encontraron " + this.errores.size() + " errores sintacticos en el codigo:");
+        for(String e: this.errores){
+            System.out.println(" - " + e);
+        }
 }
 
 private int yylex(){
