@@ -11,7 +11,7 @@ END;
 
 
 BEGIN
-aux := 2.4E+5 ;
+aux := IF ;
 "IF ( aux >= .5E4 ) THEN
     PRINT(%MAINQUEEEEEE! +
 + EEEEEEEE %);

@@ -458,8 +458,8 @@ YYSTYPE yyvs[YYSTACKSIZE];
 ///CODIGO JAVA
 
 private AnalizadorLexico analizadorLexico;
-private ArrayList<String> estructuras = new ArrayList<String>();
-private ArrayList<String> errores = new ArrayList<String>();
+private ArrayList<String> estructuras = new ArrayList<String>(); //Lista de las estructuras detectadas por el parser
+private ArrayList<String> errores = new ArrayList<String>(); //Lista de errores sintacticos detectados por el parser
 
 public void setAnalizadorLexico(AnalizadorLexico al){
 	this.analizadorLexico = al;
@@ -469,6 +469,7 @@ private void addEstructura(String e){
 	estructuras.add(e);
 }
 
+//Metodo usado por el Main para imprimir las estructuras
 public void imprimirEstructuras(){
 	System.out.println("Cantidad de estructuras detectadas: " + estructuras.size());
 	for(String e : estructuras)
@@ -479,6 +480,7 @@ private void addError(String e){
 	errores.add(e);
 }
 
+//Metodo usado por el Main para imprimir los errores lexicos
 public void imprimirErroresSintacticos(){
         System.out.println("Se encontraron " + this.errores.size() + " errores sintacticos en el codigo:");
         for(String e: this.errores){
@@ -497,7 +499,7 @@ private int yylex(){
 private void yyerror(String s){
 
 }
-#line 501 "y.tab.c"
+#line 503 "y.tab.c"
 #define YYABORT goto yyabort
 #define YYACCEPT goto yyaccept
 #define YYERROR goto yyerrlab
@@ -857,7 +859,7 @@ case 111:
 #line 208 "gramatica.y"
 { addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
-#line 861 "y.tab.c"
+#line 863 "y.tab.c"
     }
     yyssp -= yym;
     yystate = *yyssp;

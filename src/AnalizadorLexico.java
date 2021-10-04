@@ -11,10 +11,10 @@ public class AnalizadorLexico {
     private Automata automata;
     private TablaSimbolo tablaDeSimbolo;
 
-    private ArrayList< Dupla<Integer, Integer> > tokens; //Lista donde se guardaran los tokens obtenidos del codigo, (Numero de token, Clave en tabla)
+    private ArrayList< Dupla<Integer, Integer> > tokens; //Lista donde se guardaran los tokens obtenidos del codigo, <Id de token, Referencia de tabla>
     private ArrayList< Integer > nroLineas; //Lista donde se guardaran los nro de lineas correspondiente a cada token generado
-    private int indiceToken;
-    private ArrayList< String > errores;
+    private int indiceToken; //Indice que servira para recorrer tanto la lista de tokens como la de sus nros de linea
+    private ArrayList< String > errores; //Lista donde se guardaran los errores lexicos
 
     //Constructor
     public AnalizadorLexico() {
@@ -114,8 +114,9 @@ public class AnalizadorLexico {
         }
     }
 
+    //Metodo utilizado por el Main para imprimir los errores lexicos detectados
     public void imprimirErroresLexicos(){
-        System.out.println("Se encontraron " + this.errores.size() + " errores lexicos en el codigo:");
+        System.out.println("Se detectaron " + this.errores.size() + " errores lexicos en el codigo:");
         for(String e: this.errores){
             System.out.println(" - " + e);
         }

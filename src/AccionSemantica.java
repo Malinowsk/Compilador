@@ -3,7 +3,7 @@ import java.util.ArrayList;
 //Clase que contiene todas las A.S. como metodos
 public class AccionSemantica {
 
-private static String auxiliar;
+private static String auxiliar; //variable para acumular caracteres de un mismo lexema
 
 private static final Integer CLAVE_TOKEN_IDENTIFICADOR = 277;
 private static final Integer CLAVE_TOKEN_CONSTANTE = 278;
@@ -38,11 +38,11 @@ public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, Tabla
     if (auxiliar.length() <= 22){
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_IDENTIFICADOR);//se agrega identificador a la tabla
-            tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_IDENTIFICADOR, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
+            tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_IDENTIFICADOR, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
 
         }
         else{
-            int numeroClaveTabla= tablaDeSimbolo.obtenerNumeroToken(auxiliar);
+            int numeroClaveTabla= tablaDeSimbolo.obtenerReferenciaTabla(auxiliar);
             if( (PRIMER_PALABRA_RESERVADA <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA) ){
                 tokens.add(new Dupla<Integer, Integer>(numeroClaveTabla, null));
             }
@@ -95,7 +95,7 @@ public static boolean accion5(ArrayList< Dupla<Integer, Integer> > tokens, Tabla
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CONSTANTE);//se agrega identificador a la tabla
         }
-    tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CONSTANTE, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
+    tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CONSTANTE, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
     lineas.add(nroLinea);
     }else{
         errores.add("Linea " + nroLinea + ", ULong fuera de rango:"+ auxiliar);
@@ -204,7 +204,7 @@ public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_DOUBLE);//se agrega identificador a la tabla
         }
-        tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_DOUBLE, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
+        tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_DOUBLE, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
         lineas.add(nroLinea);
     }else{
         errores.add("Linea " + nroLinea + ", Double fuera de rango:"+ auxiliar);
@@ -232,7 +232,7 @@ public static boolean accion17(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
     if(!tablaDeSimbolo.existeToken(auxiliar)){
         tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CADENA);//se agrega identificador a la tabla
     }
-    tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CADENA, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
+    tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CADENA, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
     lineas.add(nroLinea);
     return false;//no se reutiliza el caracter
 }
@@ -250,7 +250,7 @@ public static boolean accion18(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
     if(!tablaDeSimbolo.existeToken(auxiliar)){
         tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CADENA);//se agrega identificador a la tabla
     }
-    tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CADENA, tablaDeSimbolo.obtenerNumeroToken(auxiliar)));
+    tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CADENA, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
     lineas.add(nroLinea);
     return false;//no se reutiliza el caracter
 }

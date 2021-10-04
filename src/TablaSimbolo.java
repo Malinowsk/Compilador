@@ -4,10 +4,9 @@ import java.util.Set;
 //Clase que hace de la tabla de simbolos
 public class TablaSimbolo {
 
-    private final int MIN_ID = 285;
+    private final int MIN_ID = 285; //este sera el numero inicial para las referencias a la tabla
     private HashMap<Integer,Dupla<Integer,String>> tablaDeSimbolo;
     private Integer autoincrementador;
-
 
     public TablaSimbolo(){
         this.tablaDeSimbolo = new HashMap<>();
@@ -15,8 +14,9 @@ public class TablaSimbolo {
         autoincrementador = MIN_ID;
     }
 
+    //Metodo que carga la tabla de simbolos con los valores ascii utilizados, las palabras reservedas y tokens de doble caracter
     private void cargarIdentificadoresUnicos(){
-
+        //cada tupla de la tabla estara formada de la sig manera: (nroRefTabla, <IdToken, Lexema>)
         tablaDeSimbolo.put(40,new Dupla<Integer, String>(40,"("));
         tablaDeSimbolo.put(41,new Dupla<Integer, String>(41,")"));
         tablaDeSimbolo.put(42,new Dupla<Integer, String>(42,"*"));
@@ -59,7 +59,6 @@ public class TablaSimbolo {
         tablaDeSimbolo.put(284,new Dupla<Integer, String>(284,"<>"));
     }
 
-
     public void agregarToken(String s, int i){
         tablaDeSimbolo.put(autoincrementador++,new Dupla<Integer, String>(i,s));
     }
@@ -68,7 +67,8 @@ public class TablaSimbolo {
         return tablaDeSimbolo.containsValue(new Dupla<Integer,String>(null,s));
     }
 
-    public int obtenerNumeroToken(String s){
+    //Obtiene la referencia a la tabla del string enviada por parametro
+    public int obtenerReferenciaTabla(String s){
         Set<Integer> claves =tablaDeSimbolo.keySet();
         for(Integer clave: claves){
             if(tablaDeSimbolo.get(clave).getSegundo().equals(s)){
@@ -78,6 +78,7 @@ public class TablaSimbolo {
         return -1;
     }
 
+    //Metodo que obtiene el valor para una referencia a la tabla
     public String obtenerValor(Integer i){
         if (tablaDeSimbolo.get(i)!=null)
             return tablaDeSimbolo.get(i).getSegundo();
