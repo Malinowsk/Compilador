@@ -43,16 +43,19 @@ public class TablaSimbolo {
         tablaDeSimbolo.put(268,new Dupla<Integer, String>(268,"DOUBLE"));
         tablaDeSimbolo.put(269,new Dupla<Integer, String>(269,"WHILE"));
         tablaDeSimbolo.put(270,new Dupla<Integer, String>(270,"DO"));
+
         tablaDeSimbolo.put(271,new Dupla<Integer, String>(271,">="));
         tablaDeSimbolo.put(272,new Dupla<Integer, String>(272,"<="));
         tablaDeSimbolo.put(273,new Dupla<Integer, String>(273,":="));
         tablaDeSimbolo.put(274,new Dupla<Integer, String>(274,"=="));
         tablaDeSimbolo.put(275,new Dupla<Integer, String>(275,"&&"));
         tablaDeSimbolo.put(276,new Dupla<Integer, String>(276,"||"));
+
         //identificadores con clave = 277
         //constantes con clave = 278
         //double con clave = 279
         //cadena con clave = 280
+
         tablaDeSimbolo.put(281,new Dupla<Integer, String>(281,"POST"));
         tablaDeSimbolo.put(282,new Dupla<Integer, String>(282,"TRY"));
         tablaDeSimbolo.put(283,new Dupla<Integer, String>(283,"CATCH"));

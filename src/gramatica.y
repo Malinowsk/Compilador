@@ -91,8 +91,8 @@ import java.util.ArrayList;
  bloque_ejecutable_funcion : sentencias_ejecutables
  ;
  
- sentencias_ejecutables : sentencia_ejecutable ';' sentencias_ejecutables
-                        | sentencia_ejecutable ';'
+ sentencias_ejecutables : sentencia_ejecutable sentencias_ejecutables
+                        | sentencia_ejecutable
  ;
 
  sentencia_ejecutable : sentencia_asignacion
@@ -104,22 +104,22 @@ import java.util.ArrayList;
                       | sentencia_try_catch
  ; 
 
- sentencia_asignacion : ID ASIG expresion_aritmetica { addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
- 		      | ID error { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
+ sentencia_asignacion : ID ASIG expresion_aritmetica ';' { addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ 		      | ID error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
  ;
 
- sentencia_llamado_funcion : ID '('expresion_aritmetica ')'{ addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
-			   | ID '(' error ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
-			   | ID '(' expresion_aritmetica ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
-			   | ID expresion_aritmetica ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
-			   //| error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
+ sentencia_llamado_funcion : ID '('expresion_aritmetica ')' ';'{ addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+			   | ID '(' error ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
+			   | ID '(' expresion_aritmetica ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+			   | ID expresion_aritmetica ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+			   //| error { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
- sentencia_condicional : if '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF
-                       | if '(' condicion ')' THEN bloque_ejecutable_condicional ELSE bloque_ejecutable_condicional ENDIF
-                       | if '(' error ')' THEN bloque_ejecutable_condicional ENDIF { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion no valida"); }
-                       | if '(' condicion THEN bloque_ejecutable_condicional ENDIF  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
-                       | if condicion ')' THEN bloque_ejecutable_condicional ENDIF  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ sentencia_condicional : if '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF ';'
+                       | if '(' condicion ')' THEN bloque_ejecutable_condicional ELSE bloque_ejecutable_condicional ENDIF ';'
+                       | if '(' error ')' THEN bloque_ejecutable_condicional ENDIF ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion no valida"); }
+                       | if '(' condicion THEN bloque_ejecutable_condicional ENDIF ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+                       | if condicion ')' THEN bloque_ejecutable_condicional ENDIF ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
                        //| error '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
@@ -146,13 +146,13 @@ import java.util.ArrayList;
  ;
 
  bloque_ejecutable_condicional : BEGIN sentencias_ejecutables END
-                               | sentencia_ejecutable ';'
+                               | sentencia_ejecutable
  ;
 
- sentencia_imprimir : print '(' CADENA ')'
- 		    | print '(' error ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", cadena no valida"); }
- 		    | print '(' CADENA { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
- 		    | print CADENA ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ sentencia_imprimir : print '(' CADENA ')' ';'
+ 		    | print '(' error ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", cadena no valida"); }
+ 		    | print '(' CADENA ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+ 		    | print CADENA ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
  		    //| error '(' CADENA ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ; 
 
@@ -172,11 +172,11 @@ import java.util.ArrayList;
  ;
 
  bloque_ejecutable_iterativo : BEGIN sentencias_ejecutables_iterativas END
- 			     | sentencia_ejecutable_iterativa ';'
+ 			     | sentencia_ejecutable_iterativa
  ;
  
- sentencias_ejecutables_iterativas : sentencia_ejecutable_iterativa ';' sentencias_ejecutables_iterativas
-                        | sentencia_ejecutable_iterativa ';'
+ sentencias_ejecutables_iterativas : sentencia_ejecutable_iterativa sentencias_ejecutables_iterativas
+                        | sentencia_ejecutable_iterativa
  ;
 
  sentencia_ejecutable_iterativa : sentencia_asignacion
@@ -189,14 +189,14 @@ import java.util.ArrayList;
                                 | sentencia_break
  ; 
 
- sentencia_break : BREAK { addEstructura( "Sentencia BREAK, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ sentencia_break : BREAK ';'{ addEstructura( "Sentencia BREAK, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
- sentencia_conversion : DOUBLE '(' expresion_aritmetica ')' { addEstructura( "Sentencia de conversion a DOUBLE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
- 		      | DOUBLE '(' error ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica no valida"); }
+ sentencia_conversion : DOUBLE '(' expresion_aritmetica ')' ';'{ addEstructura( "Sentencia de conversion a DOUBLE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ 		      | DOUBLE '(' error ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica no valida"); }
  		      //| error '(' expresion_aritmetica ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
- 		      | DOUBLE '(' expresion_aritmetica ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
- 		      | DOUBLE expresion_aritmetica ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ 		      | DOUBLE '(' expresion_aritmetica ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+ 		      | DOUBLE expresion_aritmetica ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
  ;
 
  sentencia_try_catch : try sentencia_ejecutable_con_anidamiento CATCH bloque_ejecutable

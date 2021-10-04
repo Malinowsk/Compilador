@@ -36,7 +36,7 @@ public class AnalizadorLexico {
         }
 
         int estadoActual = 0; //Comienza en el estado inicial
-        int nroLinea = 0;
+        int nroLinea = 1;
         for ( String linea : lineas ) { //Leo hasta el final del archivo
             for (int i = 0; i < linea.length(); i++) {
                 char caracter = linea.charAt(i);

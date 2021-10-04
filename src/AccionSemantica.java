@@ -12,6 +12,8 @@ private static final Integer CLAVE_TOKEN_CADENA = 280;
 
 private static final Integer PRIMER_PALABRA_RESERVADA = 257;
 private static final Integer ULTIMA_PALABRA_RESERVADA = 270;
+private static final Integer PRIMER_PALABRA_RESERVADA2 = 281;//debido a que se agrego POST, TRY y CATCH hicimos una segunda tanda de las ctes primer y ultima palabra reservada
+private static final Integer ULTIMA_PALABRA_RESERVADA2 = 283;
 
 private static final Integer AND = 275;
 private static final Integer OR = 276;
@@ -22,7 +24,7 @@ private static final Integer MENORIGUAL = 272;
 private static final Integer MAYOR = 62;
 private static final Integer MAYORIGUAL = 271;
 private static final Integer MULTIPLICACION = 42;
-private static final Integer DOS_PUNTOS = 42;
+private static final Integer DOS_PUNTOS = 58;
 private static final Integer DISTINTO = 284;
 
 //Aclaracion, siempre que se agrega un token también se agrega el nro de linea correspondiente
@@ -43,7 +45,8 @@ public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, Tabla
         }
         else{
             int numeroClaveTabla= tablaDeSimbolo.obtenerReferenciaTabla(auxiliar);
-            if( (PRIMER_PALABRA_RESERVADA <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA) ){
+            if( ((PRIMER_PALABRA_RESERVADA <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA))
+                || ((PRIMER_PALABRA_RESERVADA2 <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA2))){
                 tokens.add(new Dupla<Integer, Integer>(numeroClaveTabla, null));
             }
             else{
@@ -91,7 +94,7 @@ public static boolean accion4(ArrayList< Dupla<Integer, Integer> > tokens, int c
 devuelvo el token correspondiente. Sino, doy de alta y devuelvo el token.
  */
 public static boolean accion5(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea, ArrayList< String > errores){
-    if (Integer.valueOf(auxiliar) <= (Math.pow(2.0, 32.0 )-1)  && (Integer.valueOf(auxiliar)>=0) ){
+    if (Double.valueOf(auxiliar) <= (Math.pow(2.0, 32.0 )-1)  && (Double.valueOf(auxiliar)>=0) ){
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CONSTANTE);//se agrega identificador a la tabla
         }
@@ -198,8 +201,8 @@ public static boolean accion14(ArrayList< Dupla<Integer, Integer> > tokens, Arra
 devuelvo el token correspondiente. Sino, doy de alta y devuelvo el token.
  */
 public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea, ArrayList< String > errores){
-    if ((Math.pow(2.2250738585072014,-308)<Double.valueOf(auxiliar))  && (Double.valueOf(auxiliar)<Math.pow(1.7976931348623157,308))
-        || (Math.pow(-1.7976931348623157,308)<Double.valueOf(auxiliar))  && (Double.valueOf(auxiliar)<Math.pow(-2.2250738585072014,-308))
+    if ( ((Math.pow(2.2250738585072014,-308)<Double.valueOf(auxiliar))  && (Double.valueOf(auxiliar)<Math.pow(1.7976931348623157,308)))
+        || ((Math.pow(-1.7976931348623157,308)<Double.valueOf(auxiliar))  && (Double.valueOf(auxiliar)<Math.pow(-2.2250738585072014,-308)))
         || (Double.valueOf(auxiliar)==0.0) ){
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_DOUBLE);//se agrega identificador a la tabla
