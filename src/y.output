@@ -165,8 +165,8 @@
 
  123  termino : termino '*' factor
  124          | termino '/' factor
- 125          | '-' factor
- 126          | factor
+ 125          | factor
+ 126          | '-' factor
 
  127  factor : ID
  128         | CTE_ULONG
@@ -832,7 +832,7 @@ state 62
 
 
 state 63
-	termino : '-' . factor  (125)
+	termino : '-' . factor  (126)
 
 	ID  shift 59
 	CTE_ULONG  shift 60
@@ -877,9 +877,9 @@ state 65
 
 
 state 66
-	termino : factor .  (126)
+	termino : factor .  (125)
 
-	.  reduce 126
+	.  reduce 125
 
 
 state 67
@@ -1225,9 +1225,9 @@ state 101
 
 
 state 102
-	termino : '-' factor .  (125)
+	termino : '-' factor .  (126)
 
-	.  reduce 125
+	.  reduce 126
 
 
 state 103

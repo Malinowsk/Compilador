@@ -201,7 +201,17 @@ public static boolean accion14(ArrayList< Dupla<Integer, Integer> > tokens, Arra
 devuelvo el token correspondiente. Sino, doy de alta y devuelvo el token.
  */
 public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea, ArrayList< String > errores){
-    if ( ((Math.pow(2.2250738585072014,-308)<Double.valueOf(auxiliar))  && (Double.valueOf(auxiliar)<Math.pow(1.7976931348623157,308)))
+    if ( ((Double.valueOf(auxiliar).compareTo(2.2250738585072014E-308)>0)  && (Double.valueOf(auxiliar).compareTo(1.7976931348623157E+308)<0) )
+            || ( Double.valueOf(auxiliar)==0.0 ) ){
+        if(!tablaDeSimbolo.existeToken(auxiliar)){
+            tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_DOUBLE);//se agrega identificador a la tabla
+        }
+        tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_DOUBLE, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
+        lineas.add(nroLinea);
+    }else{
+        errores.add("Linea " + nroLinea + ", Double fuera de rango:"+ auxiliar);
+    }
+    /*if ( ((Math.pow(2.2250738585072014,-308)<Double.valueOf(auxiliar))  && (Double.valueOf(auxiliar)<Math.pow(1.7976931348623157,308)))
         || ((Math.pow(-1.7976931348623157,308)<Double.valueOf(auxiliar))  && (Double.valueOf(auxiliar)<Math.pow(-2.2250738585072014,-308)))
         || (Double.valueOf(auxiliar)==0.0) ){
         if(!tablaDeSimbolo.existeToken(auxiliar)){
@@ -211,7 +221,7 @@ public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
         lineas.add(nroLinea);
     }else{
         errores.add("Linea " + nroLinea + ", Double fuera de rango:"+ auxiliar);
-    }
+    }*/
     return true;//se reutiliza el caracter
 }
 

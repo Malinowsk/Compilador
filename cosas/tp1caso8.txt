@@ -1,0 +1,6 @@
+**hola mundo
+***** Tres asteriscos
+*hola mundo mal comentado*
+**hola mundo
+aca ya corto el comentario
+// comentario mal hecho

@@ -93,7 +93,7 @@ public class Automata {
         transiciones[0][12].setPrimero(6);
         transiciones[0][13].setPrimero(7);
         transiciones[0][14].setPrimero(18);
-        transiciones[0][15].setPrimero(9);
+        transiciones[0][15].setPrimero(8);
         transiciones[0][16].setPrimero(10);
         transiciones[0][17].setPrimero(15);
         transiciones[0][18].setPrimero(-1);

@@ -104,7 +104,8 @@ import java.util.ArrayList;
                       | sentencia_try_catch
  ; 
 
- sentencia_asignacion : ID ASIG expresion_aritmetica ';' { addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ sentencia_asignacion : ID ASIG expresion_aritmetica ';' {addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
+							  $$ = new ParserVal(crearTerceto(ASIG, $1.ival, $3.ival));}
  		      | ID error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
  ;
 
@@ -218,20 +219,30 @@ import java.util.ArrayList;
                                        | sentencia_conversion
  ; 
 
- expresion_aritmetica : expresion_aritmetica '+' termino
-           | expresion_aritmetica '-' termino
-           | termino
+ expresion_aritmetica : expresion_aritmetica '+' termino {
+							  $$ = new ParserVal(crearTerceto('+', $1.ival, $3.ival));
+ 							 }
+           | expresion_aritmetica '-' termino{
+					      $$ = new ParserVal(crearTerceto('-', $1.ival, $3.ival));
+					     }
+           | termino { $$ = $1 ; }
  ;
 
- termino : termino '*' factor
-         | termino '/' factor
-         | '-' factor
-         | factor
+ termino : termino '*' factor{
+			     $$ = new ParserVal(crearTerceto('*', $1.ival, $3.ival));
+			     }
+         | termino '/' factor{
+			     $$ = new ParserVal(crearTerceto('/', $1.ival, $3.ival));
+			     }
+         | factor {$$ = $1;}
+         | '-' factor {
+		      $$ = new ParserVal(crearTerceto('*', -1, $2.ival));
+		      }
  ;
 
- factor : ID
-        | CTE_ULONG
-        | CTE_DOUBLE
+ factor : ID {$$ = $1;}
+        | CTE_ULONG {$$ = $1;}
+        | CTE_DOUBLE {$$ = $1;}
  ;
 
 %%
@@ -242,8 +253,22 @@ private AnalizadorLexico analizadorLexico;
 private ArrayList<String> estructuras = new ArrayList<String>(); //Lista de las estructuras detectadas por el parser
 private ArrayList<String> errores = new ArrayList<String>(); //Lista de errores sintacticos detectados por el parser
 
+private ArrayList<Terceto> tercetos = new ArrayList<Terceto>(); //
+
 public void setAnalizadorLexico(AnalizadorLexico al){
 	this.analizadorLexico = al;
+}
+
+public int crearTerceto(int t1, int t2, int t3){
+	tercetos.add( new Terceto(t1, t2, t3) );
+	return tercetos.size()-1;
+}
+
+//Metodo usado por el Main para imprimir los tercetos
+public void imprimirTercetos(){
+	System.out.println("Cantidad de tercetos generados: " + tercetos.size());
+	for(Terceto t : tercetos)
+		System.out.println(t.getTerceto());
 }
 
 private void addEstructura(String e){
@@ -272,7 +297,7 @@ public void imprimirErroresSintacticos(){
 private int yylex(){
 	Dupla<Integer, Integer> tokenActual = analizadorLexico.getSiguienteToken();
 	if(tokenActual.getSegundo() != null)
-		yylval = new ParserVal(tokenActual.getSegundo());
+		yylval = new ParserVal((int)tokenActual.getSegundo());
 	//System.out.println("Token devuelto por yylex: " + tokenActual.getPrimero() );
 	return tokenActual.getPrimero();
 }

@@ -1,0 +1,17 @@
+% cadena +
++ bien +
++ escrita %
+
+%+ cadena +
++ bien +
++ escrita +
++ pero con 2 "+" de sobra+%
+
+% 2+2=5,+
++ 4 "+" a continuacion +
+++++++
++, cadena bien escrita%
+
+% cadena +
+mal +
+escrita + %

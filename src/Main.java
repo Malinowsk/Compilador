@@ -28,8 +28,9 @@ public class Main {
             System.out.println("Elija una opcion del menu:");
             System.out.println("1. Mostrar Tokens");
             System.out.println("2. Listar estructuras");
-            System.out.println("3. Mostrar errores");
-            System.out.println("4. Salir");
+            System.out.println("3. Listar errores");
+            System.out.println("4. Listar tercetos");
+            System.out.println("5. Salir");
             System.out.println("Ingrese una opción");
             opcion = s.nextInt();
             switch (opcion) {
@@ -37,11 +38,12 @@ public class Main {
                 case 2 -> p.imprimirEstructuras();
                 case 3 -> {al.imprimirErroresLexicos();
                             p.imprimirErroresSintacticos();}
-                case 4 -> {System.out.println("Fin de la ejecución.");
+                case 4 -> {p.imprimirTercetos();}
+                case 5 -> {System.out.println("Fin de la ejecución.");
                             break;}
             }
             sleep(5000);
-        } while ( opcion != 4);
+        } while ( opcion != 5);
     }
 
 }
