@@ -5,8 +5,8 @@ import java.util.ArrayList;
 %token
     IF THEN ELSE ENDIF PRINT FUNC RETURN BEGIN END BREAK ULONG DOUBLE WHILE DO
     COMP_MAYOR_IGUAL COMP_MENOR_IGUAL ASIG COMP_IGUAL AND OR ID CTE_ULONG CTE_DOUBLE
-    CADENA POST TRY CATCH COMP_DISTINTO
-
+    CADENA POST TRY CATCH COMP_DISTINTO CALL
+ 
 
 %start programa
 
@@ -96,11 +96,9 @@ import java.util.ArrayList;
  ;
 
  sentencia_ejecutable : sentencia_asignacion
-                      | sentencia_llamado_funcion
                       | sentencia_condicional
                       | sentencia_imprimir
                       | sentencia_iterativa
-                      | sentencia_conversion
                       | sentencia_try_catch
  ; 
 
@@ -109,10 +107,10 @@ import java.util.ArrayList;
  		      | ID error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
  ;
 
- sentencia_llamado_funcion : ID '('expresion_aritmetica ')' ';'{ addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
-			   | ID '(' error ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
-			   | ID '(' expresion_aritmetica ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
-			   | ID expresion_aritmetica ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ sentencia_llamado_funcion : CALL ID '('expresion_aritmetica ')' ';'{ addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+			   | CALL ID '(' error ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
+			   | CALL ID '(' expresion_aritmetica ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+			   | CALL ID expresion_aritmetica ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 			   //| error { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
@@ -183,11 +181,9 @@ import java.util.ArrayList;
  ;
 
  sentencia_ejecutable_iterativa : sentencia_asignacion
-                                | sentencia_llamado_funcion
                                 | sentencia_condicional
                                 | sentencia_imprimir
                                 | sentencia_iterativa
-                                | sentencia_conversion
                                 | sentencia_try_catch
                                 | sentencia_break
  ; 
@@ -212,11 +208,9 @@ import java.util.ArrayList;
  ;
 
  sentencia_ejecutable_con_anidamiento  : sentencia_asignacion
-                                       | sentencia_llamado_funcion
                                        | sentencia_condicional
                                        | sentencia_imprimir
                                        | sentencia_iterativa
-                                       | sentencia_conversion
  ; 
 
  expresion_aritmetica : expresion_aritmetica '+' termino {
@@ -241,6 +235,8 @@ import java.util.ArrayList;
  ;
 
  factor : ID {$$ = $1;}
+        |  sentencia_conversion {$$ = $1;}
+        | sentencia_llamado_funcion {$$ = $1;}
         | CTE_ULONG {$$ = $1;}
         | CTE_DOUBLE {$$ = $1;}
  ;

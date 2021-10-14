@@ -4,7 +4,7 @@ import java.util.Set;
 //Clase que hace de la tabla de simbolos
 public class TablaSimbolo {
 
-    private final int MIN_ID = 285; //este sera el numero inicial para las referencias a la tabla
+    private final int MIN_ID = 286; //este sera el numero inicial para las referencias a la tabla
     private HashMap<Integer,Dupla<Integer,String>> tablaDeSimbolo;
     private Integer autoincrementador;
 
@@ -60,6 +60,7 @@ public class TablaSimbolo {
         tablaDeSimbolo.put(282,new Dupla<Integer, String>(282,"TRY"));
         tablaDeSimbolo.put(283,new Dupla<Integer, String>(283,"CATCH"));
         tablaDeSimbolo.put(284,new Dupla<Integer, String>(284,"<>"));
+        tablaDeSimbolo.put(285,new Dupla<Integer, String>(285,"CALL"));
     }
 
     public void agregarToken(String s, int i){

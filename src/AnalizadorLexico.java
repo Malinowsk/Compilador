@@ -122,4 +122,8 @@ public class AnalizadorLexico {
         }
     }
 
+    public TablaSimbolo getTablaSimbolo(){
+        return tablaDeSimbolo;
+    }
+
 }
