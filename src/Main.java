@@ -34,12 +34,12 @@ public class Main {
             System.out.println("Ingrese una opción");
             opcion = s.nextInt();
             switch (opcion) {
-                case 1 -> al.imprimirTokens();
-                case 2 -> p.imprimirEstructuras();
-                case 3 -> {al.imprimirErroresLexicos();
+                case 1: al.imprimirTokens();
+                case 2: p.imprimirEstructuras();
+                case 3: {al.imprimirErroresLexicos();
                             p.imprimirErroresSintacticos();}
-                case 4 -> {p.imprimirTercetos();}
-                case 5 -> {System.out.println("Fin de la ejecución.");
+                case 4: {p.imprimirTercetos();}
+                case 5: {System.out.println("Fin de la ejecución.");
                             break;}
             }
             sleep(5000);

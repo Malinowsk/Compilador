@@ -45,7 +45,8 @@ public class AnalizadorLexico {
                     int proximoEstado = automata.getProximoEstado(estadoActual, caracter);
                     if (proximoEstado == -1) {
                         this.errores.add("Linea " + nroLinea + ", caracter invalido:"+ caracter);
-                        return;
+                        while (caracter != ';') //avanza de caracteres hasta llegar al punto y coma y poder seguir leyendo las siguientes lineas
+                            caracter = linea.charAt(i++);
                     } else {
                         reutilizarCaracter = this.ejecutarAS(automata.getAccionSemantica(estadoActual, caracter), caracter, nroLinea);
                         estadoActual = proximoEstado;
@@ -70,7 +71,7 @@ public class AnalizadorLexico {
 
     //Metodo que ejecuta la accion semantica indicada por el parametro y el cual indicará si el token debe ser reutilizado
     private boolean ejecutarAS(int AS, char caracter, int nroLinea){
-        return switch (AS) {
+        /*return switch (AS) {
             case 1 -> AccionSemantica.accion1(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea, this.errores);
             case 2 -> AccionSemantica.accion2(caracter);
             case 3 -> AccionSemantica.accion3(caracter);
@@ -91,7 +92,27 @@ public class AnalizadorLexico {
             case 18 -> AccionSemantica.accion18(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea);
             case 19 -> AccionSemantica.accion19(this.tokens, this.nroLineas, nroLinea);
             default -> false;
-        };
+        };*/
+        if (AS==1) return AccionSemantica.accion1(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea, this.errores);
+        if (AS==2) return AccionSemantica.accion2(caracter);
+        if (AS==3) return AccionSemantica.accion3(caracter);
+        if (AS==4) return AccionSemantica.accion4(this.tokens, caracter, this.nroLineas, nroLinea);
+        if (AS==5) return AccionSemantica.accion5(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea, this.errores);
+        if (AS==6) return AccionSemantica.accion6(this.tokens, this.nroLineas, nroLinea);
+        if (AS==7) return AccionSemantica.accion7(this.tokens, this.nroLineas, nroLinea);
+        if (AS==8) return AccionSemantica.accion8(this.tokens, this.nroLineas, nroLinea);
+        if (AS==9) return AccionSemantica.accion9(this.tokens, this.nroLineas, nroLinea);
+        if (AS==10) return AccionSemantica.accion10(this.tokens, this.nroLineas, nroLinea);
+        if (AS==11) return AccionSemantica.accion11(this.tokens, caracter, this.nroLineas, nroLinea);
+        if (AS==12) return AccionSemantica.accion12(this.tokens, this.nroLineas, nroLinea);
+        if (AS==13) return AccionSemantica.accion13(this.tokens, this.nroLineas, nroLinea);
+        if (AS==14) return AccionSemantica.accion14(this.tokens, this.nroLineas, nroLinea);
+        if (AS==15) return AccionSemantica.accion15(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea, this.errores);
+        if (AS==16) return AccionSemantica.accion16(caracter);
+        if (AS==17) return AccionSemantica.accion17(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea);
+        if (AS==18) return AccionSemantica.accion18(this.tokens, tablaDeSimbolo, this.nroLineas, nroLinea);
+        if (AS==19) return AccionSemantica.accion19(this.tokens, this.nroLineas, nroLinea);
+        return false;
     }
 
     //Metodo para obtener el token siguiente de la lista
