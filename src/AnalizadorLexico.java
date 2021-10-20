@@ -44,6 +44,7 @@ public class AnalizadorLexico {
                 while (reutilizarCaracter) {
                     int proximoEstado = automata.getProximoEstado(estadoActual, caracter);
                     if (proximoEstado == -1) {
+                        System.out.println("Linea " + nroLinea + ", caracter invalido:"+ caracter);
                         this.errores.add("Linea " + nroLinea + ", caracter invalido:"+ caracter);
                         while (caracter != ';') //avanza de caracteres hasta llegar al punto y coma y poder seguir leyendo las siguientes lineas
                             caracter = linea.charAt(i++);

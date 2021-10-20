@@ -1,5 +1,6 @@
 %{
 import java.util.ArrayList;
+import java.util.Stack;
 %}
 
 %token
@@ -114,35 +115,61 @@ import java.util.ArrayList;
 			   //| error { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
- sentencia_condicional : if '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF ';'
-                       | if '(' condicion ')' THEN bloque_ejecutable_condicional ELSE bloque_ejecutable_condicional ENDIF ';'
-                       | if '(' error ')' THEN bloque_ejecutable_condicional ENDIF ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
-                       | if '(' condicion THEN bloque_ejecutable_condicional ENDIF ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
-                       | if condicion ')' THEN bloque_ejecutable_condicional ENDIF ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
-                       | if '(' condicion ')' error ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia condicional invalida"); }
+ sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';' {
+ 			tercetos.get(pila.pop()).setT3(tercetos.size()+1);
+ 			}//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues del ENDIF
+                       | condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF ';'{
+			 tercetos.get(pila.pop()).setT2(tercetos.size());
+			}//Se modifica el BI, agregandole la referencia correspondiente al proximo terceto despues del ENDIF
+
                        //| error '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
- if : IF {addEstructura( "Sentencia IF, en la linea: " + analizadorLexico.getNroLineaToken() );}
+ else: ELSE{
+	tercetos.get(pila.pop()).setT3(tercetos.size()+1);
+	int refTerceto =crearTerceto(-2, -1, -1);//-2 es BI
+	pila.push(refTerceto);
+	$$ = new ParserVal(refTerceto);
+	}//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues del ELSE, se crea el terceto BI y se agrega a la pila la referencia al mismo
+
  ;
 
- condicion : expresion_booleana operacion_booleana condicion
-           | expresion_booleana
+ condicional : if '(' condicion ')' THEN {
+ 					 int refTerceto = crearTerceto(-1, $3.ival, -1);//el primer-1 es BF
+					 pila.push(refTerceto);
+ 					 $$ = new ParserVal(refTerceto);
+ 					 }// se agrega el terceto BF y su referencia a la pila
+ 	     | if '(' error ')' THEN { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
+ 	     | if '(' condicion THEN { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+ 	     | if condicion ')' THEN { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ 	     | if '(' condicion ')' error ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia condicional invalida"); }
  ;
 
- expresion_booleana : expresion_aritmetica comparador expresion_aritmetica
+ if : IF {addEstructura( "Sentencia IF, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 	  $$ = $1;}
  ;
 
- comparador : COMP_MAYOR_IGUAL 
-            | COMP_MENOR_IGUAL 
-            | COMP_IGUAL
-            | COMP_DISTINTO
-            | '<'
-            | '>'
+ condicion : expresion_booleana operacion_booleana condicion{
+	  	$$ = new ParserVal(crearTerceto($2.ival, $1.ival, $3.ival));
+	  	}
+           | expresion_booleana {$$ = $1;}
  ;
 
- operacion_booleana : AND 
-                    | OR
+ expresion_booleana : expresion_aritmetica comparador expresion_aritmetica{
+			$$ = new ParserVal(crearTerceto($2.ival, $1.ival, $3.ival));
+			}
+ ;
+
+ comparador : COMP_MAYOR_IGUAL {$$.ival = COMP_MAYOR_IGUAL;}
+            | COMP_MENOR_IGUAL {$$.ival = COMP_MENOR_IGUAL;}
+            | COMP_IGUAL {$$.ival = COMP_IGUAL;}
+            | COMP_DISTINTO {$$.ival = COMP_DISTINTO;}
+            | '<' {$$.ival = '<';}
+            | '>' {$$.ival = '>';}
+ ;
+
+ operacion_booleana : AND {$$ = $1;}
+                    | OR {$$ = $1;}
  ;
 
  bloque_ejecutable_condicional : BEGIN sentencias_ejecutables END
@@ -235,7 +262,7 @@ import java.util.ArrayList;
  ;
 
  factor : ID {$$ = $1;}
-        |  sentencia_conversion {$$ = $1;}
+        | sentencia_conversion {$$ = $1;}
         | sentencia_llamado_funcion {$$ = $1;}
         | CTE_ULONG {$$ = $1;}
         | CTE_DOUBLE {$$ = $1;}
@@ -249,7 +276,8 @@ private AnalizadorLexico analizadorLexico;
 private ArrayList<String> estructuras = new ArrayList<String>(); //Lista de las estructuras detectadas por el parser
 private ArrayList<String> errores = new ArrayList<String>(); //Lista de errores sintacticos detectados por el parser
 
-private ArrayList<Terceto> tercetos = new ArrayList<Terceto>(); //
+private ArrayList<Terceto> tercetos = new ArrayList<Terceto>(); //Lista de tercetos generados
+private Stack<Integer> pila = new Stack<Integer>(); //Pila utilizada para los tercetos
 
 public void setAnalizadorLexico(AnalizadorLexico al){
 	this.analizadorLexico = al;

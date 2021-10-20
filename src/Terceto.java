@@ -23,6 +23,18 @@ public class Terceto {
         return this.t3;
     }
 
+    public void setT1(int t1) {
+        this.t1 = t1;
+    }
+
+    public void setT2(int t2) {
+        this.t2 = t2;
+    }
+
+    public void setT3(int t3) {
+        this.t3 = t3;
+    }
+
     public String getTerceto(){
         return "( "+ this.t1 + ", " + this.t2 + ", " + this.t3 + ")";
     }

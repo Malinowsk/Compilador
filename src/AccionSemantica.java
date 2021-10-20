@@ -15,6 +15,7 @@ private static final Integer PRIMER_PALABRA_RESERVADA = 257;
 private static final Integer ULTIMA_PALABRA_RESERVADA = 270;
 private static final Integer PRIMER_PALABRA_RESERVADA2 = 281;//debido a que se agrego POST, TRY y CATCH hicimos una segunda tanda de las ctes primer y ultima palabra reservada
 private static final Integer ULTIMA_PALABRA_RESERVADA2 = 283;
+private static final Integer PRIMER_PALABRA_RESERVADA3 = 285;//debido a la nueva palabra reservada CALL
 
 private static final Integer AND = 275;
 private static final Integer OR = 276;
@@ -47,7 +48,8 @@ public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, Tabla
         else{
             int numeroClaveTabla= tablaDeSimbolo.obtenerReferenciaTabla(auxiliar);
             if( ((PRIMER_PALABRA_RESERVADA <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA))
-                || ((PRIMER_PALABRA_RESERVADA2 <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA2))){
+                || ((PRIMER_PALABRA_RESERVADA2 <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA2))
+                || PRIMER_PALABRA_RESERVADA3 == numeroClaveTabla ){
                 tokens.add(new Dupla<Integer, Integer>(numeroClaveTabla, null));
             }
             else{
