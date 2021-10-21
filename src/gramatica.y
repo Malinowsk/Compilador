@@ -104,7 +104,7 @@ import java.util.Stack;
  ; 
 
  sentencia_asignacion : ID ASIG expresion_aritmetica ';' {addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
-							  $$ = new ParserVal(crearTerceto(ASIG, $1.ival, $3.ival));}
+							  crearTerceto(ASIG, $1.ival, $3.ival);}
  		      | ID error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
  ;
 
@@ -116,13 +116,11 @@ import java.util.Stack;
  ;
 
  sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';' {
- 			tercetos.get(pila.pop()).setT3(tercetos.size()+1);
+ 			 tercetos.get(pila.pop()).setT3(tercetos.size());
  			}//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues del ENDIF
                        | condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF ';'{
 			 tercetos.get(pila.pop()).setT2(tercetos.size());
 			}//Se modifica el BI, agregandole la referencia correspondiente al proximo terceto despues del ENDIF
-
-                       //| error '(' condicion ')' THEN bloque_ejecutable_condicional ENDIF { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
  else: ELSE{
@@ -187,16 +185,25 @@ import java.util.Stack;
  print : PRINT { addEstructura( "Sentencia PRINT, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
- sentencia_iterativa : while '(' condicion ')' DO bloque_ejecutable_iterativo
- 		     | while '(' condicion ')' bloque_ejecutable_iterativo { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia iterativa invalida"); }
- 		     | while '(' condicion ')' error bloque_ejecutable_iterativo { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia iterativa invalida"); }
- 		     | while '(' error ')' DO bloque_ejecutable_iterativo { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
- 		     //| error '(' condicion ')' DO bloque_ejecutable_iterativo { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
- 		     | while '(' condicion DO bloque_ejecutable_iterativo { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
- 		     | while condicion ')' DO bloque_ejecutable_iterativo { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ sentencia_iterativa : iterativo bloque_ejecutable_iterativo{
+							     tercetos.get(pila.pop()).setT3(tercetos.size()+1);//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues de la ultima sentencia del bloque
+							     int refTerceto = crearTerceto(-2, pila.pop(), -1);//-2 es BI, se crea un BI al terceto que calcula la condicion del while
+							    }
  ;
 
- while : WHILE { addEstructura( "Sentencia WHILE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ iterativo : while '(' condicion ')' DO {
+					 int refTerceto = crearTerceto(-1, $3.ival, -1);//el primer-1 es BF
+					 pila.push(refTerceto);
+					 $$ = new ParserVal(refTerceto);
+					}// se agrega el terceto BF y su referencia a la pila
+	   | while '(' condicion ')' error { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia iterativa invalida"); }
+	   | while '(' error ')' DO { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
+	   | while '(' condicion DO { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+	   | while condicion ')' DO { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+
+ while : WHILE { addEstructura( "Sentencia WHILE, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 		 pila.push(tercetos.size());
+ 	         $$=$1; }
  ;
 
  bloque_ejecutable_iterativo : BEGIN sentencias_ejecutables_iterativas END

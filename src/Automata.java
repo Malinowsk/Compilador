@@ -28,7 +28,7 @@ public class Automata {
 
     private int getColumna(char caracter) {
 
-        if( caracter == 32)
+        if( (caracter == 32) || (caracter == 9) )
             return 0;
         if( caracter == 10)
             return 1;
