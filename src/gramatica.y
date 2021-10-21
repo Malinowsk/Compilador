@@ -70,7 +70,7 @@ import java.util.Stack;
  		 | error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
- postcondicion : POST ':' '(' condicion ')' ';' { addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ postcondicion : POST ':' '(' condicion ')' ';' { addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); /*¡POSTCONDICION_VAR= $3.ival?*/}
 	       | POST ':' '(' error ')' ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
 	       | POST '(' condicion ')' ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta :"); }
 	       | POST condicion ')' ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
@@ -103,16 +103,20 @@ import java.util.Stack;
                       | sentencia_try_catch
  ; 
 
- sentencia_asignacion : ID ASIG expresion_aritmetica ';' {addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
-							  crearTerceto(ASIG, $1.ival, $3.ival);}
+ sentencia_asignacion : ID ASIG expresion_aritmetica ';' {
+ 		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
+		       crearTerceto(ASIG, $1.ival, $3.ival);
+		      }
  		      | ID error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
  ;
 
- sentencia_llamado_funcion : CALL ID '('expresion_aritmetica ')' ';'{ addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ sentencia_llamado_funcion : CALL ID '('expresion_aritmetica ')' ';'{
+ 			    addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 			    $$ =  new ParserVal(crearTerceto(CALL, $2.ival, $4.ival));
+ 			   }
 			   | CALL ID '(' error ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
 			   | CALL ID '(' expresion_aritmetica ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 			   | CALL ID expresion_aritmetica ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
-			   //| error { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
  sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';' {
@@ -225,17 +229,25 @@ import java.util.Stack;
  sentencia_break : BREAK ';'{ addEstructura( "Sentencia BREAK, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
- sentencia_conversion : DOUBLE '(' expresion_aritmetica ')' ';'{ addEstructura( "Sentencia de conversion a DOUBLE, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ sentencia_conversion : DOUBLE '(' expresion_aritmetica ')' ';'{
+ 			 addEstructura( "Sentencia de conversion a DOUBLE, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 			 $$ =  new ParserVal(crearTerceto(DOUBLE, $3.ival, -1));
+ 			}
  		      | DOUBLE '(' error ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
- 		      //| error '(' expresion_aritmetica ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  		      | DOUBLE '(' expresion_aritmetica ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
  		      | DOUBLE expresion_aritmetica ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
  ;
 
- sentencia_try_catch : try sentencia_ejecutable_con_anidamiento CATCH bloque_ejecutable
- 		     | try sentencia_ejecutable_con_anidamiento error bloque_ejecutable { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
- 		     | try sentencia_ejecutable_con_anidamiento bloque_ejecutable { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
- 		     //| error CATCH bloque_ejecutable{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
+ sentencia_try_catch : bifurcacion_try bloque_ejecutable{
+		      tercetos.get(pila.pop()).setT3(tercetos.size());
+		     }
+ ;
+
+ bifurcacion_try : try sentencia_ejecutable_con_anidamiento CATCH {
+		  //pila.push(crearTerceto(-1, ¿POSTCONDICION_VAR?, -1));//el primer -1 es BF
+		 }
+ 		 | try sentencia_ejecutable_con_anidamiento error { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
+  		 | try sentencia_ejecutable_con_anidamiento { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
  ;
 
  try : TRY { addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
@@ -250,10 +262,10 @@ import java.util.Stack;
  expresion_aritmetica : expresion_aritmetica '+' termino {
 							  $$ = new ParserVal(crearTerceto('+', $1.ival, $3.ival));
  							 }
-           | expresion_aritmetica '-' termino{
-					      $$ = new ParserVal(crearTerceto('-', $1.ival, $3.ival));
-					     }
-           | termino { $$ = $1 ; }
+		      | expresion_aritmetica '-' termino{
+		  				         $$ = new ParserVal(crearTerceto('-', $1.ival, $3.ival));
+						        }
+		      | termino { $$ = $1 ; }
  ;
 
  termino : termino '*' factor{
