@@ -1,4 +1,4 @@
-Programa;
+Programa_Ejemplo;
 DOUBLE aux;
 ULONG aux2;
 ULONG FUNC (DOUBLE) f2 ;
@@ -16,9 +16,7 @@ BEGIN
 aux := 1.5E+2 ;
 aux2 := 1;
 
-DOUBLE(aux2 + 1);
-
-IF ( aux >= aux2) THEN
+IF ( aux >= DOUBLE(aux2+1)) THEN
 BEGIN
     WHILE (aux > aux2) DO
         BREAK;
@@ -26,13 +24,13 @@ END
 ENDIF;
 
 TRY
-    aux2 := 2;
+    aux := 1 / CALL f1( aux2 );
 CATCH
 BEGIN
-    f1( aux2 );
+    aux := 0;
 END
 
 PRINT(%todo +
-+ ok %);
++ perfecto %);
 
 END

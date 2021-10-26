@@ -1,9 +1,7 @@
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
-import static javax.print.attribute.standard.MediaSizeName.A;
 
 public class Main {
 
@@ -26,14 +24,16 @@ public class Main {
         do {
             System.out.println(" ");
             System.out.println("Elija una opcion del menu:");
-            System.out.println("1. Mostrar Tokens");
-            System.out.println("2. Listar estructuras");
-            System.out.println("3. Listar errores");
-            System.out.println("4. Listar tercetos");
-            System.out.println("5. Salir");
+            System.out.println("0- Imprimir codigo");
+            System.out.println("1- Listar Tokens");
+            System.out.println("2- Listar estructuras");
+            System.out.println("3- Listar errores");
+            System.out.println("4- Listar tercetos");
+            System.out.println("5- Salir");
             System.out.println("Ingrese una opción");
             opcion = s.nextInt();
             switch (opcion) {
+                case 0: {al.imprimirCodigo(); break;}
                 case 1: {al.imprimirTokens(); break;}
                 case 2: {p.imprimirEstructuras(); break;}
                 case 3: {al.imprimirErroresLexicos();

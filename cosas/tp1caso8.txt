@@ -1,6 +1,9 @@
-**hola mundo
+comentario;
+ULONG z; **hola mundo
 ***** Tres asteriscos
-*hola mundo mal comentado*
+BEGIN
+PRINT(%errores a continuacion%); *hola mundo mal comentado*
 **hola mundo
-aca ya corto el comentario
+aca ya corto el comentario de arriba
 // comentario mal hecho
+END;

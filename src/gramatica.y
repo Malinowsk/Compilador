@@ -110,13 +110,11 @@ import java.util.Stack;
  		      | ID error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
  ;
 
- sentencia_llamado_funcion : CALL ID '('expresion_aritmetica ')' ';'{
+ sentencia_llamado_funcion : CALL ID '('expresion_aritmetica ')'{
  			    addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
  			    $$ =  new ParserVal(crearTerceto(CALL, $2.ival, $4.ival));
  			   }
 			   | CALL ID '(' error ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
-			   | CALL ID '(' expresion_aritmetica ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
-			   | CALL ID expresion_aritmetica ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
  ;
 
  sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';' {
@@ -229,17 +227,15 @@ import java.util.Stack;
  sentencia_break : BREAK ';'{ addEstructura( "Sentencia BREAK, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
- sentencia_conversion : DOUBLE '(' expresion_aritmetica ')' ';'{
+ sentencia_conversion : DOUBLE '(' expresion_aritmetica ')'{
  			 addEstructura( "Sentencia de conversion a DOUBLE, en la linea: " + analizadorLexico.getNroLineaToken() );
  			 $$ =  new ParserVal(crearTerceto(DOUBLE, $3.ival, -1));
  			}
- 		      | DOUBLE '(' error ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
- 		      | DOUBLE '(' expresion_aritmetica ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
- 		      | DOUBLE expresion_aritmetica ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ 		      | DOUBLE '(' error ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
  ;
 
  sentencia_try_catch : bifurcacion_try bloque_ejecutable{
-		      tercetos.get(pila.pop()).setT3(tercetos.size());
+		      //tercetos.get(pila.pop()).setT3(tercetos.size());
 		     }
  ;
 
@@ -331,7 +327,7 @@ private void addError(String e){
 
 //Metodo usado por el Main para imprimir los errores lexicos
 public void imprimirErroresSintacticos(){
-        System.out.println("Se encontraron " + this.errores.size() + " errores sintacticos en el codigo:");
+        System.out.println("Se encontraron " + this.errores.size() + " errores sintacticos en el codigo");
         for(String e: this.errores){
             System.out.println(" - " + e);
         }

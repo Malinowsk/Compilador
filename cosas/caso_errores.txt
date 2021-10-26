@@ -13,7 +13,7 @@ END;
 BEGIN
 aux := IF ;
 "IF ( aux >= .5E4 ) THEN
-    PRINT(%MAINQUEEEEEE! +
-+ EEEEEEEE %);
+    PRINT(% dentro +
++ del IF %);
 ENDIF;
 END

@@ -1,3 +1,7 @@
-abc
-
-abcdefghijklmnopqrstuvxyz
+programa;
+ULONG abc;
+DOUBLE abcdefghijklmnopqrstuvxyz;
+BEGIN
+ PRINT (%abc esta dentro de rango +
+        + abcdefghijklmnopqrstuvxyz esta fuera de rango%)
+END;
