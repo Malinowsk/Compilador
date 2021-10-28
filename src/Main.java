@@ -41,7 +41,7 @@ public class Main {
                 case 4: {p.imprimirTercetos(); break;}
                 case 5: {System.out.println("Fin de la ejecución."); break;}
             }
-            sleep(5000);
+            sleep(2000);
         } while ( opcion != 5);
     }
 

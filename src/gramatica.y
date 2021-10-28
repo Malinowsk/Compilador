@@ -29,10 +29,10 @@ import java.util.Stack;
  sentencia_declarativa : tipo lista_variables { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
                        | tipo FUNC '(' tipo ')' lista_variables { addEstructura( "Declaracion de funciones como variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
                        | sentencia_declarativa_funcion
-                       | error lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable invalida"); }
+                       | error lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable invalido"); }
                        | tipo error lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida"); }
                        | tipo FUNC tipo ')' lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
-                       | tipo FUNC '(' error ')' lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
+                       | tipo FUNC '(' error ')' lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable invalido"); }
                        | tipo FUNC '(' tipo  lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 
 
@@ -108,6 +108,7 @@ import java.util.Stack;
 		       crearTerceto(ASIG, $1.ival, $3.ival);
 		      }
  		      | ID error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
+ 		      | ID ASIG error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
  ;
 
  sentencia_llamado_funcion : CALL ID '('expresion_aritmetica ')'{
@@ -181,7 +182,6 @@ import java.util.Stack;
  		    | print '(' CADENA ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
  		    | print CADENA ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
  		    | print error ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia PRINT invalida"); }
- 		    //| error '(' CADENA ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ; 
 
  print : PRINT { addEstructura( "Sentencia PRINT, en la linea: " + analizadorLexico.getNroLineaToken() ); }
