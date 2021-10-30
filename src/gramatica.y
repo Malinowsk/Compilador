@@ -233,22 +233,16 @@ import java.util.HashMap;
 
  sentencia_try_catch : bifurcacion_try bloque_ejecutable{
  		      int t = pila.pop();
- 		      if(tercetos.get(t).getT1()==-3) //habia funcion en el try
-		      	tercetos.get(t).setT3(tercetos.size());//Completa el BT del try
-		      else
-		      	tercetos.get(t).setT2(tercetos.size());//Completa el BI del try
+ 		      tercetos.get(t).setT3(tercetos.size());//Completa el BT del try
 		     }
  ;
 
  bifurcacion_try : try sentencia_ejecutable_con_anidamiento CATCH {
  		  //Primero buscamos el id de la funcion invocada en el try recorriendo la lista de tercetos
- 		  int i = tercetos.size()-1;
- 		  while( (tercetos.get(i).getT1() != CALL) && (i >= 0) )
- 		  	i--;
- 		  if(i >= 0) //en caso de que se haya llamado a una funcion
-		  	pila.push(crearTerceto(-3, postCondiciones.get(tercetos.get(i).getT2()), -1));//el primer -3 es BT, el 2do parametro hace referencia al ID de la funcion invocada
-		  else //si no se llamo a una funcion es salto incondicional
-		  	pila.push(crearTerceto(-2, -1, -1));
+		  int i = tercetos.size()-1;
+		  while( (tercetos.get(i).getT1() != CALL) && (i >= 0) )
+			i--;
+		  pila.push(crearTerceto(-3, postCondiciones.get(tercetos.get(i).getT2()), -1));//el primer -3 es BT, el 2do parametro hace referencia al ID de la funcion invocada
 		 }
  		 | try sentencia_ejecutable_con_anidamiento error { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
   		 | try sentencia_ejecutable_con_anidamiento { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
