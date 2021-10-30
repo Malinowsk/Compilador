@@ -35,12 +35,14 @@ ELSE
 	TRY
 		entero2 := CALL prec(entero1);
 	CATCH
+	BEGIN
 		WHILE(entero1 <= 10) DO
 		BEGIN
 			PRINT(%prec es predecesor y +
 + suc es sucesor%);
 			BREAK;
 		END
+	END
 ENDIF;
 
 END

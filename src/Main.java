@@ -21,7 +21,7 @@ public class Main {
     public static void menu(AnalizadorLexico al, Parser p) throws InterruptedException {
         int opcion ;
         Scanner s = new Scanner (System.in);
-        do {
+        do {//TODO: implementar lectura del codigo de la tabla de simbolos
             System.out.println(" ");
             System.out.println("Elija una opcion del menu:");
             System.out.println("0- Imprimir codigo");

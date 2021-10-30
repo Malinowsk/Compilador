@@ -1,6 +1,7 @@
 %{
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.HashMap;
 %}
 
 %token
@@ -34,15 +35,16 @@ import java.util.Stack;
                        | tipo FUNC tipo ')' lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
                        | tipo FUNC '(' error ')' lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable invalido"); }
                        | tipo FUNC '(' tipo  lista_variables { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
-
-
- ; 
-
- sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo_funcion BEGIN bloque_ejecutable_funcion retorno_funcion END
-                               | cabecera_funcion bloque_declarativo_funcion BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END
  ;
 
- cabecera_funcion : tipo FUNC ID '(' parametro ')' { addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion END {pilaFunciones.pop();}
+                               | cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END
+ ;
+
+ cabecera_funcion : tipo FUNC ID '(' parametro ')' {
+ 			 addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 			 pilaFunciones.push($3.ival);//se guarda el id en la pila para la postcondicion
+ 			}
  		  | tipo error ID '(' parametro ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida"); }
  		  | tipo FUNC error '(' parametro ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador invalido"); }
  		  | tipo FUNC ID '(' error ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", parametro invalido"); }
@@ -52,16 +54,6 @@ import java.util.Stack;
 
  parametro : tipo ID ///VER SI NO ES NECESARIO MARCAR EL ERROR ACA (EN ESE CASO VER QUE PASA CON CABECERA_FUNCION)
  ;
-
- bloque_declarativo_funcion : sentencias_declarativas_en_funcion 
- ;
- 
- sentencias_declarativas_en_funcion : sentencia_declarativa_en_funcion ';' sentencias_declarativas_en_funcion
-                                    | sentencia_declarativa_en_funcion ';'
- ;
- 
- sentencia_declarativa_en_funcion : tipo lista_variables { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
- ;    
  
  retorno_funcion : RETURN '(' expresion_aritmetica ')' ';' { addEstructura( "Sentencia RETURN, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  		 | RETURN '(' error ')' ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
@@ -70,7 +62,9 @@ import java.util.Stack;
  		 | error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
- postcondicion : POST ':' '(' condicion ')' ';' { addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); /*¡POSTCONDICION_VAR= $3.ival?*/}
+ postcondicion : POST ':' '(' condicion ')' ';' {
+ 			postCondiciones.put(pilaFunciones.pop(), tercetos.size()-1);//Se guarda en el hashmap la posicion del terceto de condicion con la clave= ID de la funcion
+ 			addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); /*¡POSTCONDICION_VAR= $3.ival?*/}
 	       | POST ':' '(' error ')' ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
 	       | POST '(' condicion ')' ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta :"); }
 	       | POST condicion ')' ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
@@ -105,7 +99,7 @@ import java.util.Stack;
 
  sentencia_asignacion : ID ASIG expresion_aritmetica ';' {
  		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
-		       crearTerceto(ASIG, $1.ival, $3.ival);
+		       $$ = new ParserVal(crearTerceto(ASIG, $1.ival, $3.ival));
 		      }
  		      | ID error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
  		      | ID ASIG error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
@@ -113,7 +107,7 @@ import java.util.Stack;
 
  sentencia_llamado_funcion : CALL ID '('expresion_aritmetica ')'{
  			    addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
- 			    $$ =  new ParserVal(crearTerceto(CALL, $2.ival, $4.ival));
+ 			    $$ = new ParserVal(crearTerceto(CALL, $2.ival, $4.ival));
  			   }
 			   | CALL ID '(' error ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
  ;
@@ -177,14 +171,17 @@ import java.util.Stack;
                                | sentencia_ejecutable
  ;
 
- sentencia_imprimir : print '(' CADENA ')' ';'
+ sentencia_imprimir : print '(' CADENA ')' ';' {crearTerceto($1.ival, $3.ival, -1);}
  		    | print '(' error ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", cadena invalida"); }
  		    | print '(' CADENA ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
  		    | print CADENA ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
  		    | print error ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia PRINT invalida"); }
  ; 
 
- print : PRINT { addEstructura( "Sentencia PRINT, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ print : PRINT {
+ 		addEstructura( "Sentencia PRINT, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 		$$ = $1;
+ 		}
  ;
 
  sentencia_iterativa : iterativo bloque_ejecutable_iterativo{
@@ -235,12 +232,23 @@ import java.util.Stack;
  ;
 
  sentencia_try_catch : bifurcacion_try bloque_ejecutable{
-		      //tercetos.get(pila.pop()).setT3(tercetos.size());
+ 		      int t = pila.pop();
+ 		      if(tercetos.get(t).getT1()==-3) //habia funcion en el try
+		      	tercetos.get(t).setT3(tercetos.size());//Completa el BT del try
+		      else
+		      	tercetos.get(t).setT2(tercetos.size());//Completa el BI del try
 		     }
  ;
 
  bifurcacion_try : try sentencia_ejecutable_con_anidamiento CATCH {
-		  //pila.push(crearTerceto(-1, ¿POSTCONDICION_VAR?, -1));//el primer -1 es BF
+ 		  //Primero buscamos el id de la funcion invocada en el try recorriendo la lista de tercetos
+ 		  int i = tercetos.size()-1;
+ 		  while( (tercetos.get(i).getT1() != CALL) && (i >= 0) )
+ 		  	i--;
+ 		  if(i >= 0) //en caso de que se haya llamado a una funcion
+		  	pila.push(crearTerceto(-3, postCondiciones.get(tercetos.get(i).getT2()), -1));//el primer -3 es BT, el 2do parametro hace referencia al ID de la funcion invocada
+		  else //si no se llamo a una funcion es salto incondicional
+		  	pila.push(crearTerceto(-2, -1, -1));
 		 }
  		 | try sentencia_ejecutable_con_anidamiento error { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
   		 | try sentencia_ejecutable_con_anidamiento { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
@@ -249,10 +257,7 @@ import java.util.Stack;
  try : TRY { addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
  ;
 
- sentencia_ejecutable_con_anidamiento  : sentencia_asignacion
-                                       | sentencia_condicional
-                                       | sentencia_imprimir
-                                       | sentencia_iterativa
+ sentencia_ejecutable_con_anidamiento  : sentencia_asignacion {$$=$1;}
  ; 
 
  expresion_aritmetica : expresion_aritmetica '+' termino {
@@ -293,6 +298,9 @@ private ArrayList<String> errores = new ArrayList<String>(); //Lista de errores 
 
 private ArrayList<Terceto> tercetos = new ArrayList<Terceto>(); //Lista de tercetos generados
 private Stack<Integer> pila = new Stack<Integer>(); //Pila utilizada para los tercetos
+
+private HashMap<Integer, Integer> postCondiciones = new HashMap<Integer, Integer>();//Hashmap utilizado para guardar el id de las funciones junto a las referencias de sus postcondicion
+private Stack<Integer> pilaFunciones = new Stack<Integer>(); //Pila utilizada para guardar los identificadores de las funciones
 
 public void setAnalizadorLexico(AnalizadorLexico al){
 	this.analizadorLexico = al;
