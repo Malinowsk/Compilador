@@ -1,5 +1,4 @@
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 //Clase que hace de la tabla de simbolos
 public class TablaSimbolo {
@@ -91,7 +90,12 @@ public class TablaSimbolo {
 
     public void imprimirTabla(){
         Set<Integer> claves =tablaDeSimbolo.keySet();
-        for(Integer clave: claves){
+        ArrayList<Integer> aux = new ArrayList<Integer>();
+        for (Integer clave: claves){
+            aux.add(clave);
+        }
+        Collections.sort(aux);
+        for(Integer clave: aux){
             System.out.println("Referencia en tabla= "+clave+ ", token= "+ tablaDeSimbolo.get(clave));
         }
     }
