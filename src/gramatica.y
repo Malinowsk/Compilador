@@ -45,11 +45,21 @@ import java.util.HashMap;
  			 addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
  			 pilaFunciones.push($3.ival);//se guarda el id en la pila para la postcondicion
  			}
- 		  | tipo error ID '(' parametro ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida"); }
- 		  | tipo FUNC error '(' parametro ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador invalido"); }
- 		  | tipo FUNC ID '(' error ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", parametro invalido"); }
- 		  | tipo FUNC ID parametro ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
- 		  | tipo FUNC ID '(' parametro { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+ 		  | tipo error ID '(' parametro ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida");
+ 		  				      pilaFunciones.push(-1);//se guarda el id en la pila para la postcondicion
+ 		  				    }
+ 		  | tipo FUNC error '(' parametro ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador invalido");
+ 		  					pilaFunciones.push(-1);//se guarda el id en la pila para la postcondicion
+ 		  				}
+ 		  | tipo FUNC ID '(' error ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", parametro invalido");
+ 		  				 pilaFunciones.push(-1);//se guarda el id en la pila para la postcondicion
+ 		  			}
+ 		  | tipo FUNC ID parametro ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura");
+ 		  				 pilaFunciones.push(-1);//se guarda el id en la pila para la postcondicion
+ 		  			}
+ 		  | tipo FUNC ID '(' parametro { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre");
+ 		  				 pilaFunciones.push(-1);//se guarda el id en la pila para la postcondicion
+ 		  			}
  ;
 
  parametro : tipo ID ///VER SI NO ES NECESARIO MARCAR EL ERROR ACA (EN ESE CASO VER QUE PASA CON CABECERA_FUNCION)
@@ -99,7 +109,7 @@ import java.util.HashMap;
 
  sentencia_asignacion : ID ASIG expresion_aritmetica ';' {
  		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
-		       $$ = new ParserVal(crearTerceto(ASIG, $1.ival, $3.ival));
+		       $$ = new ParserVal((double)crearTerceto(new ParserVal(ASIG), $1, $3));
 		      }
  		      | ID error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
  		      | ID ASIG error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
@@ -107,32 +117,32 @@ import java.util.HashMap;
 
  sentencia_llamado_funcion : CALL ID '('expresion_aritmetica ')'{
  			    addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
- 			    $$ = new ParserVal(crearTerceto(CALL, $2.ival, $4.ival));
+ 			    $$ = new ParserVal((double)crearTerceto(new ParserVal(CALL), $2, $4));
  			   }
 			   | CALL ID '(' error ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
  ;
 
  sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';' {
- 			 tercetos.get(pila.pop()).setT3(tercetos.size());
+ 			 tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()));
  			}//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues del ENDIF
                        | condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF ';'{
-			 tercetos.get(pila.pop()).setT2(tercetos.size());
+			 tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()));
 			}//Se modifica el BI, agregandole la referencia correspondiente al proximo terceto despues del ENDIF
  ;
 
  else: ELSE{
-	tercetos.get(pila.pop()).setT3(tercetos.size()+1);
-	int refTerceto =crearTerceto(-2, -1, -1);//-2 es BI
+	tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));
+	int refTerceto =crearTerceto(new ParserVal(-2), new ParserVal(-1), new ParserVal(-1));//-2 es BI
 	pila.push(refTerceto);
-	$$ = new ParserVal(refTerceto);
+	$$ = new ParserVal((double)refTerceto);
 	}//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues del ELSE, se crea el terceto BI y se agrega a la pila la referencia al mismo
 
  ;
 
  condicional : if '(' condicion ')' THEN {
- 					 int refTerceto = crearTerceto(-1, $3.ival, -1);//el primer-1 es BF
+ 					 int refTerceto = crearTerceto(new ParserVal(-1), $3, new ParserVal(-1));//el primer-1 es BF
 					 pila.push(refTerceto);
- 					 $$ = new ParserVal(refTerceto);
+ 					 $$ = new ParserVal((double)refTerceto);
  					 }// se agrega el terceto BF y su referencia a la pila
  	     | if '(' error ')' THEN { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
  	     | if '(' condicion THEN { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
@@ -145,13 +155,13 @@ import java.util.HashMap;
  ;
 
  condicion : expresion_booleana operacion_booleana condicion{
-	  	$$ = new ParserVal(crearTerceto($2.ival, $1.ival, $3.ival));
+	  	$$ = new ParserVal((double)crearTerceto($2, $1, $3));
 	  	}
            | expresion_booleana {$$ = $1;}
  ;
 
  expresion_booleana : expresion_aritmetica comparador expresion_aritmetica{
-			$$ = new ParserVal(crearTerceto($2.ival, $1.ival, $3.ival));
+			$$ = new ParserVal((double)crearTerceto($2, $1, $3));
 			}
  ;
 
@@ -171,7 +181,7 @@ import java.util.HashMap;
                                | sentencia_ejecutable
  ;
 
- sentencia_imprimir : print '(' CADENA ')' ';' {crearTerceto($1.ival, $3.ival, -1);}
+ sentencia_imprimir : print '(' CADENA ')' ';' {crearTerceto($1, $3, new ParserVal(-1));}
  		    | print '(' error ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", cadena invalida"); }
  		    | print '(' CADENA ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
  		    | print CADENA ')' ';'{ addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
@@ -180,20 +190,20 @@ import java.util.HashMap;
 
  print : PRINT {
  		addEstructura( "Sentencia PRINT, en la linea: " + analizadorLexico.getNroLineaToken() );
- 		$$ = $1;
+ 		$$ = new ParserVal((int)PRINT);
  		}
  ;
 
  sentencia_iterativa : iterativo bloque_ejecutable_iterativo{
-							     tercetos.get(pila.pop()).setT3(tercetos.size()+1);//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues de la ultima sentencia del bloque
-							     int refTerceto = crearTerceto(-2, pila.pop(), -1);//-2 es BI, se crea un BI al terceto que calcula la condicion del while
+							     tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues de la ultima sentencia del bloque
+							     crearTerceto(new ParserVal(-2), new ParserVal((double)pila.pop()), new ParserVal(-1));//-2 es BI, se crea un BI al terceto que calcula la condicion del while
 							    }
  ;
 
  iterativo : while '(' condicion ')' DO {
-					 int refTerceto = crearTerceto(-1, $3.ival, -1);//el primer-1 es BF
+					 int refTerceto = crearTerceto(new ParserVal(-1), $3, new ParserVal(-1));//el primer-1 es BF
 					 pila.push(refTerceto);
-					 $$ = new ParserVal(refTerceto);
+					 $$ = new ParserVal((double)refTerceto);
 					}// se agrega el terceto BF y su referencia a la pila
 	   | while '(' condicion ')' error { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia iterativa invalida"); }
 	   | while '(' error ')' DO { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
@@ -226,23 +236,23 @@ import java.util.HashMap;
 
  sentencia_conversion : DOUBLE '(' expresion_aritmetica ')'{
  			 addEstructura( "Sentencia de conversion a DOUBLE, en la linea: " + analizadorLexico.getNroLineaToken() );
- 			 $$ =  new ParserVal(crearTerceto(DOUBLE, $3.ival, -1));
+ 			 $$ =  new ParserVal((double)crearTerceto(new ParserVal(DOUBLE), $3, new ParserVal(-1)));
  			}
  		      | DOUBLE '(' error ')' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
  ;
 
  sentencia_try_catch : bifurcacion_try bloque_ejecutable{
  		      int t = pila.pop();
- 		      tercetos.get(t).setT3(tercetos.size());//Completa el BT del try
+ 		      tercetos.get(t).setT3(new ParserVal((double)tercetos.size()));//Completa el BT del try
 		     }
  ;
 
  bifurcacion_try : try sentencia_ejecutable_con_anidamiento CATCH {
  		  //Primero buscamos el id de la funcion invocada en el try recorriendo la lista de tercetos
 		  int i = tercetos.size()-1;
-		  while( (tercetos.get(i).getT1() != CALL) && (i >= 0) )
+		  while( (tercetos.get(i).getT1().ival != CALL) && (i >= 0) )
 			i--;
-		  pila.push(crearTerceto(-3, postCondiciones.get(tercetos.get(i).getT2()), -1));//el primer -3 es BT, el 2do parametro hace referencia al ID de la funcion invocada
+		  pila.push(crearTerceto(new ParserVal(-3), new ParserVal((double)postCondiciones.get(tercetos.get(i).getT2().ival)), new ParserVal(-1)));//el primer -3 es BT, el 2do parametro hace referencia al ID de la funcion invocada
 		 }
  		 | try sentencia_ejecutable_con_anidamiento error { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
   		 | try sentencia_ejecutable_con_anidamiento { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
@@ -255,23 +265,23 @@ import java.util.HashMap;
  ; 
 
  expresion_aritmetica : expresion_aritmetica '+' termino {
-							  $$ = new ParserVal(crearTerceto('+', $1.ival, $3.ival));
+							  $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'+'), $1, $3));
  							 }
 		      | expresion_aritmetica '-' termino{
-		  				         $$ = new ParserVal(crearTerceto('-', $1.ival, $3.ival));
+		  				         $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'-'), $1, $3));
 						        }
 		      | termino { $$ = $1 ; }
  ;
 
  termino : termino '*' factor{
-			     $$ = new ParserVal(crearTerceto('*', $1.ival, $3.ival));
+			     $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'*'), $1, $3));
 			     }
          | termino '/' factor{
-			     $$ = new ParserVal(crearTerceto('/', $1.ival, $3.ival));
+			     $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'/'), $1, $3));
 			     }
          | factor {$$ = $1;}
          | '-' factor {
-		      $$ = new ParserVal(crearTerceto('*', -1, $2.ival));
+		      $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'*'), new ParserVal(-1), $2));
 		      }
  ;
 
@@ -287,6 +297,7 @@ import java.util.HashMap;
 ///CODIGO JAVA
 
 private AnalizadorLexico analizadorLexico;
+private TablaSimbolo tablaSimbolo;
 private ArrayList<String> estructuras = new ArrayList<String>(); //Lista de las estructuras detectadas por el parser
 private ArrayList<String> errores = new ArrayList<String>(); //Lista de errores sintacticos detectados por el parser
 
@@ -300,16 +311,17 @@ public void setAnalizadorLexico(AnalizadorLexico al){
 	this.analizadorLexico = al;
 }
 
-public int crearTerceto(int t1, int t2, int t3){
+public int crearTerceto(ParserVal t1, ParserVal t2, ParserVal t3){
 	tercetos.add( new Terceto(t1, t2, t3) );
 	return tercetos.size()-1;
 }
 
 //Metodo usado por el Main para imprimir los tercetos
 public void imprimirTercetos(){
+	tablaSimbolo= analizadorLexico.getTablaSimbolo();
 	System.out.println("Cantidad de tercetos generados: " + tercetos.size());
 	for(Terceto t : tercetos)
-		System.out.println(t.getTerceto());
+		System.out.println(t.getTerceto(tablaSimbolo));
 }
 
 private void addEstructura(String e){

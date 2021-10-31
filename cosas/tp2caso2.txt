@@ -16,7 +16,7 @@ RETURN (x);
 END;
 
 ULONG entero1, entero2;
-DOUBLE FUNC (ULONG) funcion_v ;
+ULONG FUNC (ULONG) funcion_v ;
 DOUBLE doble1;
 
 **Inicio del main
