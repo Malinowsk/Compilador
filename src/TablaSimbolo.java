@@ -1,5 +1,4 @@
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 //Clase que hace de la tabla de simbolos
 public class TablaSimbolo {
@@ -74,7 +73,12 @@ public class TablaSimbolo {
     //Obtiene la referencia a la tabla del string enviada por parametro
     public int obtenerReferenciaTabla(String s){
         Set<Integer> claves =tablaDeSimbolo.keySet();
-        for(Integer clave: claves){
+        ArrayList<Integer> aux = new ArrayList<Integer>();
+        for (Integer clave: claves){
+            aux.add(clave);
+        }
+        Collections.sort(aux);
+        for(Integer clave: aux){
             if(tablaDeSimbolo.get(clave).getLexema().equals(s)){
                 return clave;
             }
