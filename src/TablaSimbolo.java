@@ -73,12 +73,7 @@ public class TablaSimbolo {
     //Obtiene la referencia a la tabla del string enviada por parametro
     public int obtenerReferenciaTabla(String s){
         Set<Integer> claves =tablaDeSimbolo.keySet();
-        ArrayList<Integer> aux = new ArrayList<Integer>();
-        for (Integer clave: claves){
-            aux.add(clave);
-        }
-        Collections.sort(aux);
-        for(Integer clave: aux){
+        for(Integer clave: claves){
             if(tablaDeSimbolo.get(clave).getLexema().equals(s)){
                 return clave;
             }
@@ -95,7 +90,12 @@ public class TablaSimbolo {
 
     public void imprimirTabla(){
         Set<Integer> claves =tablaDeSimbolo.keySet();
-        for(Integer clave: claves){
+        ArrayList<Integer> aux = new ArrayList<Integer>();
+        for (Integer clave: claves){
+            aux.add(clave);
+        }
+        Collections.sort(aux);
+        for(Integer clave: aux){
             System.out.println("Referencia en tabla= "+clave+ ", token= "+ tablaDeSimbolo.get(clave));
         }
     }
