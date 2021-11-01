@@ -16,7 +16,9 @@ import java.util.HashMap;
  programa : cabecera_programa bloque_declarativo bloque_ejecutable
  ;
 
- cabecera_programa : ID ';' { addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() );}
+ cabecera_programa : ID ';' { addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 			      ambitoActual= tablaSimbolo.obtenerValor($1.ival);
+ 			    }
  		   | error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador de programa invalido"); }
  ;
  
@@ -74,7 +76,7 @@ import java.util.HashMap;
 
  postcondicion : POST ':' '(' condicion ')' ';' {
  			postCondiciones.put(pilaFunciones.pop(), tercetos.size()-1);//Se guarda en el hashmap la posicion del terceto de condicion con la clave= ID de la funcion
- 			addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); /*¡POSTCONDICION_VAR= $3.ival?*/}
+ 			addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 	       | POST ':' '(' error ')' ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
 	       | POST '(' condicion ')' ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta :"); }
 	       | POST condicion ')' ';'  { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
@@ -82,12 +84,20 @@ import java.util.HashMap;
 	       | error ';' { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
- tipo : ULONG
-      | DOUBLE
+ tipo : ULONG {tipoActual= "ULONG";}
+      | DOUBLE {tipoActual= "DOUBLE";}
  ;
  
- lista_variables : ID ',' lista_variables
-                 | ID
+ lista_variables : ID ',' lista_variables {
+						tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
+						tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
+						tablaSimbolo.obtenerToken($1.ival).setUso("variable");
+ 					}
+                 | ID{
+			tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
+			tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
+			tablaSimbolo.obtenerToken($1.ival).setUso("variable");
+		 }
  ;
 
  bloque_ejecutable : BEGIN sentencias_ejecutables END
@@ -307,8 +317,12 @@ private Stack<Integer> pila = new Stack<Integer>(); //Pila utilizada para los te
 private HashMap<Integer, Integer> postCondiciones = new HashMap<Integer, Integer>();//Hashmap utilizado para guardar el id de las funciones junto a las referencias de sus postcondicion
 private Stack<Integer> pilaFunciones = new Stack<Integer>(); //Pila utilizada para guardar los identificadores de las funciones
 
+private String ambitoActual;
+private String tipoActual;
+
 public void setAnalizadorLexico(AnalizadorLexico al){
 	this.analizadorLexico = al;
+	tablaSimbolo= analizadorLexico.getTablaSimbolo();
 }
 
 public int crearTerceto(ParserVal t1, ParserVal t2, ParserVal t3){
@@ -348,7 +362,7 @@ public void imprimirErroresSintacticos(){
 }
 
 private int yylex(){
-	Dupla<Integer, Integer> tokenActual = analizadorLexico.getSiguienteToken();
+	Dupla<Integer, Integer> tokenActual = analizadorLexico.nextToken();
 	if(tokenActual.getSegundo() != null)
 		yylval = new ParserVal((int)tokenActual.getSegundo());
 	//System.out.println("Token devuelto por yylex: " + tokenActual.getPrimero() );

@@ -409,7 +409,7 @@ YYSTYPE yylval;
 short yyss[YYSTACKSIZE];
 YYSTYPE yyvs[YYSTACKSIZE];
 #define yystacksize YYSTACKSIZE
-#line 296 "gramatica.y"
+#line 306 "gramatica.y"
 
 ///CODIGO JAVA
 
@@ -424,8 +424,12 @@ private Stack<Integer> pila = new Stack<Integer>(); //Pila utilizada para los te
 private HashMap<Integer, Integer> postCondiciones = new HashMap<Integer, Integer>();//Hashmap utilizado para guardar el id de las funciones junto a las referencias de sus postcondicion
 private Stack<Integer> pilaFunciones = new Stack<Integer>(); //Pila utilizada para guardar los identificadores de las funciones
 
+private String ambitoActual;
+private String tipoActual;
+
 public void setAnalizadorLexico(AnalizadorLexico al){
 	this.analizadorLexico = al;
+	tablaSimbolo= analizadorLexico.getTablaSimbolo();
 }
 
 public int crearTerceto(ParserVal t1, ParserVal t2, ParserVal t3){
@@ -465,7 +469,7 @@ public void imprimirErroresSintacticos(){
 }
 
 private int yylex(){
-	Dupla<Integer, Integer> tokenActual = analizadorLexico.getSiguienteToken();
+	Dupla<Integer, Integer> tokenActual = analizadorLexico.nextToken();
 	if(tokenActual.getSegundo() != null)
 		yylval = new ParserVal((int)tokenActual.getSegundo());
 	//System.out.println("Token devuelto por yylex: " + tokenActual.getPrimero() );
@@ -475,7 +479,7 @@ private int yylex(){
 private void yyerror(String s){
 
 }
-#line 479 "y.tab.c"
+#line 483 "y.tab.c"
 #define YYABORT goto yyabort
 #define YYACCEPT goto yyaccept
 #define YYERROR goto yyerrlab
@@ -617,167 +621,193 @@ yyreduce:
     {
 case 2:
 #line 19 "gramatica.y"
-{ addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() );}
+{ addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 			      ambitoActual= tablaSimbolo.obtenerValor(yyvsp[-1].ival);
+ 			    }
 break;
 case 3:
-#line 20 "gramatica.y"
+#line 22 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador de programa invalido"); }
 break;
 case 7:
-#line 30 "gramatica.y"
+#line 32 "gramatica.y"
 { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 8:
-#line 31 "gramatica.y"
+#line 33 "gramatica.y"
 { addEstructura( "Declaracion de funciones como variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 10:
-#line 33 "gramatica.y"
+#line 35 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable invalido"); }
 break;
 case 11:
-#line 34 "gramatica.y"
+#line 36 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida"); }
 break;
 case 12:
-#line 35 "gramatica.y"
+#line 37 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 13:
-#line 36 "gramatica.y"
+#line 38 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable invalido"); }
 break;
 case 14:
-#line 37 "gramatica.y"
+#line 39 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 15:
-#line 40 "gramatica.y"
+#line 42 "gramatica.y"
 {pilaFunciones.pop();}
 break;
 case 17:
-#line 44 "gramatica.y"
+#line 46 "gramatica.y"
 {
  			 addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
  			 pilaFunciones.push(yyvsp[-3].ival);/*se guarda el id en la pila para la postcondicion*/
  			}
 break;
 case 18:
-#line 48 "gramatica.y"
+#line 50 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida");
  		  				      pilaFunciones.push(-1);/*se guarda el id en la pila para la postcondicion*/
  		  				    }
 break;
 case 19:
-#line 51 "gramatica.y"
+#line 53 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", identificador invalido");
  		  					pilaFunciones.push(-1);/*se guarda el id en la pila para la postcondicion*/
  		  				}
 break;
 case 20:
-#line 54 "gramatica.y"
+#line 56 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", parametro invalido");
  		  				 pilaFunciones.push(-1);/*se guarda el id en la pila para la postcondicion*/
  		  			}
 break;
 case 21:
-#line 57 "gramatica.y"
+#line 59 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura");
  		  				 pilaFunciones.push(-1);/*se guarda el id en la pila para la postcondicion*/
  		  			}
 break;
 case 22:
-#line 60 "gramatica.y"
+#line 62 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre");
  		  				 pilaFunciones.push(-1);/*se guarda el id en la pila para la postcondicion*/
  		  			}
 break;
 case 24:
-#line 68 "gramatica.y"
+#line 70 "gramatica.y"
 { addEstructura( "Sentencia RETURN, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 25:
-#line 69 "gramatica.y"
+#line 71 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
 break;
 case 26:
-#line 70 "gramatica.y"
+#line 72 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 27:
-#line 71 "gramatica.y"
+#line 73 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 28:
-#line 72 "gramatica.y"
+#line 74 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
 case 29:
-#line 75 "gramatica.y"
+#line 77 "gramatica.y"
 {
  			postCondiciones.put(pilaFunciones.pop(), tercetos.size()-1);/*Se guarda en el hashmap la posicion del terceto de condicion con la clave= ID de la funcion*/
- 			addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); /*¡POSTCONDICION_VAR= $3.ival?*/}
+ 			addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 30:
-#line 78 "gramatica.y"
+#line 80 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
 break;
 case 31:
-#line 79 "gramatica.y"
+#line 81 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta :"); }
 break;
 case 32:
-#line 80 "gramatica.y"
+#line 82 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 33:
-#line 81 "gramatica.y"
+#line 83 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 34:
-#line 82 "gramatica.y"
+#line 84 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
 break;
+case 35:
+#line 87 "gramatica.y"
+{tipoActual= "ULONG";}
+break;
+case 36:
+#line 88 "gramatica.y"
+{tipoActual= "DOUBLE";}
+break;
+case 37:
+#line 91 "gramatica.y"
+{
+						tablaSimbolo.obtenerToken(yyvsp[-2].ival).setLexema(tablaSimbolo.obtenerToken(yyvsp[-2].ival).getLexema()+'.'+ambitoActual);
+						tablaSimbolo.obtenerToken(yyvsp[-2].ival).setTipo(tipoActual);
+						tablaSimbolo.obtenerToken(yyvsp[-2].ival).setUso("variable");
+ 					}
+break;
+case 38:
+#line 96 "gramatica.y"
+{
+			tablaSimbolo.obtenerToken(yyvsp[0].ival).setLexema(tablaSimbolo.obtenerToken(yyvsp[0].ival).getLexema()+'.'+ambitoActual);
+			tablaSimbolo.obtenerToken(yyvsp[0].ival).setTipo(tipoActual);
+			tablaSimbolo.obtenerToken(yyvsp[0].ival).setUso("variable");
+		 }
+break;
 case 48:
-#line 110 "gramatica.y"
+#line 120 "gramatica.y"
 {
  		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
 		       yyval = new ParserVal((double)crearTerceto(new ParserVal(ASIG), yyvsp[-3], yyvsp[-1]));
 		      }
 break;
 case 49:
-#line 114 "gramatica.y"
+#line 124 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
 break;
 case 50:
-#line 115 "gramatica.y"
+#line 125 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
 break;
 case 51:
-#line 118 "gramatica.y"
+#line 128 "gramatica.y"
 {
  			    addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
  			    yyval = new ParserVal((double)crearTerceto(new ParserVal(CALL), yyvsp[-3], yyvsp[-1]));
  			   }
 break;
 case 52:
-#line 122 "gramatica.y"
+#line 132 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
 break;
 case 53:
-#line 125 "gramatica.y"
+#line 135 "gramatica.y"
 {
  			 tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()));
  			}
 break;
 case 54:
-#line 128 "gramatica.y"
+#line 138 "gramatica.y"
 {
 			 tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()));
 			}
 break;
 case 55:
-#line 133 "gramatica.y"
+#line 143 "gramatica.y"
 {
 	tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));
 	int refTerceto =crearTerceto(new ParserVal(-2), new ParserVal(-1), new ParserVal(-1));/*-2 es BI*/
@@ -786,7 +816,7 @@ case 55:
 	}
 break;
 case 56:
-#line 142 "gramatica.y"
+#line 152 "gramatica.y"
 {
  					 int refTerceto = crearTerceto(new ParserVal(-1), yyvsp[-2], new ParserVal(-1));/*el primer-1 es BF*/
 					 pila.push(refTerceto);
@@ -794,110 +824,110 @@ case 56:
  					 }
 break;
 case 57:
-#line 147 "gramatica.y"
+#line 157 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
 break;
 case 58:
-#line 148 "gramatica.y"
+#line 158 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 59:
-#line 149 "gramatica.y"
+#line 159 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 60:
-#line 150 "gramatica.y"
+#line 160 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia condicional invalida"); }
 break;
 case 61:
-#line 153 "gramatica.y"
+#line 163 "gramatica.y"
 {addEstructura( "Sentencia IF, en la linea: " + analizadorLexico.getNroLineaToken() );
  	  yyval = yyvsp[0];}
 break;
 case 62:
-#line 157 "gramatica.y"
+#line 167 "gramatica.y"
 {
 	  	yyval = new ParserVal((double)crearTerceto(yyvsp[-1], yyvsp[-2], yyvsp[0]));
 	  	}
 break;
 case 63:
-#line 160 "gramatica.y"
+#line 170 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 64:
-#line 163 "gramatica.y"
+#line 173 "gramatica.y"
 {
 			yyval = new ParserVal((double)crearTerceto(yyvsp[-1], yyvsp[-2], yyvsp[0]));
 			}
 break;
 case 65:
-#line 168 "gramatica.y"
+#line 178 "gramatica.y"
 {yyval.ival = COMP_MAYOR_IGUAL;}
 break;
 case 66:
-#line 169 "gramatica.y"
+#line 179 "gramatica.y"
 {yyval.ival = COMP_MENOR_IGUAL;}
 break;
 case 67:
-#line 170 "gramatica.y"
+#line 180 "gramatica.y"
 {yyval.ival = COMP_IGUAL;}
 break;
 case 68:
-#line 171 "gramatica.y"
+#line 181 "gramatica.y"
 {yyval.ival = COMP_DISTINTO;}
 break;
 case 69:
-#line 172 "gramatica.y"
+#line 182 "gramatica.y"
 {yyval.ival = '<';}
 break;
 case 70:
-#line 173 "gramatica.y"
+#line 183 "gramatica.y"
 {yyval.ival = '>';}
 break;
 case 71:
-#line 176 "gramatica.y"
+#line 186 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 72:
-#line 177 "gramatica.y"
+#line 187 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 75:
-#line 184 "gramatica.y"
+#line 194 "gramatica.y"
 {crearTerceto(yyvsp[-4], yyvsp[-2], new ParserVal(-1));}
 break;
 case 76:
-#line 185 "gramatica.y"
+#line 195 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", cadena invalida"); }
 break;
 case 77:
-#line 186 "gramatica.y"
+#line 196 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 78:
-#line 187 "gramatica.y"
+#line 197 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 79:
-#line 188 "gramatica.y"
+#line 198 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia PRINT invalida"); }
 break;
 case 80:
-#line 191 "gramatica.y"
+#line 201 "gramatica.y"
 {
  		addEstructura( "Sentencia PRINT, en la linea: " + analizadorLexico.getNroLineaToken() );
  		yyval = new ParserVal((int)PRINT);
  		}
 break;
 case 81:
-#line 197 "gramatica.y"
+#line 207 "gramatica.y"
 {
 							     tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));/*Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues de la ultima sentencia del bloque*/
 							     crearTerceto(new ParserVal(-2), new ParserVal((double)pila.pop()), new ParserVal(-1));/*-2 es BI, se crea un BI al terceto que calcula la condicion del while*/
 							    }
 break;
 case 82:
-#line 203 "gramatica.y"
+#line 213 "gramatica.y"
 {
 					 int refTerceto = crearTerceto(new ParserVal(-1), yyvsp[-2], new ParserVal(-1));/*el primer-1 es BF*/
 					 pila.push(refTerceto);
@@ -905,51 +935,51 @@ case 82:
 					}
 break;
 case 83:
-#line 208 "gramatica.y"
+#line 218 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia iterativa invalida"); }
 break;
 case 84:
-#line 209 "gramatica.y"
+#line 219 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
 break;
 case 85:
-#line 210 "gramatica.y"
+#line 220 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 86:
-#line 211 "gramatica.y"
+#line 221 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 87:
-#line 213 "gramatica.y"
+#line 223 "gramatica.y"
 { addEstructura( "Sentencia WHILE, en la linea: " + analizadorLexico.getNroLineaToken() );
  		 pila.push(tercetos.size());
  	         yyval=yyvsp[0]; }
 break;
 case 98:
-#line 234 "gramatica.y"
+#line 244 "gramatica.y"
 { addEstructura( "Sentencia BREAK, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 99:
-#line 237 "gramatica.y"
+#line 247 "gramatica.y"
 {
  			 addEstructura( "Sentencia de conversion a DOUBLE, en la linea: " + analizadorLexico.getNroLineaToken() );
  			 yyval =  new ParserVal((double)crearTerceto(new ParserVal(DOUBLE), yyvsp[-1], new ParserVal(-1)));
  			}
 break;
 case 100:
-#line 241 "gramatica.y"
+#line 251 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
 break;
 case 101:
-#line 244 "gramatica.y"
+#line 254 "gramatica.y"
 {
  		      int t = pila.pop();
  		      tercetos.get(t).setT3(new ParserVal((double)tercetos.size()));/*Completa el BT del try*/
 		     }
 break;
 case 102:
-#line 250 "gramatica.y"
+#line 260 "gramatica.y"
 {
  		  /*Primero buscamos el id de la funcion invocada en el try recorriendo la lista de tercetos*/
 		  int i = tercetos.size()-1;
@@ -959,80 +989,80 @@ case 102:
 		 }
 break;
 case 103:
-#line 257 "gramatica.y"
+#line 267 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
 break;
 case 104:
-#line 258 "gramatica.y"
+#line 268 "gramatica.y"
 { addError("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
 break;
 case 105:
-#line 261 "gramatica.y"
+#line 271 "gramatica.y"
 { addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 106:
-#line 264 "gramatica.y"
+#line 274 "gramatica.y"
 {yyval=yyvsp[0];}
 break;
 case 107:
-#line 267 "gramatica.y"
+#line 277 "gramatica.y"
 {
 							  yyval = new ParserVal((double)crearTerceto(new ParserVal((int)'+'), yyvsp[-2], yyvsp[0]));
  							 }
 break;
 case 108:
-#line 270 "gramatica.y"
+#line 280 "gramatica.y"
 {
 		  				         yyval = new ParserVal((double)crearTerceto(new ParserVal((int)'-'), yyvsp[-2], yyvsp[0]));
 						        }
 break;
 case 109:
-#line 273 "gramatica.y"
+#line 283 "gramatica.y"
 { yyval = yyvsp[0] ; }
 break;
 case 110:
-#line 276 "gramatica.y"
+#line 286 "gramatica.y"
 {
 			     yyval = new ParserVal((double)crearTerceto(new ParserVal((int)'*'), yyvsp[-2], yyvsp[0]));
 			     }
 break;
 case 111:
-#line 279 "gramatica.y"
+#line 289 "gramatica.y"
 {
 			     yyval = new ParserVal((double)crearTerceto(new ParserVal((int)'/'), yyvsp[-2], yyvsp[0]));
 			     }
 break;
 case 112:
-#line 282 "gramatica.y"
+#line 292 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 113:
-#line 283 "gramatica.y"
+#line 293 "gramatica.y"
 {
 		      yyval = new ParserVal((double)crearTerceto(new ParserVal((int)'*'), new ParserVal(-1), yyvsp[0]));
 		      }
 break;
 case 114:
-#line 288 "gramatica.y"
+#line 298 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 115:
-#line 289 "gramatica.y"
+#line 299 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 116:
-#line 290 "gramatica.y"
+#line 300 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 117:
-#line 291 "gramatica.y"
+#line 301 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 118:
-#line 292 "gramatica.y"
+#line 302 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
-#line 1036 "y.tab.c"
+#line 1066 "y.tab.c"
     }
     yyssp -= yym;
     yystate = *yyssp;

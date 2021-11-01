@@ -88,6 +88,12 @@ public class TablaSimbolo {
         return null;
     }
 
+    public Token obtenerToken(Integer i){
+        if (tablaDeSimbolo.get(i)!=null)
+            return tablaDeSimbolo.get(i);
+        return null;
+    }
+
     public void imprimirTabla(){
         Set<Integer> claves =tablaDeSimbolo.keySet();
         ArrayList<Integer> aux = new ArrayList<Integer>();
