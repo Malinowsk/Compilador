@@ -52,7 +52,8 @@ public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, Tabla
                 tokens.add(new Dupla<Integer, Integer>(numeroClaveTabla, null));
             }
             else{//es un identificador que ya estaba en la tabla
-                tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_IDENTIFICADOR, numeroClaveTabla));
+                tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_IDENTIFICADOR);//se agrega identificador a la tabla
+                tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_IDENTIFICADOR, tablaDeSimbolo.refUltimoToken()));
             }
         }
         lineas.add(nroLinea);

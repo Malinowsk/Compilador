@@ -39,7 +39,9 @@ public class Main {
                 case 2: {al.getTablaSimbolo().imprimirTabla();break;}
                 case 3: {p.imprimirEstructuras(); break;}
                 case 4: {al.imprimirErroresLexicos();
-                            p.imprimirErroresSintacticos(); break;}
+                            p.imprimirErroresSintacticos();
+                            p.imprimirErroresSemanticos();
+                            break;}
                 case 5: {p.imprimirTercetos(); break;}
                 case 6: {System.out.println("Fin de la ejecución."); break;}
             }

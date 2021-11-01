@@ -5,7 +5,7 @@ public class Token {
 
     private String uso = null;//indica si es variable, parametro, funcion, etc.
     private String tipo = null;//tipo de variable
-    private String ambito = null;//ambito de la variable ES NECESARIO?
+    //private String ambito = null;//ambito de la variable ES NECESARIO?
 
     Token(Integer n, String l){
         this.numero= n;
@@ -14,7 +14,7 @@ public class Token {
 
     @Override
     public String toString() {
-        return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo + ", ambito= " + ambito;
+        return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo;
     }
 
     @Override
@@ -55,11 +55,11 @@ public class Token {
         this.tipo = tipo;
     }
 
-    public String getAmbito() {
+    /*public String getAmbito() {
         return ambito;
-    }
+    }*/
 
-    public void setAmbito(String ambito) {
+    /*public void setAmbito(String ambito) {
         this.ambito = ambito;
-    }
+    }*/
 }

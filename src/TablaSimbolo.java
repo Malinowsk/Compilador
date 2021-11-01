@@ -88,12 +88,22 @@ public class TablaSimbolo {
         return null;
     }
 
+    //Metodo que obtiene el token asociado a una referencia
     public Token obtenerToken(Integer i){
         if (tablaDeSimbolo.get(i)!=null)
             return tablaDeSimbolo.get(i);
         return null;
     }
 
+    //Metodo que borra el token asociado a una referencia de la tabla
+    public void borrarToken(Integer i){
+        tablaDeSimbolo.remove(i);
+    }
+
+    //Metodo que devuelve la referencia a la ultima tabla agregada
+    public int refUltimoToken(){return autoincrementador-1;}
+
+    //Metodo que imprime la tabla de simbolos
     public void imprimirTabla(){
         Set<Integer> claves =tablaDeSimbolo.keySet();
         ArrayList<Integer> aux = new ArrayList<Integer>();
@@ -102,7 +112,8 @@ public class TablaSimbolo {
         }
         Collections.sort(aux);
         for(Integer clave: aux){
-            System.out.println("Referencia en tabla= "+clave+ ", token= "+ tablaDeSimbolo.get(clave));
+            if(clave>285)
+                System.out.println("Referencia en tabla= "+clave+ ", token= "+ tablaDeSimbolo.get(clave));
         }
     }
 
