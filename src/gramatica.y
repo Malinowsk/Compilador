@@ -54,6 +54,7 @@ import java.util.HashMap;
 			    tablaSimbolo.obtenerToken($3.ival).setLexema(auxiliar+'.'+ambitoActual);
 			    tablaSimbolo.obtenerToken($3.ival).setTipo(tipoActual);
 			    tablaSimbolo.obtenerToken($3.ival).setUso("funcion");
+			    tablaSimbolo.obtenerToken($3.ival).setTipoParametro(tablaSimbolo.obtenerToken($5.ival).getTipo());
 			    ambitoActual= ambitoActual + '.' + auxiliar;
 			    tablaSimbolo.obtenerToken($5.ival).setLexema(tablaSimbolo.obtenerToken($5.ival).getLexema()+'.'+ambitoActual);
  			 }
@@ -190,12 +191,18 @@ import java.util.HashMap;
                         auxiliar = auxiliar.substring(0, ultimoPunto);
                 }
 				int nuevaRef = tablaSimbolo.obtenerReferenciaTabla(tablaSimbolo.obtenerToken($2.ival).getLexema()+'.'+auxiliar);
+
 				if(nuevaRef == -1){
 					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", funcion no declarada");
 				}
 				else{
+
 					tablaSimbolo.borrarToken($2.ival);//se borra de la tabla de simbolos la variable duplicada de la sentencia
 					$2.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
+				    if($4.sval!=tablaSimbolo.obtenerToken($2.ival).getTipoParametro()){
+				    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", Error en la invocacion a funcion : El tipo de parametro real no coincide con el formal");
+				    }
+
 				}
 
 				addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
@@ -442,8 +449,12 @@ public int crearTerceto(ParserVal t1, ParserVal t2, ParserVal t3){
 public void imprimirTercetos(){
 	tablaSimbolo= analizadorLexico.getTablaSimbolo();
 	System.out.println("Cantidad de tercetos generados: " + tercetos.size());
-	for(Terceto t : tercetos)
-		System.out.println(t.getTerceto(tablaSimbolo));
+	int i = 0;
+	for(Terceto t : tercetos){
+		System.out.println("[" + i + "]" + t.getTerceto(tablaSimbolo));
+		i++;
+		}
+
 }
 
 private void addEstructura(String e){

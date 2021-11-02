@@ -6,6 +6,8 @@ public class Token {
     private String uso = null;//indica si es variable, parametro, funcion, etc.
     private String tipo = null;//tipo de variable
     //private String ambito = null;//ambito de la variable ES NECESARIO?
+    private String tipoParametro = null;
+
 
     Token(Integer n, String l){
         this.numero= n;
@@ -62,4 +64,12 @@ public class Token {
     /*public void setAmbito(String ambito) {
         this.ambito = ambito;
     }*/
+
+    public String getTipoParametro() {
+        return tipoParametro;
+    }
+
+    public void setTipoParametro(String tipoParametro) {
+        this.tipoParametro = tipoParametro;
+    }
 }
