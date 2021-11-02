@@ -20,6 +20,7 @@ public class AnalizadorLexico {
     private int nroLinea;//Linea del codigo en el que se encuentra el lexico
     private int charActual;//Char del codigo en el que se encuentra el lexico
 
+
     //Constructor
     public AnalizadorLexico() {
         this.automata = new Automata();

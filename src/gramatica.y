@@ -49,14 +49,24 @@ import java.util.HashMap;
  ;
 
  cabecera_funcion : tipo FUNC ID '(' parametro ')' {
- 			 String auxiliar = tablaSimbolo.obtenerToken($3.ival).getLexema();
-			 tablaSimbolo.obtenerToken($3.ival).setLexema(auxiliar+'.'+ambitoActual);
-			 tablaSimbolo.obtenerToken($3.ival).setTipo(tipoActual);
-			 tablaSimbolo.obtenerToken($3.ival).setUso("funcion");
-			 ambitoActual= ambitoActual + '.' + auxiliar;
-			 tablaSimbolo.obtenerToken($5.ival).setLexema(tablaSimbolo.obtenerToken($5.ival).getLexema()+'.'+ambitoActual);
+             String auxiliar = tablaSimbolo.obtenerToken($3.ival).getLexema();
+             if(!tablaSimbolo.existeToken(auxiliar + '.' + ambitoActual)){
+			    tablaSimbolo.obtenerToken($3.ival).setLexema(auxiliar+'.'+ambitoActual);
+			    tablaSimbolo.obtenerToken($3.ival).setTipo(tipoActual);
+			    tablaSimbolo.obtenerToken($3.ival).setUso("funcion");
+			    ambitoActual= ambitoActual + '.' + auxiliar;
+			    tablaSimbolo.obtenerToken($5.ival).setLexema(tablaSimbolo.obtenerToken($5.ival).getLexema()+'.'+ambitoActual);
+ 			 }
+ 			 else
+ 			 {
+ 			     tablaSimbolo.borrarToken($3.ival);
+                 addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", funcion redeclarada");
+ 			     $3.ival=tablaSimbolo.obtenerReferenciaTabla(auxiliar+'.'+ ambitoActual);
+ 			     ambitoActual= ambitoActual + '.' + auxiliar;
+ 			 }
  			 addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
- 			 pilaFunciones.push($3.ival);//se guarda el id en la pila para la postcondicion
+             pilaFunciones.push($3.ival);//se guarda el id en la pila para la postcondicion
+
  			}
  		  | tipo error ID '(' parametro ')' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida");
  		  				      pilaFunciones.push(-1);//se guarda el id en la pila para la postcondicion
@@ -104,15 +114,25 @@ import java.util.HashMap;
  ;
  
  lista_variables : ID ',' lista_variables {
-						tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
-						tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
-						tablaSimbolo.obtenerToken($1.ival).setUso("variable");
+                        if(!tablaSimbolo.existeToken(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual)){
+						    tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
+						    tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
+						    tablaSimbolo.obtenerToken($1.ival).setUso("variable");}
+						else{
+						    tablaSimbolo.borrarToken($1.ival);
+						    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
+						}
  					}
                  | ID{
-			tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
-			tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
-			tablaSimbolo.obtenerToken($1.ival).setUso("variable");
-		 }
+                        if(!tablaSimbolo.existeToken(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual)){
+            	            tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
+            				tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
+            				tablaSimbolo.obtenerToken($1.ival).setUso("variable");}
+            			else{
+            			    tablaSimbolo.borrarToken($1.ival);
+            			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
+            			}
+		            }
  ;
 
  bloque_ejecutable : BEGIN sentencias_ejecutables END
@@ -149,18 +169,29 @@ import java.util.HashMap;
 		       		$1.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
 		       }
 
+                // PREGUNTAR SI AL DETECTAR ERROR DE VARIABLE NO DECLARADA SE AGREGA ESTRUCTURA Y TERCERO
 		       //VER SI HAY QUE AGREGAR EL VALOR AL TOKEN
  		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
+		       if(tablaSimbolo.obtenerToken($1.ival).getTipo()!=$3.sval)
+                    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + tablaSimbolo.obtenerToken($1.ival).getTipo() + " := " + $3.sval );
 		       $$ = new ParserVal((double)crearTerceto(new ParserVal(ASIG), $1, $3));
+
 		      }
  		      | ID error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
  		      | ID ASIG error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
  ;
 
  sentencia_llamado_funcion : CALL ID '('expresion_aritmetica ')'{
-				int nuevaRef = tablaSimbolo.obtenerReferenciaTabla(tablaSimbolo.obtenerToken($2.ival).getLexema()+'.'+ambitoActual);
+                String auxiliar= ambitoActual;
+                int ultimoPunto = 0;
+                while( (!tablaSimbolo.existeToken(tablaSimbolo.obtenerToken($2.ival).getLexema()+'.'+auxiliar)) && (ultimoPunto>=0)){
+                    ultimoPunto = auxiliar.lastIndexOf('.');
+                    if(ultimoPunto>0)
+                        auxiliar = auxiliar.substring(0, ultimoPunto);
+                }
+				int nuevaRef = tablaSimbolo.obtenerReferenciaTabla(tablaSimbolo.obtenerToken($2.ival).getLexema()+'.'+auxiliar);
 				if(nuevaRef == -1){
-					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable no declarada");
+					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", funcion no declarada");
 				}
 				else{
 					tablaSimbolo.borrarToken($2.ival);//se borra de la tabla de simbolos la variable duplicada de la sentencia
@@ -169,6 +200,7 @@ import java.util.HashMap;
 
 				addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
 				$$ = new ParserVal((double)crearTerceto(new ParserVal(CALL), $2, $4));
+				$$.sval = tablaSimbolo.obtenerToken($2.ival).getTipo();
  			   }
 			   | CALL ID '(' error ')' ';'{ addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
  ;
@@ -288,6 +320,7 @@ import java.util.HashMap;
  sentencia_conversion : DOUBLE '(' expresion_aritmetica ')'{
  			 addEstructura( "Sentencia de conversion a DOUBLE, en la linea: " + analizadorLexico.getNroLineaToken() );
  			 $$ =  new ParserVal((double)crearTerceto(new ParserVal(DOUBLE), $3, new ParserVal(-1)));
+ 			 $$.sval = "DOUBLE";
  			}
  		      | DOUBLE '(' error ')' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
  ;
@@ -316,23 +349,36 @@ import java.util.HashMap;
  ; 
 
  expresion_aritmetica : expresion_aritmetica '+' termino {
+                              if($1.sval!=$3.sval)
+							       	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + $1.sval + " + " + $3.sval );
 							  $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'+'), $1, $3));
+							  $$.sval=$1.sval;
  							 }
 		      | expresion_aritmetica '-' termino{
+		                         if($1.sval!=$3.sval)
+                                    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + $1.sval + " - " + $3.sval );
 		  				         $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'-'), $1, $3));
+		  				         $$.sval=$1.sval;
 						        }
 		      | termino { $$ = $1 ; }
  ;
 
  termino : termino '*' factor{
+                 if($1.sval!=$3.sval)
+                     	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + $1.sval + " * " + $3.sval );
 			     $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'*'), $1, $3));
+			     $$.sval=$1.sval;
 			     }
          | termino '/' factor{
+                if($1.sval!=$3.sval)
+                     	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + $1.sval + " / " + $3.sval );
 			     $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'/'), $1, $3));
+			     $$.sval=$1.sval;
 			     }
          | factor {$$ = $1;}
          | '-' factor {
 		      $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'*'), new ParserVal(-1), $2));
+		      $$.sval=$1.sval;
 		      }
  ;
 
@@ -353,11 +399,14 @@ import java.util.HashMap;
 		$1.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
        }
        $$ = $1;
+       $$.sval=tablaSimbolo.obtenerToken($1.ival).getTipo();
      }
         | sentencia_conversion {$$ = $1;}
         | sentencia_llamado_funcion {$$ = $1;}
-        | CTE_ULONG {$$ = $1;}
-        | CTE_DOUBLE {$$ = $1;}
+        | CTE_ULONG {  $$ = $1;
+                       $$.sval="ULONG";}
+        | CTE_DOUBLE {$$ = $1;
+                      $$.sval="DOUBLE";}
  ;
 
 %%
@@ -426,7 +475,7 @@ public void imprimirErroresSintacticos(){
 
 //Metodo usado por el Main para imprimir los erroresSemanticos lexicos
 public void imprimirErroresSemanticos(){
-        System.out.println("Se detectaron " + this.erroresSintacticos.size() + " errores semanticos en el codigo");
+        System.out.println("Se detectaron " + this.erroresSemanticos.size() + " errores semanticos en el codigo");
         for(String e: this.erroresSemanticos){
             System.out.println(" - " + e);
         }

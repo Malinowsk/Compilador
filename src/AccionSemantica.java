@@ -100,6 +100,7 @@ public static boolean accion5(ArrayList< Dupla<Integer, Integer> > tokens, Tabla
     if (Double.valueOf(auxiliar) <= (Math.pow(2.0, 32.0 )-1)  && (Double.valueOf(auxiliar)>=0) ){
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CONSTANTE);//se agrega identificador a la tabla
+            tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setTipo("ULONG");
         }
     tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CONSTANTE, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
     lineas.add(nroLinea);
@@ -209,6 +210,7 @@ public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
             || ( auxiliarBD.compareTo(BigDecimal.valueOf(0.0))==0 ) ){
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_DOUBLE);//se agrega identificador a la tabla
+            tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setTipo("DOUBLE");
         }
         tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_DOUBLE, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
         lineas.add(nroLinea);

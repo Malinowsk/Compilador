@@ -110,6 +110,7 @@ public class TablaSimbolo {
         for (Integer clave: claves){
             aux.add(clave);
         }
+
         Collections.sort(aux);
         for(Integer clave: aux){
             if(clave>285)
