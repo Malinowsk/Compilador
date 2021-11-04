@@ -19,7 +19,8 @@ import java.util.HashMap;
  cabecera_programa : ID ';' { addEstructura( "Declaracion de programa, en la linea: " + analizadorLexico.getNroLineaToken() );
  			      ambitoActual= tablaSimbolo.obtenerValor($1.ival);
  			    }
- 		   | error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", identificador de programa invalido"); }
+ 		   | error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", identificador de programa invalido");
+ 		    		ambitoActual= "error";}
  ;
  
  bloque_declarativo : sentencias_declarativas 
@@ -40,7 +41,6 @@ import java.util.HashMap;
  ;
 
  sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion END {
- 					pilaFunciones.pop();
  					ambitoActual= ambitoActual.substring(0, ambitoActual.lastIndexOf('.'));
  				}
                                | cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END {
@@ -49,8 +49,8 @@ import java.util.HashMap;
  ;
 
  cabecera_funcion : tipo FUNC ID '(' parametro ')' {
-             String auxiliar = tablaSimbolo.obtenerToken($3.ival).getLexema();
-             if(!tablaSimbolo.existeToken(auxiliar + '.' + ambitoActual)){
+			 String auxiliar = tablaSimbolo.obtenerToken($3.ival).getLexema();
+			 if(!tablaSimbolo.existeToken(auxiliar + '.' + ambitoActual)){
 			    tablaSimbolo.obtenerToken($3.ival).setLexema(auxiliar+'.'+ambitoActual);
 			    tablaSimbolo.obtenerToken($3.ival).setTipo(tipoActual);
 			    tablaSimbolo.obtenerToken($3.ival).setUso("funcion");
@@ -61,29 +61,22 @@ import java.util.HashMap;
  			 else
  			 {
  			     tablaSimbolo.borrarToken($3.ival);
-                 addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", funcion redeclarada");
+                 	     addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", funcion redeclarada");
  			     $3.ival=tablaSimbolo.obtenerReferenciaTabla(auxiliar+'.'+ ambitoActual);
  			     ambitoActual= ambitoActual + '.' + auxiliar;
  			 }
  			 addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
-             pilaFunciones.push($3.ival);//se guarda el id en la pila para la postcondicion
-
- 			}
- 		  | tipo error ID '(' parametro ')' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida");
- 		  				      pilaFunciones.push(-1);//se guarda el id en la pila para la postcondicion
- 		  				    }
- 		  | tipo FUNC error '(' parametro ')' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", identificador invalido");
- 		  					pilaFunciones.push(-1);//se guarda el id en la pila para la postcondicion
- 		  				}
- 		  | tipo FUNC ID '(' error ')' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", parametro invalido");
- 		  				 pilaFunciones.push(-1);//se guarda el id en la pila para la postcondicion
- 		  			}
- 		  | tipo FUNC ID parametro ')' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura");
- 		  				 pilaFunciones.push(-1);//se guarda el id en la pila para la postcondicion
- 		  			}
- 		  | tipo FUNC ID '(' parametro { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre");
- 		  				 pilaFunciones.push(-1);//se guarda el id en la pila para la postcondicion
- 		  			}
+ 		  }
+ 		  | tipo error ID '(' parametro ')' { ambitoActual= ambitoActual + '.' + tablaSimbolo.obtenerToken($3.ival).getLexema(); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida");
+ 		  }
+ 		  | tipo FUNC error '(' parametro ')' { ambitoActual= ambitoActual + '.' + "error"; addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", identificador invalido");
+ 		  }
+ 		  | tipo FUNC ID '(' error ')' { ambitoActual= ambitoActual + '.' + tablaSimbolo.obtenerToken($3.ival).getLexema(); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", parametro invalido");
+ 		  }
+ 		  | tipo FUNC ID parametro ')' { ambitoActual= ambitoActual + '.' + tablaSimbolo.obtenerToken($3.ival).getLexema(); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura");
+ 		  }
+ 		  | tipo FUNC ID '(' parametro { ambitoActual= ambitoActual + '.' + tablaSimbolo.obtenerToken($3.ival).getLexema(); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre");
+ 		  }
  ;
 
  parametro : tipo ID {
@@ -101,13 +94,35 @@ import java.util.HashMap;
  ;
 
  postcondicion : POST ':' '(' condicion ')' ';' {
- 			postCondiciones.put(pilaFunciones.pop(), tercetos.size()-1);//Se guarda en el hashmap la posicion del terceto de condicion con la clave= ID de la funcion
- 			addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() ); }
-	       | POST ':' '(' error ')' ';'  { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
-	       | POST '(' condicion ')' ';'  { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta :"); }
-	       | POST condicion ')' ';'  { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
-	       | POST '(' condicion ';'  { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
-	       | error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
+ 			int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
+ 			postCondiciones.put(refFuncion, tercetos.size()-1);//Se guarda en el hashmap la posicion del terceto de condicion (ult terceto agregado en este punto) con la clave= ID de la funcion
+ 			addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 		}
+	       | POST ':' '(' error ')' ';'  {
+			int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
+			postCondiciones.put(refFuncion, 0);//Se guarda en el hashmap la posicion del terceto de condicion (ult terceto agregado en este punto) con la clave= ID de la funcion
+			addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida");
+		}
+	       | POST '(' condicion ')' ';'  {
+			int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
+			postCondiciones.put(refFuncion, tercetos.size()-1);//Se guarda en el hashmap la posicion del terceto de condicion (ult terceto agregado en este punto) con la clave= ID de la funcion
+			addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta :");
+		}
+	       | POST condicion ')' ';' {
+			int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
+			postCondiciones.put(refFuncion, tercetos.size()-1);//Se guarda en el hashmap la posicion del terceto de condicion (ult terceto agregado en este punto) con la clave= ID de la funcion
+			addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura");
+		}
+	       | POST '(' condicion ';' {
+			int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
+			postCondiciones.put(refFuncion, tercetos.size()-1);//Se guarda en el hashmap la posicion del terceto de condicion (ult terceto agregado en este punto) con la clave= ID de la funcion
+			addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre");
+		}
+	       | error ';' {
+			int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
+			postCondiciones.put(refFuncion, 0);//Se guarda en el hashmap la posicion del terceto de condicion (ult terceto agregado en este punto) con la clave= ID de la funcion
+			addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida");
+		}
  ;
 
  tipo : ULONG {tipoActual= "ULONG";}
@@ -116,24 +131,25 @@ import java.util.HashMap;
  
  lista_variables : ID ',' lista_variables {
                         if(!tablaSimbolo.existeToken(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual)){
-						    tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
-						    tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
-						    tablaSimbolo.obtenerToken($1.ival).setUso("variable");}
-						else{
-						    tablaSimbolo.borrarToken($1.ival);
-						    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
-						}
- 					}
+			    tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
+			    tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
+			    tablaSimbolo.obtenerToken($1.ival).setUso("variable");}
+			else{
+			    tablaSimbolo.borrarToken($1.ival);
+			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
+			}
+ 		 }
                  | ID{
                         if(!tablaSimbolo.existeToken(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual)){
             	            tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
-            				tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
-            				tablaSimbolo.obtenerToken($1.ival).setUso("variable");}
-            			else{
-            			    tablaSimbolo.borrarToken($1.ival);
-            			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
-            			}
-		            }
+			    tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
+			    tablaSimbolo.obtenerToken($1.ival).setUso("variable");
+			}
+			else{
+			    tablaSimbolo.borrarToken($1.ival);
+			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
+			}
+	         }
  ;
 
  bloque_ejecutable : BEGIN sentencias_ejecutables END
@@ -170,13 +186,12 @@ import java.util.HashMap;
 		       		$1.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
 		       }
 
-                // PREGUNTAR SI AL DETECTAR ERROR DE VARIABLE NO DECLARADA SE AGREGA ESTRUCTURA Y TERCERO
-		       //VER SI HAY QUE AGREGAR EL VALOR AL TOKEN
+                	// PREGUNTAR SI AL DETECTAR ERROR DE VARIABLE NO DECLARADA SE AGREGA ESTRUCTURA Y TERCERTO
+		        //VER SI HAY QUE AGREGAR EL VALOR AL TOKEN
  		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
 		       if(tablaSimbolo.obtenerToken($1.ival).getTipo()!=$3.sval)
-                    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + tablaSimbolo.obtenerToken($1.ival).getTipo() + " := " + $3.sval );
+                	        addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + tablaSimbolo.obtenerToken($1.ival).getTipo() + " := " + $3.sval );
 		       $$ = new ParserVal((double)crearTerceto(new ParserVal(ASIG), $1, $3));
-
 		      }
  		      | ID error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
  		      | ID ASIG error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
@@ -190,26 +205,21 @@ import java.util.HashMap;
                     if(ultimoPunto>0)
                         auxiliar = auxiliar.substring(0, ultimoPunto);
                 }
-				int nuevaRef = tablaSimbolo.obtenerReferenciaTabla(tablaSimbolo.obtenerToken($2.ival).getLexema()+'.'+auxiliar);
-
-				if(nuevaRef == -1){
-					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", funcion no declarada");
-				}
-				else{
-
-					tablaSimbolo.borrarToken($2.ival);//se borra de la tabla de simbolos la variable duplicada de la sentencia
-					$2.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
-				    if($4.sval!=tablaSimbolo.obtenerToken($2.ival).getTipoParametro()){
-				    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", Error en la invocacion a funcion : El tipo de parametro real no coincide con el formal");
-				    }
-
-				}
-
-				addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
-				$$ = new ParserVal((double)crearTerceto(new ParserVal(CALL), $2, $4));
-				$$.sval = tablaSimbolo.obtenerToken($2.ival).getTipo();
- 			   }
-			   | CALL ID '(' error ')' ';'{ addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
+		int nuevaRef = tablaSimbolo.obtenerReferenciaTabla(tablaSimbolo.obtenerToken($2.ival).getLexema()+'.'+auxiliar);
+		if(nuevaRef == -1){
+			addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", funcion no declarada");
+		}
+		else{
+			tablaSimbolo.borrarToken($2.ival);//se borra de la tabla de simbolos la variable duplicada de la sentencia
+			$2.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
+			if($4.sval!=tablaSimbolo.obtenerToken($2.ival).getTipoParametro())
+				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", Error en la invocacion a funcion : El tipo de parametro real no coincide con el formal");
+		}
+		addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
+		$$ = new ParserVal((double)crearTerceto(new ParserVal(CALL), $2, $4));
+		$$.sval = tablaSimbolo.obtenerToken($2.ival).getTipo();
+	   }
+	   | CALL ID '(' error ')' ';'{ addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
  ;
 
  sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';' {
@@ -226,7 +236,6 @@ import java.util.HashMap;
 	pila.push(refTerceto);
 	$$ = new ParserVal((double)refTerceto);
 	}//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues del ELSE, se crea el terceto BI y se agrega a la pila la referencia al mismo
-
  ;
 
  condicional : if '(' condicion ')' THEN {
@@ -234,10 +243,10 @@ import java.util.HashMap;
 					 pila.push(refTerceto);
  					 $$ = new ParserVal((double)refTerceto);
  					 }// se agrega el terceto BF y su referencia a la pila
- 	     | if '(' error ')' THEN { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
- 	     | if '(' condicion THEN { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
- 	     | if condicion ')' THEN { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
- 	     | if '(' condicion ')' error ';'{ addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia condicional invalida"); }
+ 	     | if '(' error ')' THEN { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
+ 	     | if '(' condicion THEN { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+ 	     | if condicion ')' THEN { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ 	     | if '(' condicion ')' error ';'{ pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia condicional invalida"); }
  ;
 
  if : IF {addEstructura( "Sentencia IF, en la linea: " + analizadorLexico.getNroLineaToken() );
@@ -295,10 +304,10 @@ import java.util.HashMap;
 					 pila.push(refTerceto);
 					 $$ = new ParserVal((double)refTerceto);
 					}// se agrega el terceto BF y su referencia a la pila
-	   | while '(' condicion ')' error { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia iterativa invalida"); }
-	   | while '(' error ')' DO { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
-	   | while '(' condicion DO { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
-	   | while condicion ')' DO { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+	   | while '(' condicion ')' error { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia iterativa invalida"); }
+	   | while '(' error ')' DO { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
+	   | while '(' condicion DO { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+	   | while condicion ')' DO { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 
  while : WHILE { addEstructura( "Sentencia WHILE, en la linea: " + analizadorLexico.getNroLineaToken() );
  		 pila.push(tercetos.size());
@@ -345,8 +354,8 @@ import java.util.HashMap;
 			i--;
 		  pila.push(crearTerceto(new ParserVal(-3), new ParserVal((double)postCondiciones.get(tercetos.get(i).getT2().ival)), new ParserVal(-1)));//el primer -3 es BT, el 2do parametro hace referencia a la postcondicion de la funcion invocada
 		 }
- 		 | try sentencia_ejecutable_con_anidamiento error { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
-  		 | try sentencia_ejecutable_con_anidamiento { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
+ 		 | try sentencia_ejecutable_con_anidamiento error { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
+  		 | try sentencia_ejecutable_con_anidamiento { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
  ;
 
  try : TRY { addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
@@ -357,36 +366,36 @@ import java.util.HashMap;
 
  expresion_aritmetica : expresion_aritmetica '+' termino {
                               if($1.sval!=$3.sval)
-							       	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + $1.sval + " + " + $3.sval );
-							  $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'+'), $1, $3));
-							  $$.sval=$1.sval;
- 							 }
+				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + $1.sval + " + " + $3.sval );
+			      $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'+'), $1, $3));
+			      $$.sval=$1.sval;
+ 		      }
 		      | expresion_aritmetica '-' termino{
-		                         if($1.sval!=$3.sval)
-                                    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + $1.sval + " - " + $3.sval );
-		  				         $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'-'), $1, $3));
-		  				         $$.sval=$1.sval;
-						        }
+				 if($1.sval!=$3.sval)
+					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + $1.sval + " - " + $3.sval );
+				 $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'-'), $1, $3));
+				 $$.sval=$1.sval;
+		      }
 		      | termino { $$ = $1 ; }
  ;
 
  termino : termino '*' factor{
-                 if($1.sval!=$3.sval)
-                     	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + $1.sval + " * " + $3.sval );
-			     $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'*'), $1, $3));
-			     $$.sval=$1.sval;
-			     }
+             if($1.sval!=$3.sval)
+                   addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + $1.sval + " * " + $3.sval );
+	     $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'*'), $1, $3));
+	     $$.sval=$1.sval;
+	 }
          | termino '/' factor{
                 if($1.sval!=$3.sval)
                      	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + $1.sval + " / " + $3.sval );
-			     $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'/'), $1, $3));
-			     $$.sval=$1.sval;
-			     }
+		$$ = new ParserVal((double)crearTerceto(new ParserVal((int)'/'), $1, $3));
+		$$.sval=$1.sval;
+	 }
          | factor {$$ = $1;}
          | '-' factor {
 		      $$ = new ParserVal((double)crearTerceto(new ParserVal((int)'*'), new ParserVal(-1), $2));
 		      $$.sval=$1.sval;
-		      }
+	 }
  ;
 
  factor : ID {
@@ -430,7 +439,6 @@ private ArrayList<Terceto> tercetos = new ArrayList<Terceto>(); //Lista de terce
 private Stack<Integer> pila = new Stack<Integer>(); //Pila utilizada para los tercetos
 
 private HashMap<Integer, Integer> postCondiciones = new HashMap<Integer, Integer>();//Hashmap utilizado para guardar el id de las funciones junto a las referencias de sus postcondicion
-private Stack<Integer> pilaFunciones = new Stack<Integer>(); //Pila utilizada para guardar los identificadores de las funciones
 
 private String ambitoActual;
 private String tipoActual;
