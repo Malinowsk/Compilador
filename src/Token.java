@@ -5,7 +5,6 @@ public class Token {
 
     private String uso = null;//indica si es variable, parametro, funcion, etc.
     private String tipo = null;//tipo de variable
-    //private String ambito = null;//ambito de la variable ES NECESARIO?
     private String tipoParametro = null;
 
 
@@ -27,10 +26,6 @@ public class Token {
 
     public Integer getNumero() {
         return numero;
-    }
-
-    public void setNumero(Integer numero) {
-        this.numero = numero;
     }
 
     public String getLexema() {
@@ -56,14 +51,6 @@ public class Token {
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
-
-    /*public String getAmbito() {
-        return ambito;
-    }*/
-
-    /*public void setAmbito(String ambito) {
-        this.ambito = ambito;
-    }*/
 
     public String getTipoParametro() {
         return tipoParametro;

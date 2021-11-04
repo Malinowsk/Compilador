@@ -42,7 +42,11 @@ public class Main {
                             p.imprimirErroresSintacticos();
                             p.imprimirErroresSemanticos();
                             break;}
-                case 5: {p.imprimirTercetos(); break;}
+                case 5: {if(!al.hayError() && !p.hayError())
+                            p.imprimirTercetos();
+                         else
+                            System.out.println("No se listan los tercetos debido a que hay al menos un error, revisar el listado de errores con la opcion 4.");
+                         break;}
                 case 6: {System.out.println("Fin de la ejecución."); break;}
             }
             sleep(2000);

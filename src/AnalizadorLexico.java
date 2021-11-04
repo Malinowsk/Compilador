@@ -148,6 +148,10 @@ public class AnalizadorLexico {
         }
     }
 
+    public boolean hayError(){
+        return (this.errores.size() > 0);
+    }
+
     //Metodo para obtener la tabla de simbolo generada por el lexico
     public TablaSimbolo getTablaSimbolo(){
         return this.tablaDeSimbolo;

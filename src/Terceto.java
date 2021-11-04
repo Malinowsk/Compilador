@@ -21,14 +21,6 @@ public class Terceto {
         return this.t2;
     }
 
-    public ParserVal getT3(){
-        return this.t3;
-    }
-
-    public void setT1(ParserVal t1) {
-        this.t1 = t1;
-    }
-
     public void setT2(ParserVal t2) {
         this.t2 = t2;
     }

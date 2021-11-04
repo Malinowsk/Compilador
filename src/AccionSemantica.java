@@ -38,7 +38,7 @@ private static final Integer DISTINTO = 284;
 devuelvo el token correspondiente. Sino doy de alta y devuelvo el token.
 (recordar que si es una palabra reservada envio Token, miéntras que si es un identificador envio Token mas Clave del Hashmap)
  */
-public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea, ArrayList< String > errores){
+public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea, ArrayList< String > warnings){
     if (auxiliar.length() <= 22){//no existe el lexema en la tabla de simbolos
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_IDENTIFICADOR);//se agrega identificador a la tabla
@@ -58,7 +58,7 @@ public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, Tabla
         }
         lineas.add(nroLinea);
     }else{
-        errores.add("Linea " + nroLinea + ", Identificador fuera de rango:"+ auxiliar);
+        warnings.add("Linea " + nroLinea + ", Identificador fuera de rango:"+ auxiliar);
     }
     return true;//se reutiliza el caracter
 }

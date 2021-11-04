@@ -20,7 +20,8 @@ import java.util.HashMap;
  			      ambitoActual= tablaSimbolo.obtenerValor($1.ival);
  			    }
  		   | error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", identificador de programa invalido");
- 		    		ambitoActual= "error";}
+ 		    		 ambitoActual= "error";
+ 		    		}
  ;
  
  bloque_declarativo : sentencias_declarativas 
@@ -186,7 +187,6 @@ import java.util.HashMap;
 		       		$1.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
 		       }
 
-                	// PREGUNTAR SI AL DETECTAR ERROR DE VARIABLE NO DECLARADA SE AGREGA ESTRUCTURA Y TERCERTO
 		        //VER SI HAY QUE AGREGAR EL VALOR AL TOKEN
  		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
 		       if(tablaSimbolo.obtenerToken($1.ival).getTipo()!=$3.sval)
@@ -347,21 +347,19 @@ import java.util.HashMap;
 		     }
  ;
 
- bifurcacion_try : try sentencia_ejecutable_con_anidamiento CATCH {
+ bifurcacion_try : try sentencia_asignacion CATCH {
  		  //Primero buscamos el id de la funcion invocada en el try recorriendo la lista de tercetos
 		  int i = tercetos.size()-1;
 		  while( (tercetos.get(i).getT1().ival != CALL) && (i >= 0) )
 			i--;
+		  //TODO: AGREGAR IF PARA VERIFICAR SI HAY POSTCONDICION O NO
 		  pila.push(crearTerceto(new ParserVal(-3), new ParserVal((double)postCondiciones.get(tercetos.get(i).getT2().ival)), new ParserVal(-1)));//el primer -3 es BT, el 2do parametro hace referencia a la postcondicion de la funcion invocada
 		 }
- 		 | try sentencia_ejecutable_con_anidamiento error { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
-  		 | try sentencia_ejecutable_con_anidamiento { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
+ 		 | try sentencia_asignacion error { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
+  		 | try sentencia_asignacion { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
  ;
 
  try : TRY { addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
- ;
-
- sentencia_ejecutable_con_anidamiento  : sentencia_asignacion {$$=$1;}
  ; 
 
  expresion_aritmetica : expresion_aritmetica '+' termino {
@@ -498,6 +496,10 @@ public void imprimirErroresSemanticos(){
         for(String e: this.erroresSemanticos){
             System.out.println(" - " + e);
         }
+}
+
+public boolean hayError(){
+	return ((this.erroresSintacticos.size()>0) || (this.erroresSemanticos.size()>0));
 }
 
 private int yylex(){
