@@ -39,27 +39,27 @@ devuelvo el token correspondiente. Sino doy de alta y devuelvo el token.
 (recordar que si es una palabra reservada envio Token, miéntras que si es un identificador envio Token mas Clave del Hashmap)
  */
 public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea, ArrayList< String > warnings){
-    if (auxiliar.length() <= 22){//no existe el lexema en la tabla de simbolos
-        if(!tablaDeSimbolo.existeToken(auxiliar)){
-            tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_IDENTIFICADOR);//se agrega identificador a la tabla
-            tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_IDENTIFICADOR, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
-        }
-        else{
-            int numeroClaveTabla= tablaDeSimbolo.obtenerReferenciaTabla(auxiliar);
-            if( ((PRIMER_PALABRA_RESERVADA <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA))
-                || ((PRIMER_PALABRA_RESERVADA2 <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA2))
-                || PRIMER_PALABRA_RESERVADA3 == numeroClaveTabla ){ //es una palabra reservada
-                tokens.add(new Dupla<Integer, Integer>(numeroClaveTabla, null));
-            }
-            else{//es un identificador que ya estaba en la tabla
-                tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_IDENTIFICADOR);//se agrega identificador a la tabla
-                tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_IDENTIFICADOR, tablaDeSimbolo.refUltimoToken()));
-            }
-        }
-        lineas.add(nroLinea);
-    }else{
-        warnings.add("Linea " + nroLinea + ", Identificador fuera de rango:"+ auxiliar);
+    if (auxiliar.length() > 22) {//se pasa de la cantidad de caracteres permitidas
+        warnings.add("Linea " + nroLinea + ", Identificador fuera de rango:" + auxiliar +", el mismo acorto a 22 caracteres");
+        auxiliar=auxiliar.substring(0, 22);//acortamos el identificador
     }
+    if(!tablaDeSimbolo.existeToken(auxiliar)){
+        tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_IDENTIFICADOR);//se agrega identificador a la tabla
+        tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_IDENTIFICADOR, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
+    }
+    else{
+        int numeroClaveTabla= tablaDeSimbolo.obtenerReferenciaTabla(auxiliar);
+        if( ((PRIMER_PALABRA_RESERVADA <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA))
+            || ((PRIMER_PALABRA_RESERVADA2 <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA2))
+            || PRIMER_PALABRA_RESERVADA3 == numeroClaveTabla ){ //es una palabra reservada
+            tokens.add(new Dupla<Integer, Integer>(numeroClaveTabla, null));
+        }
+        else{//es un identificador que ya estaba en la tabla
+            tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_IDENTIFICADOR);//se agrega identificador a la tabla
+            tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_IDENTIFICADOR, tablaDeSimbolo.refUltimoToken()));
+        }
+    }
+    lineas.add(nroLinea);
     return true;//se reutiliza el caracter
 }
 

@@ -15,6 +15,7 @@ public class AnalizadorLexico {
     private ArrayList< Dupla<Integer, Integer> > tokens; //Lista donde se guardaran los tokens obtenidos del codigo, <Id de token, Referencia de tabla>
     private ArrayList< Integer > nroLineas; //Lista donde se guardaran los nro de lineas correspondiente a cada token generado
     private ArrayList< String > errores; //Lista donde se guardaran los errores lexicos
+    private ArrayList< String > warnings; //Lista donde se guardaran los warnings lexicos
 
     private int estadoActual;//Estado del automata en el que se encuentra el lexico
     private int nroLinea;//Linea del codigo en el que se encuentra el lexico
@@ -94,7 +95,7 @@ public class AnalizadorLexico {
 
     //Metodo que ejecuta la accion semantica indicada por el parametro y el cual indicará si el token debe ser reutilizado
     private boolean ejecutarAS(int AS, char caracter){
-        if (AS==1) return AccionSemantica.accion1(this.tokens, this.tablaDeSimbolo, this.nroLineas, this.nroLinea, this.errores);
+        if (AS==1) return AccionSemantica.accion1(this.tokens, this.tablaDeSimbolo, this.nroLineas, this.nroLinea, this.warnings);
         if (AS==2) return AccionSemantica.accion2(caracter);
         if (AS==3) return AccionSemantica.accion3(caracter);
         if (AS==4) return AccionSemantica.accion4(this.tokens, caracter, this.nroLineas, this.nroLinea);
@@ -148,8 +149,17 @@ public class AnalizadorLexico {
         }
     }
 
+    //Metodo utilizado por el main para saber si hay almenos un error lexico
     public boolean hayError(){
         return (this.errores.size() > 0);
+    }
+
+    //Metodo utilizado por el Main para imprimir los warnings lexicos detectados
+    public void imprimirWarningsLexicos(){
+        System.out.println("Se detectaron " + this.warnings.size() + " warnings lexicos en el codigo");
+        for(String w: this.warnings){
+            System.out.println(" - " + w);
+        }
     }
 
     //Metodo para obtener la tabla de simbolo generada por el lexico

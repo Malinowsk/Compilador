@@ -32,14 +32,72 @@ import java.util.HashMap;
  ;
  
  sentencia_declarativa : tipo lista_variables { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
-                       | tipo FUNC '(' tipo ')' lista_variables {addEstructura( "Declaracion de funciones como variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+                       | tipo_funcion lista_funcion_como_variables
                        | sentencia_declarativa_funcion
                        | error lista_variables { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable invalido"); }
                        | tipo error lista_variables { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida"); }
-                       | tipo FUNC tipo ')' lista_variables { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
-                       | tipo FUNC '(' error ')' lista_variables { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable invalido"); }
-                       | tipo FUNC '(' tipo  lista_variables { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
  ;
+
+ tipo : ULONG {tipoActual= "ULONG"; $$.sval= "ULONG";}
+      | DOUBLE {tipoActual= "DOUBLE"; $$.sval= "DOUBLE";}
+ ;
+
+ lista_variables : ID ',' lista_variables {
+                        if(!tablaSimbolo.existeToken(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual)){
+			    tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
+			    tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
+			    tablaSimbolo.obtenerToken($1.ival).setUso("variable");
+			}else{
+			    tablaSimbolo.borrarToken($1.ival);
+			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
+			}
+ 		 }
+                 | ID{
+                        if(!tablaSimbolo.existeToken(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual)){
+            	            tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
+			    tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
+			    tablaSimbolo.obtenerToken($1.ival).setUso("variable");
+			}
+			else{
+			    tablaSimbolo.borrarToken($1.ival);
+			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
+			}
+	         }
+ ;
+
+ tipo_funcion: tipo FUNC '(' tipo ')'{
+		tipoActualdeFuncion= $1.sval;
+		addEstructura( "Declaracion de funciones como variables, en la linea: " + analizadorLexico.getNroLineaToken() );
+ }
+ | tipo FUNC tipo ')' lista_variables { tipoActualdeFuncion=tablaSimbolo.obtenerValor($1.ival); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+ | tipo FUNC '(' error ')' lista_variables { tipoActualdeFuncion=tablaSimbolo.obtenerValor($1.ival); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable invalido"); }
+ | tipo FUNC '(' tipo  lista_variables { tipoActualdeFuncion=tablaSimbolo.obtenerValor($1.ival); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
+ ;
+
+  lista_funcion_como_variables : ID ',' lista_funcion_como_variables {
+                         if(!tablaSimbolo.existeToken(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual)){
+ 			    tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
+ 			    tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActualdeFuncion);
+ 			    tablaSimbolo.obtenerToken($1.ival).setUso("funcion designada a variable");
+ 			    tablaSimbolo.obtenerToken($1.ival).setTipoParametro(tipoActual);
+ 			}else{
+ 			    tablaSimbolo.borrarToken($1.ival);
+ 			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
+ 			}
+  		 }
+                  | ID{
+                         if(!tablaSimbolo.existeToken(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual)){
+             	            tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
+ 			    tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActualdeFuncion);
+ 			    tablaSimbolo.obtenerToken($1.ival).setUso("funcion designada a variable");
+ 			    tablaSimbolo.obtenerToken($1.ival).setTipoParametro(tipoActual);
+ 			}
+ 			else{
+ 			    tablaSimbolo.borrarToken($1.ival);
+ 			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
+ 			}
+ 	         }
+  ;
 
  sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion END {
  					ambitoActual= ambitoActual.substring(0, ambitoActual.lastIndexOf('.'));
@@ -126,33 +184,6 @@ import java.util.HashMap;
 		}
  ;
 
- tipo : ULONG {tipoActual= "ULONG";}
-      | DOUBLE {tipoActual= "DOUBLE";}
- ;
- 
- lista_variables : ID ',' lista_variables {
-                        if(!tablaSimbolo.existeToken(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual)){
-			    tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
-			    tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
-			    tablaSimbolo.obtenerToken($1.ival).setUso("variable");}
-			else{
-			    tablaSimbolo.borrarToken($1.ival);
-			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
-			}
- 		 }
-                 | ID{
-                        if(!tablaSimbolo.existeToken(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual)){
-            	            tablaSimbolo.obtenerToken($1.ival).setLexema(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+ambitoActual);
-			    tablaSimbolo.obtenerToken($1.ival).setTipo(tipoActual);
-			    tablaSimbolo.obtenerToken($1.ival).setUso("variable");
-			}
-			else{
-			    tablaSimbolo.borrarToken($1.ival);
-			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
-			}
-	         }
- ;
-
  bloque_ejecutable : BEGIN sentencias_ejecutables END
  ;
 
@@ -187,8 +218,19 @@ import java.util.HashMap;
 		       		$1.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
 		       }
 
-		        //VER SI HAY QUE AGREGAR EL VALOR AL TOKEN
  		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 		       if(tablaSimbolo.obtenerToken($1.ival).getUso()=="funcion")
+ 		       		addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el identificador a la izquierda de la asignacion es una funcion");
+ 		       if(tablaSimbolo.obtenerToken($1.ival).getUso()=="funcion designada a variable")//Solo se puede asignar una funcion
+ 		       		if($3.ival==0){//$3 no hace referencia a un identificador
+ 		       			addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
+ 		       		}else{
+ 		       			if(tablaSimbolo.obtenerToken($3.ival).getUso()!="funcion")
+ 		       				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
+ 		       			else
+ 		       				if(tablaSimbolo.obtenerToken($1.ival).getTipoParametro() != tablaSimbolo.obtenerToken($3.ival).getTipoParametro())
+ 		       					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el parametro de la funcion es de distinto tipo que el del parametro de la variable");
+ 		       		}
 		       if(tablaSimbolo.obtenerToken($1.ival).getTipo()!=$3.sval)
                 	        addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + tablaSimbolo.obtenerToken($1.ival).getTipo() + " := " + $3.sval );
 		       $$ = new ParserVal((double)crearTerceto(new ParserVal(ASIG), $1, $3));
@@ -440,6 +482,7 @@ private HashMap<Integer, Integer> postCondiciones = new HashMap<Integer, Integer
 
 private String ambitoActual;
 private String tipoActual;
+private String tipoActualdeFuncion;
 
 public void setAnalizadorLexico(AnalizadorLexico al){
 	this.analizadorLexico = al;

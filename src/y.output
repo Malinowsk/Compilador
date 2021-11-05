@@ -11,154 +11,159 @@
    6                          | sentencia_declarativa ';'
 
    7  sentencia_declarativa : tipo lista_variables
-   8                        | tipo FUNC '(' tipo ')' lista_variables
+   8                        | tipo_funcion lista_funcion_como_variables
    9                        | sentencia_declarativa_funcion
   10                        | error lista_variables
   11                        | tipo error lista_variables
-  12                        | tipo FUNC tipo ')' lista_variables
-  13                        | tipo FUNC '(' error ')' lista_variables
-  14                        | tipo FUNC '(' tipo lista_variables
 
-  15  sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion END
-  16                                | cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END
+  12  tipo : ULONG
+  13       | DOUBLE
 
-  17  cabecera_funcion : tipo FUNC ID '(' parametro ')'
-  18                   | tipo error ID '(' parametro ')'
-  19                   | tipo FUNC error '(' parametro ')'
-  20                   | tipo FUNC ID '(' error ')'
-  21                   | tipo FUNC ID parametro ')'
-  22                   | tipo FUNC ID '(' parametro
+  14  lista_variables : ID ',' lista_variables
+  15                  | ID
 
-  23  parametro : tipo ID
+  16  tipo_funcion : tipo FUNC '(' tipo ')'
+  17               | tipo FUNC tipo ')' lista_variables
+  18               | tipo FUNC '(' error ')' lista_variables
+  19               | tipo FUNC '(' tipo lista_variables
 
-  24  retorno_funcion : RETURN '(' expresion_aritmetica ')' ';'
-  25                  | RETURN '(' error ')' ';'
-  26                  | RETURN '(' expresion_aritmetica ';'
-  27                  | RETURN expresion_aritmetica ')' ';'
-  28                  | error ';'
+  20  lista_funcion_como_variables : ID ',' lista_funcion_como_variables
+  21                               | ID
 
-  29  postcondicion : POST ':' '(' condicion ')' ';'
-  30                | POST ':' '(' error ')' ';'
-  31                | POST '(' condicion ')' ';'
-  32                | POST condicion ')' ';'
-  33                | POST '(' condicion ';'
-  34                | error ';'
+  22  sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion END
+  23                                | cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END
 
-  35  tipo : ULONG
-  36       | DOUBLE
+  24  cabecera_funcion : tipo FUNC ID '(' parametro ')'
+  25                   | tipo error ID '(' parametro ')'
+  26                   | tipo FUNC error '(' parametro ')'
+  27                   | tipo FUNC ID '(' error ')'
+  28                   | tipo FUNC ID parametro ')'
+  29                   | tipo FUNC ID '(' parametro
 
-  37  lista_variables : ID ',' lista_variables
-  38                  | ID
+  30  parametro : tipo ID
 
-  39  bloque_ejecutable : BEGIN sentencias_ejecutables END
+  31  retorno_funcion : RETURN '(' expresion_aritmetica ')' ';'
+  32                  | RETURN '(' error ')' ';'
+  33                  | RETURN '(' expresion_aritmetica ';'
+  34                  | RETURN expresion_aritmetica ')' ';'
+  35                  | error ';'
 
-  40  bloque_ejecutable_funcion : sentencias_ejecutables
+  36  postcondicion : POST ':' '(' condicion ')' ';'
+  37                | POST ':' '(' error ')' ';'
+  38                | POST '(' condicion ')' ';'
+  39                | POST condicion ')' ';'
+  40                | POST '(' condicion ';'
+  41                | error ';'
 
-  41  sentencias_ejecutables : sentencia_ejecutable sentencias_ejecutables
-  42                         | sentencia_ejecutable
+  42  bloque_ejecutable : BEGIN sentencias_ejecutables END
 
-  43  sentencia_ejecutable : sentencia_asignacion
-  44                       | sentencia_condicional
-  45                       | sentencia_imprimir
-  46                       | sentencia_iterativa
-  47                       | sentencia_try_catch
+  43  bloque_ejecutable_funcion : sentencias_ejecutables
 
-  48  sentencia_asignacion : ID ASIG expresion_aritmetica ';'
-  49                       | ID error ';'
-  50                       | ID ASIG error ';'
+  44  sentencias_ejecutables : sentencia_ejecutable sentencias_ejecutables
+  45                         | sentencia_ejecutable
 
-  51  sentencia_llamado_funcion : CALL ID '(' expresion_aritmetica ')'
-  52                            | CALL ID '(' error ')' ';'
+  46  sentencia_ejecutable : sentencia_asignacion
+  47                       | sentencia_condicional
+  48                       | sentencia_imprimir
+  49                       | sentencia_iterativa
+  50                       | sentencia_try_catch
 
-  53  sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';'
-  54                        | condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF ';'
+  51  sentencia_asignacion : ID ASIG expresion_aritmetica ';'
+  52                       | ID error ';'
+  53                       | ID ASIG error ';'
 
-  55  else : ELSE
+  54  sentencia_llamado_funcion : CALL ID '(' expresion_aritmetica ')'
+  55                            | CALL ID '(' error ')' ';'
 
-  56  condicional : if '(' condicion ')' THEN
-  57              | if '(' error ')' THEN
-  58              | if '(' condicion THEN
-  59              | if condicion ')' THEN
-  60              | if '(' condicion ')' error ';'
+  56  sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';'
+  57                        | condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF ';'
 
-  61  if : IF
+  58  else : ELSE
 
-  62  condicion : expresion_booleana operacion_booleana condicion
-  63            | expresion_booleana
+  59  condicional : if '(' condicion ')' THEN
+  60              | if '(' error ')' THEN
+  61              | if '(' condicion THEN
+  62              | if condicion ')' THEN
+  63              | if '(' condicion ')' error ';'
 
-  64  expresion_booleana : expresion_aritmetica comparador expresion_aritmetica
+  64  if : IF
 
-  65  comparador : COMP_MAYOR_IGUAL
-  66             | COMP_MENOR_IGUAL
-  67             | COMP_IGUAL
-  68             | COMP_DISTINTO
-  69             | '<'
-  70             | '>'
+  65  condicion : expresion_booleana operacion_booleana condicion
+  66            | expresion_booleana
 
-  71  operacion_booleana : AND
-  72                     | OR
+  67  expresion_booleana : expresion_aritmetica comparador expresion_aritmetica
 
-  73  bloque_ejecutable_condicional : BEGIN sentencias_ejecutables END
-  74                                | sentencia_ejecutable
+  68  comparador : COMP_MAYOR_IGUAL
+  69             | COMP_MENOR_IGUAL
+  70             | COMP_IGUAL
+  71             | COMP_DISTINTO
+  72             | '<'
+  73             | '>'
 
-  75  sentencia_imprimir : print '(' CADENA ')' ';'
-  76                     | print '(' error ')' ';'
-  77                     | print '(' CADENA ';'
-  78                     | print CADENA ')' ';'
-  79                     | print error ';'
+  74  operacion_booleana : AND
+  75                     | OR
 
-  80  print : PRINT
+  76  bloque_ejecutable_condicional : BEGIN sentencias_ejecutables END
+  77                                | sentencia_ejecutable
 
-  81  sentencia_iterativa : iterativo bloque_ejecutable_iterativo
+  78  sentencia_imprimir : print '(' CADENA ')' ';'
+  79                     | print '(' error ')' ';'
+  80                     | print '(' CADENA ';'
+  81                     | print CADENA ')' ';'
+  82                     | print error ';'
 
-  82  iterativo : while '(' condicion ')' DO
-  83            | while '(' condicion ')' error
-  84            | while '(' error ')' DO
-  85            | while '(' condicion DO
-  86            | while condicion ')' DO
+  83  print : PRINT
 
-  87  while : WHILE
+  84  sentencia_iterativa : iterativo bloque_ejecutable_iterativo
 
-  88  bloque_ejecutable_iterativo : BEGIN sentencias_ejecutables_iterativas END
-  89                              | sentencia_ejecutable_iterativa
+  85  iterativo : while '(' condicion ')' DO
+  86            | while '(' condicion ')' error
+  87            | while '(' error ')' DO
+  88            | while '(' condicion DO
+  89            | while condicion ')' DO
 
-  90  sentencias_ejecutables_iterativas : sentencia_ejecutable_iterativa sentencias_ejecutables_iterativas
-  91                                    | sentencia_ejecutable_iterativa
+  90  while : WHILE
 
-  92  sentencia_ejecutable_iterativa : sentencia_asignacion
-  93                                 | sentencia_condicional
-  94                                 | sentencia_imprimir
-  95                                 | sentencia_iterativa
-  96                                 | sentencia_try_catch
-  97                                 | sentencia_break
+  91  bloque_ejecutable_iterativo : BEGIN sentencias_ejecutables_iterativas END
+  92                              | sentencia_ejecutable_iterativa
 
-  98  sentencia_break : BREAK ';'
+  93  sentencias_ejecutables_iterativas : sentencia_ejecutable_iterativa sentencias_ejecutables_iterativas
+  94                                    | sentencia_ejecutable_iterativa
 
-  99  sentencia_conversion : DOUBLE '(' expresion_aritmetica ')'
- 100                       | DOUBLE '(' error ')'
+  95  sentencia_ejecutable_iterativa : sentencia_asignacion
+  96                                 | sentencia_condicional
+  97                                 | sentencia_imprimir
+  98                                 | sentencia_iterativa
+  99                                 | sentencia_try_catch
+ 100                                 | sentencia_break
 
- 101  sentencia_try_catch : bifurcacion_try bloque_ejecutable
+ 101  sentencia_break : BREAK ';'
 
- 102  bifurcacion_try : try sentencia_asignacion CATCH
- 103                  | try sentencia_asignacion error
- 104                  | try sentencia_asignacion
+ 102  sentencia_conversion : DOUBLE '(' expresion_aritmetica ')'
+ 103                       | DOUBLE '(' error ')'
 
- 105  try : TRY
+ 104  sentencia_try_catch : bifurcacion_try bloque_ejecutable
 
- 106  expresion_aritmetica : expresion_aritmetica '+' termino
- 107                       | expresion_aritmetica '-' termino
- 108                       | termino
+ 105  bifurcacion_try : try sentencia_asignacion CATCH
+ 106                  | try sentencia_asignacion error
+ 107                  | try sentencia_asignacion
 
- 109  termino : termino '*' factor
- 110          | termino '/' factor
- 111          | factor
- 112          | '-' factor
+ 108  try : TRY
 
- 113  factor : ID
- 114         | sentencia_conversion
- 115         | sentencia_llamado_funcion
- 116         | CTE_ULONG
- 117         | CTE_DOUBLE
+ 109  expresion_aritmetica : expresion_aritmetica '+' termino
+ 110                       | expresion_aritmetica '-' termino
+ 111                       | termino
+
+ 112  termino : termino '*' factor
+ 113          | termino '/' factor
+ 114          | factor
+ 115          | '-' factor
+
+ 116  factor : ID
+ 117         | sentencia_conversion
+ 118         | sentencia_llamado_funcion
+ 119         | CTE_ULONG
+ 120         | CTE_DOUBLE
 
 state 0
 	$accept : . programa $end  (0)
@@ -203,8 +208,9 @@ state 4
 	sentencias_declarativas  goto 11
 	sentencia_declarativa  goto 12
 	tipo  goto 13
-	sentencia_declarativa_funcion  goto 14
-	cabecera_funcion  goto 15
+	tipo_funcion  goto 14
+	sentencia_declarativa_funcion  goto 15
+	cabecera_funcion  goto 16
 
 
 state 5
@@ -222,31 +228,31 @@ state 6
 state 7
 	sentencia_declarativa : error . lista_variables  (10)
 
-	ID  shift 16
+	ID  shift 17
 	.  error
 
-	lista_variables  goto 17
+	lista_variables  goto 18
 
 
 state 8
-	tipo : ULONG .  (35)
+	tipo : ULONG .  (12)
 
-	.  reduce 35
+	.  reduce 12
 
 
 state 9
-	tipo : DOUBLE .  (36)
+	tipo : DOUBLE .  (13)
 
-	.  reduce 36
+	.  reduce 13
 
 
 state 10
 	programa : cabecera_programa bloque_declarativo . bloque_ejecutable  (1)
 
-	BEGIN  shift 18
+	BEGIN  shift 19
 	.  error
 
-	bloque_ejecutable  goto 19
+	bloque_ejecutable  goto 20
 
 
 state 11
@@ -259,102 +265,113 @@ state 12
 	sentencias_declarativas : sentencia_declarativa . ';' sentencias_declarativas  (5)
 	sentencias_declarativas : sentencia_declarativa . ';'  (6)
 
-	';'  shift 20
+	';'  shift 21
 	.  error
 
 
 state 13
 	sentencia_declarativa : tipo . lista_variables  (7)
-	sentencia_declarativa : tipo . FUNC '(' tipo ')' lista_variables  (8)
 	sentencia_declarativa : tipo . error lista_variables  (11)
-	sentencia_declarativa : tipo . FUNC tipo ')' lista_variables  (12)
-	sentencia_declarativa : tipo . FUNC '(' error ')' lista_variables  (13)
-	sentencia_declarativa : tipo . FUNC '(' tipo lista_variables  (14)
-	cabecera_funcion : tipo . FUNC ID '(' parametro ')'  (17)
-	cabecera_funcion : tipo . error ID '(' parametro ')'  (18)
-	cabecera_funcion : tipo . FUNC error '(' parametro ')'  (19)
-	cabecera_funcion : tipo . FUNC ID '(' error ')'  (20)
-	cabecera_funcion : tipo . FUNC ID parametro ')'  (21)
-	cabecera_funcion : tipo . FUNC ID '(' parametro  (22)
+	tipo_funcion : tipo . FUNC '(' tipo ')'  (16)
+	tipo_funcion : tipo . FUNC tipo ')' lista_variables  (17)
+	tipo_funcion : tipo . FUNC '(' error ')' lista_variables  (18)
+	tipo_funcion : tipo . FUNC '(' tipo lista_variables  (19)
+	cabecera_funcion : tipo . FUNC ID '(' parametro ')'  (24)
+	cabecera_funcion : tipo . error ID '(' parametro ')'  (25)
+	cabecera_funcion : tipo . FUNC error '(' parametro ')'  (26)
+	cabecera_funcion : tipo . FUNC ID '(' error ')'  (27)
+	cabecera_funcion : tipo . FUNC ID parametro ')'  (28)
+	cabecera_funcion : tipo . FUNC ID '(' parametro  (29)
 
-	error  shift 21
-	FUNC  shift 22
-	ID  shift 16
+	error  shift 22
+	FUNC  shift 23
+	ID  shift 17
 	.  error
 
-	lista_variables  goto 23
+	lista_variables  goto 24
 
 
 state 14
+	sentencia_declarativa : tipo_funcion . lista_funcion_como_variables  (8)
+
+	ID  shift 25
+	.  error
+
+	lista_funcion_como_variables  goto 26
+
+
+state 15
 	sentencia_declarativa : sentencia_declarativa_funcion .  (9)
 
 	.  reduce 9
 
 
-state 15
-	sentencia_declarativa_funcion : cabecera_funcion . bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion END  (15)
-	sentencia_declarativa_funcion : cabecera_funcion . bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END  (16)
+state 16
+	sentencia_declarativa_funcion : cabecera_funcion . bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion END  (22)
+	sentencia_declarativa_funcion : cabecera_funcion . bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END  (23)
 
 	error  shift 7
 	ULONG  shift 8
 	DOUBLE  shift 9
 	.  error
 
-	bloque_declarativo  goto 24
+	bloque_declarativo  goto 27
 	sentencias_declarativas  goto 11
 	sentencia_declarativa  goto 12
 	tipo  goto 13
-	sentencia_declarativa_funcion  goto 14
-	cabecera_funcion  goto 15
-
-
-state 16
-	lista_variables : ID . ',' lista_variables  (37)
-	lista_variables : ID .  (38)
-
-	','  shift 25
-	';'  reduce 38
+	tipo_funcion  goto 14
+	sentencia_declarativa_funcion  goto 15
+	cabecera_funcion  goto 16
 
 
 state 17
+	lista_variables : ID . ',' lista_variables  (14)
+	lista_variables : ID .  (15)
+
+	','  shift 28
+	ID  reduce 15
+	';'  reduce 15
+
+
+state 18
 	sentencia_declarativa : error lista_variables .  (10)
 
 	.  reduce 10
 
 
-state 18
-	bloque_ejecutable : BEGIN . sentencias_ejecutables END  (39)
+state 19
+	bloque_ejecutable : BEGIN . sentencias_ejecutables END  (42)
 
-	IF  shift 26
-	PRINT  shift 27
-	WHILE  shift 28
-	ID  shift 29
-	TRY  shift 30
+	IF  shift 29
+	PRINT  shift 30
+	WHILE  shift 31
+	ID  shift 32
+	TRY  shift 33
 	.  error
 
-	sentencias_ejecutables  goto 31
-	sentencia_ejecutable  goto 32
-	sentencia_asignacion  goto 33
-	sentencia_condicional  goto 34
-	sentencia_imprimir  goto 35
-	sentencia_iterativa  goto 36
-	sentencia_try_catch  goto 37
-	condicional  goto 38
-	if  goto 39
-	print  goto 40
-	iterativo  goto 41
-	while  goto 42
-	bifurcacion_try  goto 43
-	try  goto 44
+	sentencias_ejecutables  goto 34
+	sentencia_ejecutable  goto 35
+	sentencia_asignacion  goto 36
+	sentencia_condicional  goto 37
+	sentencia_imprimir  goto 38
+	sentencia_iterativa  goto 39
+	sentencia_try_catch  goto 40
+	condicional  goto 41
+	if  goto 42
+	print  goto 43
+	iterativo  goto 44
+	while  goto 45
+	bifurcacion_try  goto 46
+	try  goto 47
 
 
-state 19
+state 20
 	programa : cabecera_programa bloque_declarativo bloque_ejecutable .  (1)
 
 	.  reduce 1
 
 
-state 20
+state 21
 	sentencias_declarativas : sentencia_declarativa ';' . sentencias_declarativas  (5)
 	sentencias_declarativas : sentencia_declarativa ';' .  (6)
 
@@ -363,2082 +380,2103 @@ state 20
 	DOUBLE  shift 9
 	BEGIN  reduce 6
 
-	sentencias_declarativas  goto 45
+	sentencias_declarativas  goto 48
 	sentencia_declarativa  goto 12
 	tipo  goto 13
-	sentencia_declarativa_funcion  goto 14
-	cabecera_funcion  goto 15
-
-
-state 21
-	sentencia_declarativa : tipo error . lista_variables  (11)
-	cabecera_funcion : tipo error . ID '(' parametro ')'  (18)
-
-	ID  shift 46
-	.  error
-
-	lista_variables  goto 47
+	tipo_funcion  goto 14
+	sentencia_declarativa_funcion  goto 15
+	cabecera_funcion  goto 16
 
 
 state 22
-	sentencia_declarativa : tipo FUNC . '(' tipo ')' lista_variables  (8)
-	sentencia_declarativa : tipo FUNC . tipo ')' lista_variables  (12)
-	sentencia_declarativa : tipo FUNC . '(' error ')' lista_variables  (13)
-	sentencia_declarativa : tipo FUNC . '(' tipo lista_variables  (14)
-	cabecera_funcion : tipo FUNC . ID '(' parametro ')'  (17)
-	cabecera_funcion : tipo FUNC . error '(' parametro ')'  (19)
-	cabecera_funcion : tipo FUNC . ID '(' error ')'  (20)
-	cabecera_funcion : tipo FUNC . ID parametro ')'  (21)
-	cabecera_funcion : tipo FUNC . ID '(' parametro  (22)
+	sentencia_declarativa : tipo error . lista_variables  (11)
+	cabecera_funcion : tipo error . ID '(' parametro ')'  (25)
 
-	error  shift 48
-	ULONG  shift 8
-	DOUBLE  shift 9
 	ID  shift 49
-	'('  shift 50
 	.  error
 
-	tipo  goto 51
+	lista_variables  goto 50
 
 
 state 23
+	tipo_funcion : tipo FUNC . '(' tipo ')'  (16)
+	tipo_funcion : tipo FUNC . tipo ')' lista_variables  (17)
+	tipo_funcion : tipo FUNC . '(' error ')' lista_variables  (18)
+	tipo_funcion : tipo FUNC . '(' tipo lista_variables  (19)
+	cabecera_funcion : tipo FUNC . ID '(' parametro ')'  (24)
+	cabecera_funcion : tipo FUNC . error '(' parametro ')'  (26)
+	cabecera_funcion : tipo FUNC . ID '(' error ')'  (27)
+	cabecera_funcion : tipo FUNC . ID parametro ')'  (28)
+	cabecera_funcion : tipo FUNC . ID '(' parametro  (29)
+
+	error  shift 51
+	ULONG  shift 8
+	DOUBLE  shift 9
+	ID  shift 52
+	'('  shift 53
+	.  error
+
+	tipo  goto 54
+
+
+state 24
 	sentencia_declarativa : tipo lista_variables .  (7)
 
 	.  reduce 7
 
 
-state 24
-	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo . BEGIN bloque_ejecutable_funcion retorno_funcion END  (15)
-	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo . BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END  (16)
-
-	BEGIN  shift 52
-	.  error
-
-
 state 25
-	lista_variables : ID ',' . lista_variables  (37)
+	lista_funcion_como_variables : ID . ',' lista_funcion_como_variables  (20)
+	lista_funcion_como_variables : ID .  (21)
 
-	ID  shift 16
-	.  error
-
-	lista_variables  goto 53
+	','  shift 55
+	';'  reduce 21
 
 
 state 26
-	if : IF .  (61)
+	sentencia_declarativa : tipo_funcion lista_funcion_como_variables .  (8)
 
-	.  reduce 61
+	.  reduce 8
 
 
 state 27
-	print : PRINT .  (80)
+	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo . BEGIN bloque_ejecutable_funcion retorno_funcion END  (22)
+	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo . BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END  (23)
 
-	.  reduce 80
+	BEGIN  shift 56
+	.  error
 
 
 state 28
-	while : WHILE .  (87)
+	lista_variables : ID ',' . lista_variables  (14)
 
-	.  reduce 87
+	ID  shift 17
+	.  error
+
+	lista_variables  goto 57
 
 
 state 29
-	sentencia_asignacion : ID . ASIG expresion_aritmetica ';'  (48)
-	sentencia_asignacion : ID . error ';'  (49)
-	sentencia_asignacion : ID . ASIG error ';'  (50)
+	if : IF .  (64)
 
-	error  shift 54
-	ASIG  shift 55
-	.  error
+	.  reduce 64
 
 
 state 30
-	try : TRY .  (105)
+	print : PRINT .  (83)
 
-	.  reduce 105
+	.  reduce 83
 
 
 state 31
-	bloque_ejecutable : BEGIN sentencias_ejecutables . END  (39)
+	while : WHILE .  (90)
 
-	END  shift 56
-	.  error
+	.  reduce 90
 
 
 state 32
-	sentencias_ejecutables : sentencia_ejecutable . sentencias_ejecutables  (41)
-	sentencias_ejecutables : sentencia_ejecutable .  (42)
+	sentencia_asignacion : ID . ASIG expresion_aritmetica ';'  (51)
+	sentencia_asignacion : ID . error ';'  (52)
+	sentencia_asignacion : ID . ASIG error ';'  (53)
 
-	IF  shift 26
-	PRINT  shift 27
-	WHILE  shift 28
-	ID  shift 29
-	TRY  shift 30
-	error  reduce 42
-	RETURN  reduce 42
-	END  reduce 42
-
-	sentencias_ejecutables  goto 57
-	sentencia_ejecutable  goto 32
-	sentencia_asignacion  goto 33
-	sentencia_condicional  goto 34
-	sentencia_imprimir  goto 35
-	sentencia_iterativa  goto 36
-	sentencia_try_catch  goto 37
-	condicional  goto 38
-	if  goto 39
-	print  goto 40
-	iterativo  goto 41
-	while  goto 42
-	bifurcacion_try  goto 43
-	try  goto 44
+	error  shift 58
+	ASIG  shift 59
+	.  error
 
 
 state 33
-	sentencia_ejecutable : sentencia_asignacion .  (43)
+	try : TRY .  (108)
 
-	.  reduce 43
+	.  reduce 108
 
 
 state 34
-	sentencia_ejecutable : sentencia_condicional .  (44)
+	bloque_ejecutable : BEGIN sentencias_ejecutables . END  (42)
 
-	.  reduce 44
+	END  shift 60
+	.  error
 
 
 state 35
-	sentencia_ejecutable : sentencia_imprimir .  (45)
+	sentencias_ejecutables : sentencia_ejecutable . sentencias_ejecutables  (44)
+	sentencias_ejecutables : sentencia_ejecutable .  (45)
 
-	.  reduce 45
+	IF  shift 29
+	PRINT  shift 30
+	WHILE  shift 31
+	ID  shift 32
+	TRY  shift 33
+	error  reduce 45
+	RETURN  reduce 45
+	END  reduce 45
+
+	sentencias_ejecutables  goto 61
+	sentencia_ejecutable  goto 35
+	sentencia_asignacion  goto 36
+	sentencia_condicional  goto 37
+	sentencia_imprimir  goto 38
+	sentencia_iterativa  goto 39
+	sentencia_try_catch  goto 40
+	condicional  goto 41
+	if  goto 42
+	print  goto 43
+	iterativo  goto 44
+	while  goto 45
+	bifurcacion_try  goto 46
+	try  goto 47
 
 
 state 36
-	sentencia_ejecutable : sentencia_iterativa .  (46)
+	sentencia_ejecutable : sentencia_asignacion .  (46)
 
 	.  reduce 46
 
 
 state 37
-	sentencia_ejecutable : sentencia_try_catch .  (47)
+	sentencia_ejecutable : sentencia_condicional .  (47)
 
 	.  reduce 47
 
 
 state 38
-	sentencia_condicional : condicional . bloque_ejecutable_condicional ENDIF ';'  (53)
-	sentencia_condicional : condicional . bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF ';'  (54)
+	sentencia_ejecutable : sentencia_imprimir .  (48)
 
-	IF  shift 26
-	PRINT  shift 27
-	BEGIN  shift 58
-	WHILE  shift 28
-	ID  shift 29
-	TRY  shift 30
-	.  error
-
-	sentencia_ejecutable  goto 59
-	sentencia_asignacion  goto 33
-	sentencia_condicional  goto 34
-	sentencia_imprimir  goto 35
-	sentencia_iterativa  goto 36
-	sentencia_try_catch  goto 37
-	condicional  goto 38
-	bloque_ejecutable_condicional  goto 60
-	if  goto 39
-	print  goto 40
-	iterativo  goto 41
-	while  goto 42
-	bifurcacion_try  goto 43
-	try  goto 44
+	.  reduce 48
 
 
 state 39
-	condicional : if . '(' condicion ')' THEN  (56)
-	condicional : if . '(' error ')' THEN  (57)
-	condicional : if . '(' condicion THEN  (58)
-	condicional : if . condicion ')' THEN  (59)
-	condicional : if . '(' condicion ')' error ';'  (60)
+	sentencia_ejecutable : sentencia_iterativa .  (49)
 
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'('  shift 66
-	'-'  shift 67
-	.  error
-
-	expresion_aritmetica  goto 68
-	condicion  goto 69
-	sentencia_llamado_funcion  goto 70
-	expresion_booleana  goto 71
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
+	.  reduce 49
 
 
 state 40
-	sentencia_imprimir : print . '(' CADENA ')' ';'  (75)
-	sentencia_imprimir : print . '(' error ')' ';'  (76)
-	sentencia_imprimir : print . '(' CADENA ';'  (77)
-	sentencia_imprimir : print . CADENA ')' ';'  (78)
-	sentencia_imprimir : print . error ';'  (79)
+	sentencia_ejecutable : sentencia_try_catch .  (50)
 
-	error  shift 75
-	CADENA  shift 76
-	'('  shift 77
-	.  error
+	.  reduce 50
 
 
 state 41
-	sentencia_iterativa : iterativo . bloque_ejecutable_iterativo  (81)
+	sentencia_condicional : condicional . bloque_ejecutable_condicional ENDIF ';'  (56)
+	sentencia_condicional : condicional . bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF ';'  (57)
 
-	IF  shift 26
-	PRINT  shift 27
-	BEGIN  shift 78
-	BREAK  shift 79
-	WHILE  shift 28
-	ID  shift 29
-	TRY  shift 30
+	IF  shift 29
+	PRINT  shift 30
+	BEGIN  shift 62
+	WHILE  shift 31
+	ID  shift 32
+	TRY  shift 33
 	.  error
 
-	sentencia_asignacion  goto 80
-	sentencia_condicional  goto 81
-	sentencia_imprimir  goto 82
-	sentencia_iterativa  goto 83
-	sentencia_try_catch  goto 84
-	condicional  goto 38
-	if  goto 39
-	print  goto 40
-	iterativo  goto 41
-	bloque_ejecutable_iterativo  goto 85
-	while  goto 42
-	sentencia_ejecutable_iterativa  goto 86
-	sentencia_break  goto 87
-	bifurcacion_try  goto 43
-	try  goto 44
+	sentencia_ejecutable  goto 63
+	sentencia_asignacion  goto 36
+	sentencia_condicional  goto 37
+	sentencia_imprimir  goto 38
+	sentencia_iterativa  goto 39
+	sentencia_try_catch  goto 40
+	condicional  goto 41
+	bloque_ejecutable_condicional  goto 64
+	if  goto 42
+	print  goto 43
+	iterativo  goto 44
+	while  goto 45
+	bifurcacion_try  goto 46
+	try  goto 47
 
 
 state 42
-	iterativo : while . '(' condicion ')' DO  (82)
-	iterativo : while . '(' condicion ')' error  (83)
-	iterativo : while . '(' error ')' DO  (84)
-	iterativo : while . '(' condicion DO  (85)
-	iterativo : while . condicion ')' DO  (86)
+	condicional : if . '(' condicion ')' THEN  (59)
+	condicional : if . '(' error ')' THEN  (60)
+	condicional : if . '(' condicion THEN  (61)
+	condicional : if . condicion ')' THEN  (62)
+	condicional : if . '(' condicion ')' error ';'  (63)
 
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'('  shift 88
-	'-'  shift 67
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'('  shift 70
+	'-'  shift 71
 	.  error
 
-	expresion_aritmetica  goto 68
-	condicion  goto 89
-	sentencia_llamado_funcion  goto 70
-	expresion_booleana  goto 71
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
+	expresion_aritmetica  goto 72
+	condicion  goto 73
+	sentencia_llamado_funcion  goto 74
+	expresion_booleana  goto 75
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
 
 
 state 43
-	sentencia_try_catch : bifurcacion_try . bloque_ejecutable  (101)
+	sentencia_imprimir : print . '(' CADENA ')' ';'  (78)
+	sentencia_imprimir : print . '(' error ')' ';'  (79)
+	sentencia_imprimir : print . '(' CADENA ';'  (80)
+	sentencia_imprimir : print . CADENA ')' ';'  (81)
+	sentencia_imprimir : print . error ';'  (82)
 
-	BEGIN  shift 18
+	error  shift 79
+	CADENA  shift 80
+	'('  shift 81
 	.  error
-
-	bloque_ejecutable  goto 90
 
 
 state 44
-	bifurcacion_try : try . sentencia_asignacion CATCH  (102)
-	bifurcacion_try : try . sentencia_asignacion error  (103)
-	bifurcacion_try : try . sentencia_asignacion  (104)
+	sentencia_iterativa : iterativo . bloque_ejecutable_iterativo  (84)
 
-	ID  shift 29
+	IF  shift 29
+	PRINT  shift 30
+	BEGIN  shift 82
+	BREAK  shift 83
+	WHILE  shift 31
+	ID  shift 32
+	TRY  shift 33
 	.  error
 
-	sentencia_asignacion  goto 91
+	sentencia_asignacion  goto 84
+	sentencia_condicional  goto 85
+	sentencia_imprimir  goto 86
+	sentencia_iterativa  goto 87
+	sentencia_try_catch  goto 88
+	condicional  goto 41
+	if  goto 42
+	print  goto 43
+	iterativo  goto 44
+	bloque_ejecutable_iterativo  goto 89
+	while  goto 45
+	sentencia_ejecutable_iterativa  goto 90
+	sentencia_break  goto 91
+	bifurcacion_try  goto 46
+	try  goto 47
 
 
 state 45
+	iterativo : while . '(' condicion ')' DO  (85)
+	iterativo : while . '(' condicion ')' error  (86)
+	iterativo : while . '(' error ')' DO  (87)
+	iterativo : while . '(' condicion DO  (88)
+	iterativo : while . condicion ')' DO  (89)
+
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'('  shift 92
+	'-'  shift 71
+	.  error
+
+	expresion_aritmetica  goto 72
+	condicion  goto 93
+	sentencia_llamado_funcion  goto 74
+	expresion_booleana  goto 75
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
+
+
+state 46
+	sentencia_try_catch : bifurcacion_try . bloque_ejecutable  (104)
+
+	BEGIN  shift 19
+	.  error
+
+	bloque_ejecutable  goto 94
+
+
+state 47
+	bifurcacion_try : try . sentencia_asignacion CATCH  (105)
+	bifurcacion_try : try . sentencia_asignacion error  (106)
+	bifurcacion_try : try . sentencia_asignacion  (107)
+
+	ID  shift 32
+	.  error
+
+	sentencia_asignacion  goto 95
+
+
+state 48
 	sentencias_declarativas : sentencia_declarativa ';' sentencias_declarativas .  (5)
 
 	.  reduce 5
 
 
-state 46
-	cabecera_funcion : tipo error ID . '(' parametro ')'  (18)
-	lista_variables : ID . ',' lista_variables  (37)
-	lista_variables : ID .  (38)
+state 49
+	lista_variables : ID . ',' lista_variables  (14)
+	lista_variables : ID .  (15)
+	cabecera_funcion : tipo error ID . '(' parametro ')'  (25)
 
-	'('  shift 92
-	','  shift 25
-	';'  reduce 38
+	','  shift 28
+	'('  shift 96
+	';'  reduce 15
 
 
-state 47
+state 50
 	sentencia_declarativa : tipo error lista_variables .  (11)
 
 	.  reduce 11
 
 
-state 48
-	cabecera_funcion : tipo FUNC error . '(' parametro ')'  (19)
-
-	'('  shift 93
-	.  error
-
-
-state 49
-	cabecera_funcion : tipo FUNC ID . '(' parametro ')'  (17)
-	cabecera_funcion : tipo FUNC ID . '(' error ')'  (20)
-	cabecera_funcion : tipo FUNC ID . parametro ')'  (21)
-	cabecera_funcion : tipo FUNC ID . '(' parametro  (22)
-
-	ULONG  shift 8
-	DOUBLE  shift 9
-	'('  shift 94
-	.  error
-
-	tipo  goto 95
-	parametro  goto 96
-
-
-state 50
-	sentencia_declarativa : tipo FUNC '(' . tipo ')' lista_variables  (8)
-	sentencia_declarativa : tipo FUNC '(' . error ')' lista_variables  (13)
-	sentencia_declarativa : tipo FUNC '(' . tipo lista_variables  (14)
-
-	error  shift 97
-	ULONG  shift 8
-	DOUBLE  shift 9
-	.  error
-
-	tipo  goto 98
-
-
 state 51
-	sentencia_declarativa : tipo FUNC tipo . ')' lista_variables  (12)
+	cabecera_funcion : tipo FUNC error . '(' parametro ')'  (26)
 
-	')'  shift 99
+	'('  shift 97
 	.  error
 
 
 state 52
-	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN . bloque_ejecutable_funcion retorno_funcion END  (15)
-	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN . bloque_ejecutable_funcion retorno_funcion postcondicion END  (16)
+	cabecera_funcion : tipo FUNC ID . '(' parametro ')'  (24)
+	cabecera_funcion : tipo FUNC ID . '(' error ')'  (27)
+	cabecera_funcion : tipo FUNC ID . parametro ')'  (28)
+	cabecera_funcion : tipo FUNC ID . '(' parametro  (29)
 
-	IF  shift 26
-	PRINT  shift 27
-	WHILE  shift 28
-	ID  shift 29
-	TRY  shift 30
+	ULONG  shift 8
+	DOUBLE  shift 9
+	'('  shift 98
 	.  error
 
-	bloque_ejecutable_funcion  goto 100
-	sentencias_ejecutables  goto 101
-	sentencia_ejecutable  goto 32
-	sentencia_asignacion  goto 33
-	sentencia_condicional  goto 34
-	sentencia_imprimir  goto 35
-	sentencia_iterativa  goto 36
-	sentencia_try_catch  goto 37
-	condicional  goto 38
-	if  goto 39
-	print  goto 40
-	iterativo  goto 41
-	while  goto 42
-	bifurcacion_try  goto 43
-	try  goto 44
+	tipo  goto 99
+	parametro  goto 100
 
 
 state 53
-	lista_variables : ID ',' lista_variables .  (37)
+	tipo_funcion : tipo FUNC '(' . tipo ')'  (16)
+	tipo_funcion : tipo FUNC '(' . error ')' lista_variables  (18)
+	tipo_funcion : tipo FUNC '(' . tipo lista_variables  (19)
 
-	.  reduce 37
+	error  shift 101
+	ULONG  shift 8
+	DOUBLE  shift 9
+	.  error
+
+	tipo  goto 102
 
 
 state 54
-	sentencia_asignacion : ID error . ';'  (49)
+	tipo_funcion : tipo FUNC tipo . ')' lista_variables  (17)
 
-	';'  shift 102
+	')'  shift 103
 	.  error
 
 
 state 55
-	sentencia_asignacion : ID ASIG . expresion_aritmetica ';'  (48)
-	sentencia_asignacion : ID ASIG . error ';'  (50)
+	lista_funcion_como_variables : ID ',' . lista_funcion_como_variables  (20)
 
-	error  shift 103
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'-'  shift 67
+	ID  shift 25
 	.  error
 
-	expresion_aritmetica  goto 104
-	sentencia_llamado_funcion  goto 70
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
+	lista_funcion_como_variables  goto 104
 
 
 state 56
-	bloque_ejecutable : BEGIN sentencias_ejecutables END .  (39)
+	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN . bloque_ejecutable_funcion retorno_funcion END  (22)
+	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN . bloque_ejecutable_funcion retorno_funcion postcondicion END  (23)
 
-	.  reduce 39
+	IF  shift 29
+	PRINT  shift 30
+	WHILE  shift 31
+	ID  shift 32
+	TRY  shift 33
+	.  error
+
+	bloque_ejecutable_funcion  goto 105
+	sentencias_ejecutables  goto 106
+	sentencia_ejecutable  goto 35
+	sentencia_asignacion  goto 36
+	sentencia_condicional  goto 37
+	sentencia_imprimir  goto 38
+	sentencia_iterativa  goto 39
+	sentencia_try_catch  goto 40
+	condicional  goto 41
+	if  goto 42
+	print  goto 43
+	iterativo  goto 44
+	while  goto 45
+	bifurcacion_try  goto 46
+	try  goto 47
 
 
 state 57
-	sentencias_ejecutables : sentencia_ejecutable sentencias_ejecutables .  (41)
+	lista_variables : ID ',' lista_variables .  (14)
 
-	.  reduce 41
+	.  reduce 14
 
 
 state 58
-	bloque_ejecutable_condicional : BEGIN . sentencias_ejecutables END  (73)
+	sentencia_asignacion : ID error . ';'  (52)
 
-	IF  shift 26
-	PRINT  shift 27
-	WHILE  shift 28
-	ID  shift 29
-	TRY  shift 30
+	';'  shift 107
 	.  error
-
-	sentencias_ejecutables  goto 105
-	sentencia_ejecutable  goto 32
-	sentencia_asignacion  goto 33
-	sentencia_condicional  goto 34
-	sentencia_imprimir  goto 35
-	sentencia_iterativa  goto 36
-	sentencia_try_catch  goto 37
-	condicional  goto 38
-	if  goto 39
-	print  goto 40
-	iterativo  goto 41
-	while  goto 42
-	bifurcacion_try  goto 43
-	try  goto 44
 
 
 state 59
-	bloque_ejecutable_condicional : sentencia_ejecutable .  (74)
+	sentencia_asignacion : ID ASIG . expresion_aritmetica ';'  (51)
+	sentencia_asignacion : ID ASIG . error ';'  (53)
 
-	.  reduce 74
+	error  shift 108
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'-'  shift 71
+	.  error
+
+	expresion_aritmetica  goto 109
+	sentencia_llamado_funcion  goto 74
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
 
 
 state 60
-	sentencia_condicional : condicional bloque_ejecutable_condicional . ENDIF ';'  (53)
-	sentencia_condicional : condicional bloque_ejecutable_condicional . else bloque_ejecutable_condicional ENDIF ';'  (54)
+	bloque_ejecutable : BEGIN sentencias_ejecutables END .  (42)
 
-	ELSE  shift 106
-	ENDIF  shift 107
-	.  error
-
-	else  goto 108
+	.  reduce 42
 
 
 state 61
-	sentencia_conversion : DOUBLE . '(' expresion_aritmetica ')'  (99)
-	sentencia_conversion : DOUBLE . '(' error ')'  (100)
+	sentencias_ejecutables : sentencia_ejecutable sentencias_ejecutables .  (44)
 
-	'('  shift 109
-	.  error
+	.  reduce 44
 
 
 state 62
-	factor : ID .  (113)
+	bloque_ejecutable_condicional : BEGIN . sentencias_ejecutables END  (76)
 
-	.  reduce 113
+	IF  shift 29
+	PRINT  shift 30
+	WHILE  shift 31
+	ID  shift 32
+	TRY  shift 33
+	.  error
+
+	sentencias_ejecutables  goto 110
+	sentencia_ejecutable  goto 35
+	sentencia_asignacion  goto 36
+	sentencia_condicional  goto 37
+	sentencia_imprimir  goto 38
+	sentencia_iterativa  goto 39
+	sentencia_try_catch  goto 40
+	condicional  goto 41
+	if  goto 42
+	print  goto 43
+	iterativo  goto 44
+	while  goto 45
+	bifurcacion_try  goto 46
+	try  goto 47
 
 
 state 63
-	factor : CTE_ULONG .  (116)
+	bloque_ejecutable_condicional : sentencia_ejecutable .  (77)
 
-	.  reduce 116
+	.  reduce 77
 
 
 state 64
-	factor : CTE_DOUBLE .  (117)
+	sentencia_condicional : condicional bloque_ejecutable_condicional . ENDIF ';'  (56)
+	sentencia_condicional : condicional bloque_ejecutable_condicional . else bloque_ejecutable_condicional ENDIF ';'  (57)
 
-	.  reduce 117
+	ELSE  shift 111
+	ENDIF  shift 112
+	.  error
+
+	else  goto 113
 
 
 state 65
-	sentencia_llamado_funcion : CALL . ID '(' expresion_aritmetica ')'  (51)
-	sentencia_llamado_funcion : CALL . ID '(' error ')' ';'  (52)
+	sentencia_conversion : DOUBLE . '(' expresion_aritmetica ')'  (102)
+	sentencia_conversion : DOUBLE . '(' error ')'  (103)
 
-	ID  shift 110
+	'('  shift 114
 	.  error
 
 
 state 66
-	condicional : if '(' . condicion ')' THEN  (56)
-	condicional : if '(' . error ')' THEN  (57)
-	condicional : if '(' . condicion THEN  (58)
-	condicional : if '(' . condicion ')' error ';'  (60)
+	factor : ID .  (116)
 
-	error  shift 111
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'-'  shift 67
-	.  error
-
-	expresion_aritmetica  goto 68
-	condicion  goto 112
-	sentencia_llamado_funcion  goto 70
-	expresion_booleana  goto 71
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
+	.  reduce 116
 
 
 state 67
-	termino : '-' . factor  (112)
+	factor : CTE_ULONG .  (119)
 
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	.  error
-
-	sentencia_llamado_funcion  goto 70
-	sentencia_conversion  goto 72
-	factor  goto 113
+	.  reduce 119
 
 
 state 68
-	expresion_booleana : expresion_aritmetica . comparador expresion_aritmetica  (64)
-	expresion_aritmetica : expresion_aritmetica . '+' termino  (106)
-	expresion_aritmetica : expresion_aritmetica . '-' termino  (107)
+	factor : CTE_DOUBLE .  (120)
 
-	COMP_MAYOR_IGUAL  shift 114
-	COMP_MENOR_IGUAL  shift 115
-	COMP_IGUAL  shift 116
-	COMP_DISTINTO  shift 117
-	'<'  shift 118
-	'>'  shift 119
-	'+'  shift 120
-	'-'  shift 121
-	.  error
-
-	comparador  goto 122
+	.  reduce 120
 
 
 state 69
-	condicional : if condicion . ')' THEN  (59)
+	sentencia_llamado_funcion : CALL . ID '(' expresion_aritmetica ')'  (54)
+	sentencia_llamado_funcion : CALL . ID '(' error ')' ';'  (55)
 
-	')'  shift 123
+	ID  shift 115
 	.  error
 
 
 state 70
-	factor : sentencia_llamado_funcion .  (115)
+	condicional : if '(' . condicion ')' THEN  (59)
+	condicional : if '(' . error ')' THEN  (60)
+	condicional : if '(' . condicion THEN  (61)
+	condicional : if '(' . condicion ')' error ';'  (63)
 
-	.  reduce 115
+	error  shift 116
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'-'  shift 71
+	.  error
+
+	expresion_aritmetica  goto 72
+	condicion  goto 117
+	sentencia_llamado_funcion  goto 74
+	expresion_booleana  goto 75
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
 
 
 state 71
-	condicion : expresion_booleana . operacion_booleana condicion  (62)
-	condicion : expresion_booleana .  (63)
+	termino : '-' . factor  (115)
 
-	AND  shift 124
-	OR  shift 125
-	THEN  reduce 63
-	DO  reduce 63
-	';'  reduce 63
-	')'  reduce 63
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	.  error
 
-	operacion_booleana  goto 126
+	sentencia_llamado_funcion  goto 74
+	sentencia_conversion  goto 76
+	factor  goto 118
 
 
 state 72
-	factor : sentencia_conversion .  (114)
+	expresion_booleana : expresion_aritmetica . comparador expresion_aritmetica  (67)
+	expresion_aritmetica : expresion_aritmetica . '+' termino  (109)
+	expresion_aritmetica : expresion_aritmetica . '-' termino  (110)
+
+	COMP_MAYOR_IGUAL  shift 119
+	COMP_MENOR_IGUAL  shift 120
+	COMP_IGUAL  shift 121
+	COMP_DISTINTO  shift 122
+	'<'  shift 123
+	'>'  shift 124
+	'+'  shift 125
+	'-'  shift 126
+	.  error
+
+	comparador  goto 127
+
+
+state 73
+	condicional : if condicion . ')' THEN  (62)
+
+	')'  shift 128
+	.  error
+
+
+state 74
+	factor : sentencia_llamado_funcion .  (118)
+
+	.  reduce 118
+
+
+state 75
+	condicion : expresion_booleana . operacion_booleana condicion  (65)
+	condicion : expresion_booleana .  (66)
+
+	AND  shift 129
+	OR  shift 130
+	THEN  reduce 66
+	DO  reduce 66
+	';'  reduce 66
+	')'  reduce 66
+
+	operacion_booleana  goto 131
+
+
+state 76
+	factor : sentencia_conversion .  (117)
+
+	.  reduce 117
+
+
+state 77
+	expresion_aritmetica : termino .  (111)
+	termino : termino . '*' factor  (112)
+	termino : termino . '/' factor  (113)
+
+	'*'  shift 132
+	'/'  shift 133
+	THEN  reduce 111
+	DO  reduce 111
+	COMP_MAYOR_IGUAL  reduce 111
+	COMP_MENOR_IGUAL  reduce 111
+	COMP_IGUAL  reduce 111
+	AND  reduce 111
+	OR  reduce 111
+	COMP_DISTINTO  reduce 111
+	';'  reduce 111
+	')'  reduce 111
+	'<'  reduce 111
+	'>'  reduce 111
+	'+'  reduce 111
+	'-'  reduce 111
+
+
+state 78
+	termino : factor .  (114)
 
 	.  reduce 114
 
 
-state 73
-	expresion_aritmetica : termino .  (108)
-	termino : termino . '*' factor  (109)
-	termino : termino . '/' factor  (110)
-
-	'*'  shift 127
-	'/'  shift 128
-	THEN  reduce 108
-	DO  reduce 108
-	COMP_MAYOR_IGUAL  reduce 108
-	COMP_MENOR_IGUAL  reduce 108
-	COMP_IGUAL  reduce 108
-	AND  reduce 108
-	OR  reduce 108
-	COMP_DISTINTO  reduce 108
-	';'  reduce 108
-	')'  reduce 108
-	'<'  reduce 108
-	'>'  reduce 108
-	'+'  reduce 108
-	'-'  reduce 108
-
-
-state 74
-	termino : factor .  (111)
-
-	.  reduce 111
-
-
-state 75
-	sentencia_imprimir : print error . ';'  (79)
-
-	';'  shift 129
-	.  error
-
-
-state 76
-	sentencia_imprimir : print CADENA . ')' ';'  (78)
-
-	')'  shift 130
-	.  error
-
-
-state 77
-	sentencia_imprimir : print '(' . CADENA ')' ';'  (75)
-	sentencia_imprimir : print '(' . error ')' ';'  (76)
-	sentencia_imprimir : print '(' . CADENA ';'  (77)
-
-	error  shift 131
-	CADENA  shift 132
-	.  error
-
-
-state 78
-	bloque_ejecutable_iterativo : BEGIN . sentencias_ejecutables_iterativas END  (88)
-
-	IF  shift 26
-	PRINT  shift 27
-	BREAK  shift 79
-	WHILE  shift 28
-	ID  shift 29
-	TRY  shift 30
-	.  error
-
-	sentencia_asignacion  goto 80
-	sentencia_condicional  goto 81
-	sentencia_imprimir  goto 82
-	sentencia_iterativa  goto 83
-	sentencia_try_catch  goto 84
-	condicional  goto 38
-	if  goto 39
-	print  goto 40
-	iterativo  goto 41
-	while  goto 42
-	sentencias_ejecutables_iterativas  goto 133
-	sentencia_ejecutable_iterativa  goto 134
-	sentencia_break  goto 87
-	bifurcacion_try  goto 43
-	try  goto 44
-
-
 state 79
-	sentencia_break : BREAK . ';'  (98)
+	sentencia_imprimir : print error . ';'  (82)
 
-	';'  shift 135
+	';'  shift 134
 	.  error
 
 
 state 80
-	sentencia_ejecutable_iterativa : sentencia_asignacion .  (92)
+	sentencia_imprimir : print CADENA . ')' ';'  (81)
 
-	.  reduce 92
+	')'  shift 135
+	.  error
 
 
 state 81
-	sentencia_ejecutable_iterativa : sentencia_condicional .  (93)
+	sentencia_imprimir : print '(' . CADENA ')' ';'  (78)
+	sentencia_imprimir : print '(' . error ')' ';'  (79)
+	sentencia_imprimir : print '(' . CADENA ';'  (80)
 
-	.  reduce 93
+	error  shift 136
+	CADENA  shift 137
+	.  error
 
 
 state 82
-	sentencia_ejecutable_iterativa : sentencia_imprimir .  (94)
+	bloque_ejecutable_iterativo : BEGIN . sentencias_ejecutables_iterativas END  (91)
 
-	.  reduce 94
+	IF  shift 29
+	PRINT  shift 30
+	BREAK  shift 83
+	WHILE  shift 31
+	ID  shift 32
+	TRY  shift 33
+	.  error
+
+	sentencia_asignacion  goto 84
+	sentencia_condicional  goto 85
+	sentencia_imprimir  goto 86
+	sentencia_iterativa  goto 87
+	sentencia_try_catch  goto 88
+	condicional  goto 41
+	if  goto 42
+	print  goto 43
+	iterativo  goto 44
+	while  goto 45
+	sentencias_ejecutables_iterativas  goto 138
+	sentencia_ejecutable_iterativa  goto 139
+	sentencia_break  goto 91
+	bifurcacion_try  goto 46
+	try  goto 47
 
 
 state 83
-	sentencia_ejecutable_iterativa : sentencia_iterativa .  (95)
+	sentencia_break : BREAK . ';'  (101)
+
+	';'  shift 140
+	.  error
+
+
+state 84
+	sentencia_ejecutable_iterativa : sentencia_asignacion .  (95)
 
 	.  reduce 95
 
 
-state 84
-	sentencia_ejecutable_iterativa : sentencia_try_catch .  (96)
+state 85
+	sentencia_ejecutable_iterativa : sentencia_condicional .  (96)
 
 	.  reduce 96
 
 
-state 85
-	sentencia_iterativa : iterativo bloque_ejecutable_iterativo .  (81)
-
-	.  reduce 81
-
-
 state 86
-	bloque_ejecutable_iterativo : sentencia_ejecutable_iterativa .  (89)
-
-	.  reduce 89
-
-
-state 87
-	sentencia_ejecutable_iterativa : sentencia_break .  (97)
+	sentencia_ejecutable_iterativa : sentencia_imprimir .  (97)
 
 	.  reduce 97
 
 
-state 88
-	iterativo : while '(' . condicion ')' DO  (82)
-	iterativo : while '(' . condicion ')' error  (83)
-	iterativo : while '(' . error ')' DO  (84)
-	iterativo : while '(' . condicion DO  (85)
-
-	error  shift 136
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'-'  shift 67
-	.  error
-
-	expresion_aritmetica  goto 68
-	condicion  goto 137
-	sentencia_llamado_funcion  goto 70
-	expresion_booleana  goto 71
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
-
-
-state 89
-	iterativo : while condicion . ')' DO  (86)
-
-	')'  shift 138
-	.  error
-
-
-state 90
-	sentencia_try_catch : bifurcacion_try bloque_ejecutable .  (101)
-
-	.  reduce 101
-
-
-state 91
-	bifurcacion_try : try sentencia_asignacion . CATCH  (102)
-	bifurcacion_try : try sentencia_asignacion . error  (103)
-	bifurcacion_try : try sentencia_asignacion .  (104)
-
-	error  shift 139
-	CATCH  shift 140
-	BEGIN  reduce 104
-
-
-state 92
-	cabecera_funcion : tipo error ID '(' . parametro ')'  (18)
-
-	ULONG  shift 8
-	DOUBLE  shift 9
-	.  error
-
-	tipo  goto 95
-	parametro  goto 141
-
-
-state 93
-	cabecera_funcion : tipo FUNC error '(' . parametro ')'  (19)
-
-	ULONG  shift 8
-	DOUBLE  shift 9
-	.  error
-
-	tipo  goto 95
-	parametro  goto 142
-
-
-state 94
-	cabecera_funcion : tipo FUNC ID '(' . parametro ')'  (17)
-	cabecera_funcion : tipo FUNC ID '(' . error ')'  (20)
-	cabecera_funcion : tipo FUNC ID '(' . parametro  (22)
-
-	error  shift 143
-	ULONG  shift 8
-	DOUBLE  shift 9
-	.  error
-
-	tipo  goto 95
-	parametro  goto 144
-
-
-state 95
-	parametro : tipo . ID  (23)
-
-	ID  shift 145
-	.  error
-
-
-state 96
-	cabecera_funcion : tipo FUNC ID parametro . ')'  (21)
-
-	')'  shift 146
-	.  error
-
-
-state 97
-	sentencia_declarativa : tipo FUNC '(' error . ')' lista_variables  (13)
-
-	')'  shift 147
-	.  error
-
-
-state 98
-	sentencia_declarativa : tipo FUNC '(' tipo . ')' lista_variables  (8)
-	sentencia_declarativa : tipo FUNC '(' tipo . lista_variables  (14)
-
-	ID  shift 16
-	')'  shift 148
-	.  error
-
-	lista_variables  goto 149
-
-
-state 99
-	sentencia_declarativa : tipo FUNC tipo ')' . lista_variables  (12)
-
-	ID  shift 16
-	.  error
-
-	lista_variables  goto 150
-
-
-state 100
-	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion . retorno_funcion END  (15)
-	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion . retorno_funcion postcondicion END  (16)
-
-	error  shift 151
-	RETURN  shift 152
-	.  error
-
-	retorno_funcion  goto 153
-
-
-state 101
-	bloque_ejecutable_funcion : sentencias_ejecutables .  (40)
-
-	.  reduce 40
-
-
-state 102
-	sentencia_asignacion : ID error ';' .  (49)
-
-	.  reduce 49
-
-
-state 103
-	sentencia_asignacion : ID ASIG error . ';'  (50)
-
-	';'  shift 154
-	.  error
-
-
-state 104
-	sentencia_asignacion : ID ASIG expresion_aritmetica . ';'  (48)
-	expresion_aritmetica : expresion_aritmetica . '+' termino  (106)
-	expresion_aritmetica : expresion_aritmetica . '-' termino  (107)
-
-	';'  shift 155
-	'+'  shift 120
-	'-'  shift 121
-	.  error
-
-
-state 105
-	bloque_ejecutable_condicional : BEGIN sentencias_ejecutables . END  (73)
-
-	END  shift 156
-	.  error
-
-
-state 106
-	else : ELSE .  (55)
-
-	.  reduce 55
-
-
-state 107
-	sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF . ';'  (53)
-
-	';'  shift 157
-	.  error
-
-
-state 108
-	sentencia_condicional : condicional bloque_ejecutable_condicional else . bloque_ejecutable_condicional ENDIF ';'  (54)
-
-	IF  shift 26
-	PRINT  shift 27
-	BEGIN  shift 58
-	WHILE  shift 28
-	ID  shift 29
-	TRY  shift 30
-	.  error
-
-	sentencia_ejecutable  goto 59
-	sentencia_asignacion  goto 33
-	sentencia_condicional  goto 34
-	sentencia_imprimir  goto 35
-	sentencia_iterativa  goto 36
-	sentencia_try_catch  goto 37
-	condicional  goto 38
-	bloque_ejecutable_condicional  goto 158
-	if  goto 39
-	print  goto 40
-	iterativo  goto 41
-	while  goto 42
-	bifurcacion_try  goto 43
-	try  goto 44
-
-
-state 109
-	sentencia_conversion : DOUBLE '(' . expresion_aritmetica ')'  (99)
-	sentencia_conversion : DOUBLE '(' . error ')'  (100)
-
-	error  shift 159
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'-'  shift 67
-	.  error
-
-	expresion_aritmetica  goto 160
-	sentencia_llamado_funcion  goto 70
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
-
-
-state 110
-	sentencia_llamado_funcion : CALL ID . '(' expresion_aritmetica ')'  (51)
-	sentencia_llamado_funcion : CALL ID . '(' error ')' ';'  (52)
-
-	'('  shift 161
-	.  error
-
-
-state 111
-	condicional : if '(' error . ')' THEN  (57)
-
-	')'  shift 162
-	.  error
-
-
-state 112
-	condicional : if '(' condicion . ')' THEN  (56)
-	condicional : if '(' condicion . THEN  (58)
-	condicional : if '(' condicion . ')' error ';'  (60)
-
-	THEN  shift 163
-	')'  shift 164
-	.  error
-
-
-state 113
-	termino : '-' factor .  (112)
-
-	.  reduce 112
-
-
-state 114
-	comparador : COMP_MAYOR_IGUAL .  (65)
-
-	.  reduce 65
-
-
-state 115
-	comparador : COMP_MENOR_IGUAL .  (66)
-
-	.  reduce 66
-
-
-state 116
-	comparador : COMP_IGUAL .  (67)
-
-	.  reduce 67
-
-
-state 117
-	comparador : COMP_DISTINTO .  (68)
-
-	.  reduce 68
-
-
-state 118
-	comparador : '<' .  (69)
-
-	.  reduce 69
-
-
-state 119
-	comparador : '>' .  (70)
-
-	.  reduce 70
-
-
-state 120
-	expresion_aritmetica : expresion_aritmetica '+' . termino  (106)
-
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'-'  shift 67
-	.  error
-
-	sentencia_llamado_funcion  goto 70
-	sentencia_conversion  goto 72
-	termino  goto 165
-	factor  goto 74
-
-
-state 121
-	expresion_aritmetica : expresion_aritmetica '-' . termino  (107)
-
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'-'  shift 67
-	.  error
-
-	sentencia_llamado_funcion  goto 70
-	sentencia_conversion  goto 72
-	termino  goto 166
-	factor  goto 74
-
-
-state 122
-	expresion_booleana : expresion_aritmetica comparador . expresion_aritmetica  (64)
-
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'-'  shift 67
-	.  error
-
-	expresion_aritmetica  goto 167
-	sentencia_llamado_funcion  goto 70
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
-
-
-state 123
-	condicional : if condicion ')' . THEN  (59)
-
-	THEN  shift 168
-	.  error
-
-
-state 124
-	operacion_booleana : AND .  (71)
-
-	.  reduce 71
-
-
-state 125
-	operacion_booleana : OR .  (72)
-
-	.  reduce 72
-
-
-state 126
-	condicion : expresion_booleana operacion_booleana . condicion  (62)
-
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'-'  shift 67
-	.  error
-
-	expresion_aritmetica  goto 68
-	condicion  goto 169
-	sentencia_llamado_funcion  goto 70
-	expresion_booleana  goto 71
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
-
-
-state 127
-	termino : termino '*' . factor  (109)
-
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	.  error
-
-	sentencia_llamado_funcion  goto 70
-	sentencia_conversion  goto 72
-	factor  goto 170
-
-
-state 128
-	termino : termino '/' . factor  (110)
-
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	.  error
-
-	sentencia_llamado_funcion  goto 70
-	sentencia_conversion  goto 72
-	factor  goto 171
-
-
-state 129
-	sentencia_imprimir : print error ';' .  (79)
-
-	.  reduce 79
-
-
-state 130
-	sentencia_imprimir : print CADENA ')' . ';'  (78)
-
-	';'  shift 172
-	.  error
-
-
-state 131
-	sentencia_imprimir : print '(' error . ')' ';'  (76)
-
-	')'  shift 173
-	.  error
-
-
-state 132
-	sentencia_imprimir : print '(' CADENA . ')' ';'  (75)
-	sentencia_imprimir : print '(' CADENA . ';'  (77)
-
-	';'  shift 174
-	')'  shift 175
-	.  error
-
-
-state 133
-	bloque_ejecutable_iterativo : BEGIN sentencias_ejecutables_iterativas . END  (88)
-
-	END  shift 176
-	.  error
-
-
-state 134
-	sentencias_ejecutables_iterativas : sentencia_ejecutable_iterativa . sentencias_ejecutables_iterativas  (90)
-	sentencias_ejecutables_iterativas : sentencia_ejecutable_iterativa .  (91)
-
-	IF  shift 26
-	PRINT  shift 27
-	BREAK  shift 79
-	WHILE  shift 28
-	ID  shift 29
-	TRY  shift 30
-	END  reduce 91
-
-	sentencia_asignacion  goto 80
-	sentencia_condicional  goto 81
-	sentencia_imprimir  goto 82
-	sentencia_iterativa  goto 83
-	sentencia_try_catch  goto 84
-	condicional  goto 38
-	if  goto 39
-	print  goto 40
-	iterativo  goto 41
-	while  goto 42
-	sentencias_ejecutables_iterativas  goto 177
-	sentencia_ejecutable_iterativa  goto 134
-	sentencia_break  goto 87
-	bifurcacion_try  goto 43
-	try  goto 44
-
-
-state 135
-	sentencia_break : BREAK ';' .  (98)
+state 87
+	sentencia_ejecutable_iterativa : sentencia_iterativa .  (98)
 
 	.  reduce 98
 
 
+state 88
+	sentencia_ejecutable_iterativa : sentencia_try_catch .  (99)
+
+	.  reduce 99
+
+
+state 89
+	sentencia_iterativa : iterativo bloque_ejecutable_iterativo .  (84)
+
+	.  reduce 84
+
+
+state 90
+	bloque_ejecutable_iterativo : sentencia_ejecutable_iterativa .  (92)
+
+	.  reduce 92
+
+
+state 91
+	sentencia_ejecutable_iterativa : sentencia_break .  (100)
+
+	.  reduce 100
+
+
+state 92
+	iterativo : while '(' . condicion ')' DO  (85)
+	iterativo : while '(' . condicion ')' error  (86)
+	iterativo : while '(' . error ')' DO  (87)
+	iterativo : while '(' . condicion DO  (88)
+
+	error  shift 141
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'-'  shift 71
+	.  error
+
+	expresion_aritmetica  goto 72
+	condicion  goto 142
+	sentencia_llamado_funcion  goto 74
+	expresion_booleana  goto 75
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
+
+
+state 93
+	iterativo : while condicion . ')' DO  (89)
+
+	')'  shift 143
+	.  error
+
+
+state 94
+	sentencia_try_catch : bifurcacion_try bloque_ejecutable .  (104)
+
+	.  reduce 104
+
+
+state 95
+	bifurcacion_try : try sentencia_asignacion . CATCH  (105)
+	bifurcacion_try : try sentencia_asignacion . error  (106)
+	bifurcacion_try : try sentencia_asignacion .  (107)
+
+	error  shift 144
+	CATCH  shift 145
+	BEGIN  reduce 107
+
+
+state 96
+	cabecera_funcion : tipo error ID '(' . parametro ')'  (25)
+
+	ULONG  shift 8
+	DOUBLE  shift 9
+	.  error
+
+	tipo  goto 99
+	parametro  goto 146
+
+
+state 97
+	cabecera_funcion : tipo FUNC error '(' . parametro ')'  (26)
+
+	ULONG  shift 8
+	DOUBLE  shift 9
+	.  error
+
+	tipo  goto 99
+	parametro  goto 147
+
+
+state 98
+	cabecera_funcion : tipo FUNC ID '(' . parametro ')'  (24)
+	cabecera_funcion : tipo FUNC ID '(' . error ')'  (27)
+	cabecera_funcion : tipo FUNC ID '(' . parametro  (29)
+
+	error  shift 148
+	ULONG  shift 8
+	DOUBLE  shift 9
+	.  error
+
+	tipo  goto 99
+	parametro  goto 149
+
+
+state 99
+	parametro : tipo . ID  (30)
+
+	ID  shift 150
+	.  error
+
+
+state 100
+	cabecera_funcion : tipo FUNC ID parametro . ')'  (28)
+
+	')'  shift 151
+	.  error
+
+
+state 101
+	tipo_funcion : tipo FUNC '(' error . ')' lista_variables  (18)
+
+	')'  shift 152
+	.  error
+
+
+state 102
+	tipo_funcion : tipo FUNC '(' tipo . ')'  (16)
+	tipo_funcion : tipo FUNC '(' tipo . lista_variables  (19)
+
+	ID  shift 17
+	')'  shift 153
+	.  error
+
+	lista_variables  goto 154
+
+
+state 103
+	tipo_funcion : tipo FUNC tipo ')' . lista_variables  (17)
+
+	ID  shift 17
+	.  error
+
+	lista_variables  goto 155
+
+
+state 104
+	lista_funcion_como_variables : ID ',' lista_funcion_como_variables .  (20)
+
+	.  reduce 20
+
+
+state 105
+	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion . retorno_funcion END  (22)
+	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion . retorno_funcion postcondicion END  (23)
+
+	error  shift 156
+	RETURN  shift 157
+	.  error
+
+	retorno_funcion  goto 158
+
+
+state 106
+	bloque_ejecutable_funcion : sentencias_ejecutables .  (43)
+
+	.  reduce 43
+
+
+state 107
+	sentencia_asignacion : ID error ';' .  (52)
+
+	.  reduce 52
+
+
+state 108
+	sentencia_asignacion : ID ASIG error . ';'  (53)
+
+	';'  shift 159
+	.  error
+
+
+state 109
+	sentencia_asignacion : ID ASIG expresion_aritmetica . ';'  (51)
+	expresion_aritmetica : expresion_aritmetica . '+' termino  (109)
+	expresion_aritmetica : expresion_aritmetica . '-' termino  (110)
+
+	';'  shift 160
+	'+'  shift 125
+	'-'  shift 126
+	.  error
+
+
+state 110
+	bloque_ejecutable_condicional : BEGIN sentencias_ejecutables . END  (76)
+
+	END  shift 161
+	.  error
+
+
+state 111
+	else : ELSE .  (58)
+
+	.  reduce 58
+
+
+state 112
+	sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF . ';'  (56)
+
+	';'  shift 162
+	.  error
+
+
+state 113
+	sentencia_condicional : condicional bloque_ejecutable_condicional else . bloque_ejecutable_condicional ENDIF ';'  (57)
+
+	IF  shift 29
+	PRINT  shift 30
+	BEGIN  shift 62
+	WHILE  shift 31
+	ID  shift 32
+	TRY  shift 33
+	.  error
+
+	sentencia_ejecutable  goto 63
+	sentencia_asignacion  goto 36
+	sentencia_condicional  goto 37
+	sentencia_imprimir  goto 38
+	sentencia_iterativa  goto 39
+	sentencia_try_catch  goto 40
+	condicional  goto 41
+	bloque_ejecutable_condicional  goto 163
+	if  goto 42
+	print  goto 43
+	iterativo  goto 44
+	while  goto 45
+	bifurcacion_try  goto 46
+	try  goto 47
+
+
+state 114
+	sentencia_conversion : DOUBLE '(' . expresion_aritmetica ')'  (102)
+	sentencia_conversion : DOUBLE '(' . error ')'  (103)
+
+	error  shift 164
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'-'  shift 71
+	.  error
+
+	expresion_aritmetica  goto 165
+	sentencia_llamado_funcion  goto 74
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
+
+
+state 115
+	sentencia_llamado_funcion : CALL ID . '(' expresion_aritmetica ')'  (54)
+	sentencia_llamado_funcion : CALL ID . '(' error ')' ';'  (55)
+
+	'('  shift 166
+	.  error
+
+
+state 116
+	condicional : if '(' error . ')' THEN  (60)
+
+	')'  shift 167
+	.  error
+
+
+state 117
+	condicional : if '(' condicion . ')' THEN  (59)
+	condicional : if '(' condicion . THEN  (61)
+	condicional : if '(' condicion . ')' error ';'  (63)
+
+	THEN  shift 168
+	')'  shift 169
+	.  error
+
+
+state 118
+	termino : '-' factor .  (115)
+
+	.  reduce 115
+
+
+state 119
+	comparador : COMP_MAYOR_IGUAL .  (68)
+
+	.  reduce 68
+
+
+state 120
+	comparador : COMP_MENOR_IGUAL .  (69)
+
+	.  reduce 69
+
+
+state 121
+	comparador : COMP_IGUAL .  (70)
+
+	.  reduce 70
+
+
+state 122
+	comparador : COMP_DISTINTO .  (71)
+
+	.  reduce 71
+
+
+state 123
+	comparador : '<' .  (72)
+
+	.  reduce 72
+
+
+state 124
+	comparador : '>' .  (73)
+
+	.  reduce 73
+
+
+state 125
+	expresion_aritmetica : expresion_aritmetica '+' . termino  (109)
+
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'-'  shift 71
+	.  error
+
+	sentencia_llamado_funcion  goto 74
+	sentencia_conversion  goto 76
+	termino  goto 170
+	factor  goto 78
+
+
+state 126
+	expresion_aritmetica : expresion_aritmetica '-' . termino  (110)
+
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'-'  shift 71
+	.  error
+
+	sentencia_llamado_funcion  goto 74
+	sentencia_conversion  goto 76
+	termino  goto 171
+	factor  goto 78
+
+
+state 127
+	expresion_booleana : expresion_aritmetica comparador . expresion_aritmetica  (67)
+
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'-'  shift 71
+	.  error
+
+	expresion_aritmetica  goto 172
+	sentencia_llamado_funcion  goto 74
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
+
+
+state 128
+	condicional : if condicion ')' . THEN  (62)
+
+	THEN  shift 173
+	.  error
+
+
+state 129
+	operacion_booleana : AND .  (74)
+
+	.  reduce 74
+
+
+state 130
+	operacion_booleana : OR .  (75)
+
+	.  reduce 75
+
+
+state 131
+	condicion : expresion_booleana operacion_booleana . condicion  (65)
+
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'-'  shift 71
+	.  error
+
+	expresion_aritmetica  goto 72
+	condicion  goto 174
+	sentencia_llamado_funcion  goto 74
+	expresion_booleana  goto 75
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
+
+
+state 132
+	termino : termino '*' . factor  (112)
+
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	.  error
+
+	sentencia_llamado_funcion  goto 74
+	sentencia_conversion  goto 76
+	factor  goto 175
+
+
+state 133
+	termino : termino '/' . factor  (113)
+
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	.  error
+
+	sentencia_llamado_funcion  goto 74
+	sentencia_conversion  goto 76
+	factor  goto 176
+
+
+state 134
+	sentencia_imprimir : print error ';' .  (82)
+
+	.  reduce 82
+
+
+state 135
+	sentencia_imprimir : print CADENA ')' . ';'  (81)
+
+	';'  shift 177
+	.  error
+
+
 state 136
-	iterativo : while '(' error . ')' DO  (84)
+	sentencia_imprimir : print '(' error . ')' ';'  (79)
 
 	')'  shift 178
 	.  error
 
 
 state 137
-	iterativo : while '(' condicion . ')' DO  (82)
-	iterativo : while '(' condicion . ')' error  (83)
-	iterativo : while '(' condicion . DO  (85)
+	sentencia_imprimir : print '(' CADENA . ')' ';'  (78)
+	sentencia_imprimir : print '(' CADENA . ';'  (80)
 
-	DO  shift 179
+	';'  shift 179
 	')'  shift 180
 	.  error
 
 
 state 138
-	iterativo : while condicion ')' . DO  (86)
+	bloque_ejecutable_iterativo : BEGIN sentencias_ejecutables_iterativas . END  (91)
 
-	DO  shift 181
+	END  shift 181
 	.  error
 
 
 state 139
-	bifurcacion_try : try sentencia_asignacion error .  (103)
+	sentencias_ejecutables_iterativas : sentencia_ejecutable_iterativa . sentencias_ejecutables_iterativas  (93)
+	sentencias_ejecutables_iterativas : sentencia_ejecutable_iterativa .  (94)
 
-	.  reduce 103
+	IF  shift 29
+	PRINT  shift 30
+	BREAK  shift 83
+	WHILE  shift 31
+	ID  shift 32
+	TRY  shift 33
+	END  reduce 94
+
+	sentencia_asignacion  goto 84
+	sentencia_condicional  goto 85
+	sentencia_imprimir  goto 86
+	sentencia_iterativa  goto 87
+	sentencia_try_catch  goto 88
+	condicional  goto 41
+	if  goto 42
+	print  goto 43
+	iterativo  goto 44
+	while  goto 45
+	sentencias_ejecutables_iterativas  goto 182
+	sentencia_ejecutable_iterativa  goto 139
+	sentencia_break  goto 91
+	bifurcacion_try  goto 46
+	try  goto 47
 
 
 state 140
-	bifurcacion_try : try sentencia_asignacion CATCH .  (102)
+	sentencia_break : BREAK ';' .  (101)
 
-	.  reduce 102
+	.  reduce 101
 
 
 state 141
-	cabecera_funcion : tipo error ID '(' parametro . ')'  (18)
-
-	')'  shift 182
-	.  error
-
-
-state 142
-	cabecera_funcion : tipo FUNC error '(' parametro . ')'  (19)
+	iterativo : while '(' error . ')' DO  (87)
 
 	')'  shift 183
 	.  error
 
 
-state 143
-	cabecera_funcion : tipo FUNC ID '(' error . ')'  (20)
+state 142
+	iterativo : while '(' condicion . ')' DO  (85)
+	iterativo : while '(' condicion . ')' error  (86)
+	iterativo : while '(' condicion . DO  (88)
 
-	')'  shift 184
+	DO  shift 184
+	')'  shift 185
+	.  error
+
+
+state 143
+	iterativo : while condicion ')' . DO  (89)
+
+	DO  shift 186
 	.  error
 
 
 state 144
-	cabecera_funcion : tipo FUNC ID '(' parametro . ')'  (17)
-	cabecera_funcion : tipo FUNC ID '(' parametro .  (22)
+	bifurcacion_try : try sentencia_asignacion error .  (106)
 
-	')'  shift 185
-	error  reduce 22
-	ULONG  reduce 22
-	DOUBLE  reduce 22
+	.  reduce 106
 
 
 state 145
-	parametro : tipo ID .  (23)
+	bifurcacion_try : try sentencia_asignacion CATCH .  (105)
 
-	.  reduce 23
+	.  reduce 105
 
 
 state 146
-	cabecera_funcion : tipo FUNC ID parametro ')' .  (21)
+	cabecera_funcion : tipo error ID '(' parametro . ')'  (25)
 
-	.  reduce 21
+	')'  shift 187
+	.  error
 
 
 state 147
-	sentencia_declarativa : tipo FUNC '(' error ')' . lista_variables  (13)
+	cabecera_funcion : tipo FUNC error '(' parametro . ')'  (26)
 
-	ID  shift 16
+	')'  shift 188
 	.  error
-
-	lista_variables  goto 186
 
 
 state 148
-	sentencia_declarativa : tipo FUNC '(' tipo ')' . lista_variables  (8)
+	cabecera_funcion : tipo FUNC ID '(' error . ')'  (27)
 
-	ID  shift 16
+	')'  shift 189
 	.  error
-
-	lista_variables  goto 187
 
 
 state 149
-	sentencia_declarativa : tipo FUNC '(' tipo lista_variables .  (14)
+	cabecera_funcion : tipo FUNC ID '(' parametro . ')'  (24)
+	cabecera_funcion : tipo FUNC ID '(' parametro .  (29)
 
-	.  reduce 14
+	')'  shift 190
+	error  reduce 29
+	ULONG  reduce 29
+	DOUBLE  reduce 29
 
 
 state 150
-	sentencia_declarativa : tipo FUNC tipo ')' lista_variables .  (12)
+	parametro : tipo ID .  (30)
 
-	.  reduce 12
+	.  reduce 30
 
 
 state 151
-	retorno_funcion : error . ';'  (28)
-
-	';'  shift 188
-	.  error
-
-
-state 152
-	retorno_funcion : RETURN . '(' expresion_aritmetica ')' ';'  (24)
-	retorno_funcion : RETURN . '(' error ')' ';'  (25)
-	retorno_funcion : RETURN . '(' expresion_aritmetica ';'  (26)
-	retorno_funcion : RETURN . expresion_aritmetica ')' ';'  (27)
-
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'('  shift 189
-	'-'  shift 67
-	.  error
-
-	expresion_aritmetica  goto 190
-	sentencia_llamado_funcion  goto 70
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
-
-
-state 153
-	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion . END  (15)
-	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion . postcondicion END  (16)
-
-	error  shift 191
-	END  shift 192
-	POST  shift 193
-	.  error
-
-	postcondicion  goto 194
-
-
-state 154
-	sentencia_asignacion : ID ASIG error ';' .  (50)
-
-	.  reduce 50
-
-
-state 155
-	sentencia_asignacion : ID ASIG expresion_aritmetica ';' .  (48)
-
-	.  reduce 48
-
-
-state 156
-	bloque_ejecutable_condicional : BEGIN sentencias_ejecutables END .  (73)
-
-	.  reduce 73
-
-
-state 157
-	sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';' .  (53)
-
-	.  reduce 53
-
-
-state 158
-	sentencia_condicional : condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional . ENDIF ';'  (54)
-
-	ENDIF  shift 195
-	.  error
-
-
-state 159
-	sentencia_conversion : DOUBLE '(' error . ')'  (100)
-
-	')'  shift 196
-	.  error
-
-
-state 160
-	sentencia_conversion : DOUBLE '(' expresion_aritmetica . ')'  (99)
-	expresion_aritmetica : expresion_aritmetica . '+' termino  (106)
-	expresion_aritmetica : expresion_aritmetica . '-' termino  (107)
-
-	')'  shift 197
-	'+'  shift 120
-	'-'  shift 121
-	.  error
-
-
-state 161
-	sentencia_llamado_funcion : CALL ID '(' . expresion_aritmetica ')'  (51)
-	sentencia_llamado_funcion : CALL ID '(' . error ')' ';'  (52)
-
-	error  shift 198
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'-'  shift 67
-	.  error
-
-	expresion_aritmetica  goto 199
-	sentencia_llamado_funcion  goto 70
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
-
-
-state 162
-	condicional : if '(' error ')' . THEN  (57)
-
-	THEN  shift 200
-	.  error
-
-
-state 163
-	condicional : if '(' condicion THEN .  (58)
-
-	.  reduce 58
-
-
-state 164
-	condicional : if '(' condicion ')' . THEN  (56)
-	condicional : if '(' condicion ')' . error ';'  (60)
-
-	error  shift 201
-	THEN  shift 202
-	.  error
-
-
-state 165
-	expresion_aritmetica : expresion_aritmetica '+' termino .  (106)
-	termino : termino . '*' factor  (109)
-	termino : termino . '/' factor  (110)
-
-	'*'  shift 127
-	'/'  shift 128
-	THEN  reduce 106
-	DO  reduce 106
-	COMP_MAYOR_IGUAL  reduce 106
-	COMP_MENOR_IGUAL  reduce 106
-	COMP_IGUAL  reduce 106
-	AND  reduce 106
-	OR  reduce 106
-	COMP_DISTINTO  reduce 106
-	';'  reduce 106
-	')'  reduce 106
-	'<'  reduce 106
-	'>'  reduce 106
-	'+'  reduce 106
-	'-'  reduce 106
-
-
-state 166
-	expresion_aritmetica : expresion_aritmetica '-' termino .  (107)
-	termino : termino . '*' factor  (109)
-	termino : termino . '/' factor  (110)
-
-	'*'  shift 127
-	'/'  shift 128
-	THEN  reduce 107
-	DO  reduce 107
-	COMP_MAYOR_IGUAL  reduce 107
-	COMP_MENOR_IGUAL  reduce 107
-	COMP_IGUAL  reduce 107
-	AND  reduce 107
-	OR  reduce 107
-	COMP_DISTINTO  reduce 107
-	';'  reduce 107
-	')'  reduce 107
-	'<'  reduce 107
-	'>'  reduce 107
-	'+'  reduce 107
-	'-'  reduce 107
-
-
-state 167
-	expresion_booleana : expresion_aritmetica comparador expresion_aritmetica .  (64)
-	expresion_aritmetica : expresion_aritmetica . '+' termino  (106)
-	expresion_aritmetica : expresion_aritmetica . '-' termino  (107)
-
-	'+'  shift 120
-	'-'  shift 121
-	THEN  reduce 64
-	DO  reduce 64
-	AND  reduce 64
-	OR  reduce 64
-	';'  reduce 64
-	')'  reduce 64
-
-
-state 168
-	condicional : if condicion ')' THEN .  (59)
-
-	.  reduce 59
-
-
-state 169
-	condicion : expresion_booleana operacion_booleana condicion .  (62)
-
-	.  reduce 62
-
-
-state 170
-	termino : termino '*' factor .  (109)
-
-	.  reduce 109
-
-
-state 171
-	termino : termino '/' factor .  (110)
-
-	.  reduce 110
-
-
-state 172
-	sentencia_imprimir : print CADENA ')' ';' .  (78)
-
-	.  reduce 78
-
-
-state 173
-	sentencia_imprimir : print '(' error ')' . ';'  (76)
-
-	';'  shift 203
-	.  error
-
-
-state 174
-	sentencia_imprimir : print '(' CADENA ';' .  (77)
-
-	.  reduce 77
-
-
-state 175
-	sentencia_imprimir : print '(' CADENA ')' . ';'  (75)
-
-	';'  shift 204
-	.  error
-
-
-state 176
-	bloque_ejecutable_iterativo : BEGIN sentencias_ejecutables_iterativas END .  (88)
-
-	.  reduce 88
-
-
-state 177
-	sentencias_ejecutables_iterativas : sentencia_ejecutable_iterativa sentencias_ejecutables_iterativas .  (90)
-
-	.  reduce 90
-
-
-state 178
-	iterativo : while '(' error ')' . DO  (84)
-
-	DO  shift 205
-	.  error
-
-
-state 179
-	iterativo : while '(' condicion DO .  (85)
-
-	.  reduce 85
-
-
-state 180
-	iterativo : while '(' condicion ')' . DO  (82)
-	iterativo : while '(' condicion ')' . error  (83)
-
-	error  shift 206
-	DO  shift 207
-	.  error
-
-
-state 181
-	iterativo : while condicion ')' DO .  (86)
-
-	.  reduce 86
-
-
-state 182
-	cabecera_funcion : tipo error ID '(' parametro ')' .  (18)
-
-	.  reduce 18
-
-
-state 183
-	cabecera_funcion : tipo FUNC error '(' parametro ')' .  (19)
-
-	.  reduce 19
-
-
-state 184
-	cabecera_funcion : tipo FUNC ID '(' error ')' .  (20)
-
-	.  reduce 20
-
-
-state 185
-	cabecera_funcion : tipo FUNC ID '(' parametro ')' .  (17)
-
-	.  reduce 17
-
-
-state 186
-	sentencia_declarativa : tipo FUNC '(' error ')' lista_variables .  (13)
-
-	.  reduce 13
-
-
-state 187
-	sentencia_declarativa : tipo FUNC '(' tipo ')' lista_variables .  (8)
-
-	.  reduce 8
-
-
-state 188
-	retorno_funcion : error ';' .  (28)
+	cabecera_funcion : tipo FUNC ID parametro ')' .  (28)
 
 	.  reduce 28
 
 
-state 189
-	retorno_funcion : RETURN '(' . expresion_aritmetica ')' ';'  (24)
-	retorno_funcion : RETURN '(' . error ')' ';'  (25)
-	retorno_funcion : RETURN '(' . expresion_aritmetica ';'  (26)
+state 152
+	tipo_funcion : tipo FUNC '(' error ')' . lista_variables  (18)
 
-	error  shift 208
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'-'  shift 67
+	ID  shift 17
 	.  error
 
-	expresion_aritmetica  goto 209
-	sentencia_llamado_funcion  goto 70
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
+	lista_variables  goto 191
 
 
-state 190
-	retorno_funcion : RETURN expresion_aritmetica . ')' ';'  (27)
-	expresion_aritmetica : expresion_aritmetica . '+' termino  (106)
-	expresion_aritmetica : expresion_aritmetica . '-' termino  (107)
+state 153
+	tipo_funcion : tipo FUNC '(' tipo ')' .  (16)
 
-	')'  shift 210
-	'+'  shift 120
-	'-'  shift 121
-	.  error
+	.  reduce 16
 
 
-state 191
-	postcondicion : error . ';'  (34)
+state 154
+	tipo_funcion : tipo FUNC '(' tipo lista_variables .  (19)
 
-	';'  shift 211
+	.  reduce 19
+
+
+state 155
+	tipo_funcion : tipo FUNC tipo ')' lista_variables .  (17)
+
+	.  reduce 17
+
+
+state 156
+	retorno_funcion : error . ';'  (35)
+
+	';'  shift 192
 	.  error
 
 
-state 192
-	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion END .  (15)
+state 157
+	retorno_funcion : RETURN . '(' expresion_aritmetica ')' ';'  (31)
+	retorno_funcion : RETURN . '(' error ')' ';'  (32)
+	retorno_funcion : RETURN . '(' expresion_aritmetica ';'  (33)
+	retorno_funcion : RETURN . expresion_aritmetica ')' ';'  (34)
 
-	.  reduce 15
-
-
-state 193
-	postcondicion : POST . ':' '(' condicion ')' ';'  (29)
-	postcondicion : POST . ':' '(' error ')' ';'  (30)
-	postcondicion : POST . '(' condicion ')' ';'  (31)
-	postcondicion : POST . condicion ')' ';'  (32)
-	postcondicion : POST . '(' condicion ';'  (33)
-
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'('  shift 212
-	':'  shift 213
-	'-'  shift 67
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'('  shift 193
+	'-'  shift 71
 	.  error
 
-	expresion_aritmetica  goto 68
-	condicion  goto 214
-	sentencia_llamado_funcion  goto 70
-	expresion_booleana  goto 71
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
+	expresion_aritmetica  goto 194
+	sentencia_llamado_funcion  goto 74
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
 
 
-state 194
-	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion . END  (16)
+state 158
+	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion . END  (22)
+	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion . postcondicion END  (23)
 
-	END  shift 215
+	error  shift 195
+	END  shift 196
+	POST  shift 197
 	.  error
 
-
-state 195
-	sentencia_condicional : condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF . ';'  (54)
-
-	';'  shift 216
-	.  error
+	postcondicion  goto 198
 
 
-state 196
-	sentencia_conversion : DOUBLE '(' error ')' .  (100)
+state 159
+	sentencia_asignacion : ID ASIG error ';' .  (53)
 
-	.  reduce 100
-
-
-state 197
-	sentencia_conversion : DOUBLE '(' expresion_aritmetica ')' .  (99)
-
-	.  reduce 99
+	.  reduce 53
 
 
-state 198
-	sentencia_llamado_funcion : CALL ID '(' error . ')' ';'  (52)
+state 160
+	sentencia_asignacion : ID ASIG expresion_aritmetica ';' .  (51)
 
-	')'  shift 217
-	.  error
-
-
-state 199
-	sentencia_llamado_funcion : CALL ID '(' expresion_aritmetica . ')'  (51)
-	expresion_aritmetica : expresion_aritmetica . '+' termino  (106)
-	expresion_aritmetica : expresion_aritmetica . '-' termino  (107)
-
-	')'  shift 218
-	'+'  shift 120
-	'-'  shift 121
-	.  error
+	.  reduce 51
 
 
-state 200
-	condicional : if '(' error ')' THEN .  (57)
-
-	.  reduce 57
-
-
-state 201
-	condicional : if '(' condicion ')' error . ';'  (60)
-
-	';'  shift 219
-	.  error
-
-
-state 202
-	condicional : if '(' condicion ')' THEN .  (56)
-
-	.  reduce 56
-
-
-state 203
-	sentencia_imprimir : print '(' error ')' ';' .  (76)
+state 161
+	bloque_ejecutable_condicional : BEGIN sentencias_ejecutables END .  (76)
 
 	.  reduce 76
 
 
-state 204
-	sentencia_imprimir : print '(' CADENA ')' ';' .  (75)
+state 162
+	sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';' .  (56)
 
-	.  reduce 75
+	.  reduce 56
+
+
+state 163
+	sentencia_condicional : condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional . ENDIF ';'  (57)
+
+	ENDIF  shift 199
+	.  error
+
+
+state 164
+	sentencia_conversion : DOUBLE '(' error . ')'  (103)
+
+	')'  shift 200
+	.  error
+
+
+state 165
+	sentencia_conversion : DOUBLE '(' expresion_aritmetica . ')'  (102)
+	expresion_aritmetica : expresion_aritmetica . '+' termino  (109)
+	expresion_aritmetica : expresion_aritmetica . '-' termino  (110)
+
+	')'  shift 201
+	'+'  shift 125
+	'-'  shift 126
+	.  error
+
+
+state 166
+	sentencia_llamado_funcion : CALL ID '(' . expresion_aritmetica ')'  (54)
+	sentencia_llamado_funcion : CALL ID '(' . error ')' ';'  (55)
+
+	error  shift 202
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'-'  shift 71
+	.  error
+
+	expresion_aritmetica  goto 203
+	sentencia_llamado_funcion  goto 74
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
+
+
+state 167
+	condicional : if '(' error ')' . THEN  (60)
+
+	THEN  shift 204
+	.  error
+
+
+state 168
+	condicional : if '(' condicion THEN .  (61)
+
+	.  reduce 61
+
+
+state 169
+	condicional : if '(' condicion ')' . THEN  (59)
+	condicional : if '(' condicion ')' . error ';'  (63)
+
+	error  shift 205
+	THEN  shift 206
+	.  error
+
+
+state 170
+	expresion_aritmetica : expresion_aritmetica '+' termino .  (109)
+	termino : termino . '*' factor  (112)
+	termino : termino . '/' factor  (113)
+
+	'*'  shift 132
+	'/'  shift 133
+	THEN  reduce 109
+	DO  reduce 109
+	COMP_MAYOR_IGUAL  reduce 109
+	COMP_MENOR_IGUAL  reduce 109
+	COMP_IGUAL  reduce 109
+	AND  reduce 109
+	OR  reduce 109
+	COMP_DISTINTO  reduce 109
+	';'  reduce 109
+	')'  reduce 109
+	'<'  reduce 109
+	'>'  reduce 109
+	'+'  reduce 109
+	'-'  reduce 109
+
+
+state 171
+	expresion_aritmetica : expresion_aritmetica '-' termino .  (110)
+	termino : termino . '*' factor  (112)
+	termino : termino . '/' factor  (113)
+
+	'*'  shift 132
+	'/'  shift 133
+	THEN  reduce 110
+	DO  reduce 110
+	COMP_MAYOR_IGUAL  reduce 110
+	COMP_MENOR_IGUAL  reduce 110
+	COMP_IGUAL  reduce 110
+	AND  reduce 110
+	OR  reduce 110
+	COMP_DISTINTO  reduce 110
+	';'  reduce 110
+	')'  reduce 110
+	'<'  reduce 110
+	'>'  reduce 110
+	'+'  reduce 110
+	'-'  reduce 110
+
+
+state 172
+	expresion_booleana : expresion_aritmetica comparador expresion_aritmetica .  (67)
+	expresion_aritmetica : expresion_aritmetica . '+' termino  (109)
+	expresion_aritmetica : expresion_aritmetica . '-' termino  (110)
+
+	'+'  shift 125
+	'-'  shift 126
+	THEN  reduce 67
+	DO  reduce 67
+	AND  reduce 67
+	OR  reduce 67
+	';'  reduce 67
+	')'  reduce 67
+
+
+state 173
+	condicional : if condicion ')' THEN .  (62)
+
+	.  reduce 62
+
+
+state 174
+	condicion : expresion_booleana operacion_booleana condicion .  (65)
+
+	.  reduce 65
+
+
+state 175
+	termino : termino '*' factor .  (112)
+
+	.  reduce 112
+
+
+state 176
+	termino : termino '/' factor .  (113)
+
+	.  reduce 113
+
+
+state 177
+	sentencia_imprimir : print CADENA ')' ';' .  (81)
+
+	.  reduce 81
+
+
+state 178
+	sentencia_imprimir : print '(' error ')' . ';'  (79)
+
+	';'  shift 207
+	.  error
+
+
+state 179
+	sentencia_imprimir : print '(' CADENA ';' .  (80)
+
+	.  reduce 80
+
+
+state 180
+	sentencia_imprimir : print '(' CADENA ')' . ';'  (78)
+
+	';'  shift 208
+	.  error
+
+
+state 181
+	bloque_ejecutable_iterativo : BEGIN sentencias_ejecutables_iterativas END .  (91)
+
+	.  reduce 91
+
+
+state 182
+	sentencias_ejecutables_iterativas : sentencia_ejecutable_iterativa sentencias_ejecutables_iterativas .  (93)
+
+	.  reduce 93
+
+
+state 183
+	iterativo : while '(' error ')' . DO  (87)
+
+	DO  shift 209
+	.  error
+
+
+state 184
+	iterativo : while '(' condicion DO .  (88)
+
+	.  reduce 88
+
+
+state 185
+	iterativo : while '(' condicion ')' . DO  (85)
+	iterativo : while '(' condicion ')' . error  (86)
+
+	error  shift 210
+	DO  shift 211
+	.  error
+
+
+state 186
+	iterativo : while condicion ')' DO .  (89)
+
+	.  reduce 89
+
+
+state 187
+	cabecera_funcion : tipo error ID '(' parametro ')' .  (25)
+
+	.  reduce 25
+
+
+state 188
+	cabecera_funcion : tipo FUNC error '(' parametro ')' .  (26)
+
+	.  reduce 26
+
+
+state 189
+	cabecera_funcion : tipo FUNC ID '(' error ')' .  (27)
+
+	.  reduce 27
+
+
+state 190
+	cabecera_funcion : tipo FUNC ID '(' parametro ')' .  (24)
+
+	.  reduce 24
+
+
+state 191
+	tipo_funcion : tipo FUNC '(' error ')' lista_variables .  (18)
+
+	.  reduce 18
+
+
+state 192
+	retorno_funcion : error ';' .  (35)
+
+	.  reduce 35
+
+
+state 193
+	retorno_funcion : RETURN '(' . expresion_aritmetica ')' ';'  (31)
+	retorno_funcion : RETURN '(' . error ')' ';'  (32)
+	retorno_funcion : RETURN '(' . expresion_aritmetica ';'  (33)
+
+	error  shift 212
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'-'  shift 71
+	.  error
+
+	expresion_aritmetica  goto 213
+	sentencia_llamado_funcion  goto 74
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
+
+
+state 194
+	retorno_funcion : RETURN expresion_aritmetica . ')' ';'  (34)
+	expresion_aritmetica : expresion_aritmetica . '+' termino  (109)
+	expresion_aritmetica : expresion_aritmetica . '-' termino  (110)
+
+	')'  shift 214
+	'+'  shift 125
+	'-'  shift 126
+	.  error
+
+
+state 195
+	postcondicion : error . ';'  (41)
+
+	';'  shift 215
+	.  error
+
+
+state 196
+	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion END .  (22)
+
+	.  reduce 22
+
+
+state 197
+	postcondicion : POST . ':' '(' condicion ')' ';'  (36)
+	postcondicion : POST . ':' '(' error ')' ';'  (37)
+	postcondicion : POST . '(' condicion ')' ';'  (38)
+	postcondicion : POST . condicion ')' ';'  (39)
+	postcondicion : POST . '(' condicion ';'  (40)
+
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'('  shift 216
+	':'  shift 217
+	'-'  shift 71
+	.  error
+
+	expresion_aritmetica  goto 72
+	condicion  goto 218
+	sentencia_llamado_funcion  goto 74
+	expresion_booleana  goto 75
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
+
+
+state 198
+	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion . END  (23)
+
+	END  shift 219
+	.  error
+
+
+state 199
+	sentencia_condicional : condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF . ';'  (57)
+
+	';'  shift 220
+	.  error
+
+
+state 200
+	sentencia_conversion : DOUBLE '(' error ')' .  (103)
+
+	.  reduce 103
+
+
+state 201
+	sentencia_conversion : DOUBLE '(' expresion_aritmetica ')' .  (102)
+
+	.  reduce 102
+
+
+state 202
+	sentencia_llamado_funcion : CALL ID '(' error . ')' ';'  (55)
+
+	')'  shift 221
+	.  error
+
+
+state 203
+	sentencia_llamado_funcion : CALL ID '(' expresion_aritmetica . ')'  (54)
+	expresion_aritmetica : expresion_aritmetica . '+' termino  (109)
+	expresion_aritmetica : expresion_aritmetica . '-' termino  (110)
+
+	')'  shift 222
+	'+'  shift 125
+	'-'  shift 126
+	.  error
+
+
+state 204
+	condicional : if '(' error ')' THEN .  (60)
+
+	.  reduce 60
 
 
 state 205
-	iterativo : while '(' error ')' DO .  (84)
-
-	.  reduce 84
-
-
-state 206
-	iterativo : while '(' condicion ')' error .  (83)
-
-	.  reduce 83
-
-
-state 207
-	iterativo : while '(' condicion ')' DO .  (82)
-
-	.  reduce 82
-
-
-state 208
-	retorno_funcion : RETURN '(' error . ')' ';'  (25)
-
-	')'  shift 220
-	.  error
-
-
-state 209
-	retorno_funcion : RETURN '(' expresion_aritmetica . ')' ';'  (24)
-	retorno_funcion : RETURN '(' expresion_aritmetica . ';'  (26)
-	expresion_aritmetica : expresion_aritmetica . '+' termino  (106)
-	expresion_aritmetica : expresion_aritmetica . '-' termino  (107)
-
-	';'  shift 221
-	')'  shift 222
-	'+'  shift 120
-	'-'  shift 121
-	.  error
-
-
-state 210
-	retorno_funcion : RETURN expresion_aritmetica ')' . ';'  (27)
+	condicional : if '(' condicion ')' error . ';'  (63)
 
 	';'  shift 223
 	.  error
 
 
-state 211
-	postcondicion : error ';' .  (34)
+state 206
+	condicional : if '(' condicion ')' THEN .  (59)
 
-	.  reduce 34
+	.  reduce 59
+
+
+state 207
+	sentencia_imprimir : print '(' error ')' ';' .  (79)
+
+	.  reduce 79
+
+
+state 208
+	sentencia_imprimir : print '(' CADENA ')' ';' .  (78)
+
+	.  reduce 78
+
+
+state 209
+	iterativo : while '(' error ')' DO .  (87)
+
+	.  reduce 87
+
+
+state 210
+	iterativo : while '(' condicion ')' error .  (86)
+
+	.  reduce 86
+
+
+state 211
+	iterativo : while '(' condicion ')' DO .  (85)
+
+	.  reduce 85
 
 
 state 212
-	postcondicion : POST '(' . condicion ')' ';'  (31)
-	postcondicion : POST '(' . condicion ';'  (33)
+	retorno_funcion : RETURN '(' error . ')' ';'  (32)
 
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'-'  shift 67
+	')'  shift 224
 	.  error
-
-	expresion_aritmetica  goto 68
-	condicion  goto 224
-	sentencia_llamado_funcion  goto 70
-	expresion_booleana  goto 71
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
 
 
 state 213
-	postcondicion : POST ':' . '(' condicion ')' ';'  (29)
-	postcondicion : POST ':' . '(' error ')' ';'  (30)
+	retorno_funcion : RETURN '(' expresion_aritmetica . ')' ';'  (31)
+	retorno_funcion : RETURN '(' expresion_aritmetica . ';'  (33)
+	expresion_aritmetica : expresion_aritmetica . '+' termino  (109)
+	expresion_aritmetica : expresion_aritmetica . '-' termino  (110)
 
-	'('  shift 225
+	';'  shift 225
+	')'  shift 226
+	'+'  shift 125
+	'-'  shift 126
 	.  error
 
 
 state 214
-	postcondicion : POST condicion . ')' ';'  (32)
-
-	')'  shift 226
-	.  error
-
-
-state 215
-	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END .  (16)
-
-	.  reduce 16
-
-
-state 216
-	sentencia_condicional : condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF ';' .  (54)
-
-	.  reduce 54
-
-
-state 217
-	sentencia_llamado_funcion : CALL ID '(' error ')' . ';'  (52)
+	retorno_funcion : RETURN expresion_aritmetica ')' . ';'  (34)
 
 	';'  shift 227
 	.  error
 
 
-state 218
-	sentencia_llamado_funcion : CALL ID '(' expresion_aritmetica ')' .  (51)
+state 215
+	postcondicion : error ';' .  (41)
 
-	.  reduce 51
+	.  reduce 41
+
+
+state 216
+	postcondicion : POST '(' . condicion ')' ';'  (38)
+	postcondicion : POST '(' . condicion ';'  (40)
+
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'-'  shift 71
+	.  error
+
+	expresion_aritmetica  goto 72
+	condicion  goto 228
+	sentencia_llamado_funcion  goto 74
+	expresion_booleana  goto 75
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
+
+
+state 217
+	postcondicion : POST ':' . '(' condicion ')' ';'  (36)
+	postcondicion : POST ':' . '(' error ')' ';'  (37)
+
+	'('  shift 229
+	.  error
+
+
+state 218
+	postcondicion : POST condicion . ')' ';'  (39)
+
+	')'  shift 230
+	.  error
 
 
 state 219
-	condicional : if '(' condicion ')' error ';' .  (60)
+	sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END .  (23)
 
-	.  reduce 60
+	.  reduce 23
 
 
 state 220
-	retorno_funcion : RETURN '(' error ')' . ';'  (25)
+	sentencia_condicional : condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF ';' .  (57)
 
-	';'  shift 228
-	.  error
+	.  reduce 57
 
 
 state 221
-	retorno_funcion : RETURN '(' expresion_aritmetica ';' .  (26)
+	sentencia_llamado_funcion : CALL ID '(' error ')' . ';'  (55)
 
-	.  reduce 26
-
-
-state 222
-	retorno_funcion : RETURN '(' expresion_aritmetica ')' . ';'  (24)
-
-	';'  shift 229
+	';'  shift 231
 	.  error
 
 
-state 223
-	retorno_funcion : RETURN expresion_aritmetica ')' ';' .  (27)
+state 222
+	sentencia_llamado_funcion : CALL ID '(' expresion_aritmetica ')' .  (54)
 
-	.  reduce 27
+	.  reduce 54
+
+
+state 223
+	condicional : if '(' condicion ')' error ';' .  (63)
+
+	.  reduce 63
 
 
 state 224
-	postcondicion : POST '(' condicion . ')' ';'  (31)
-	postcondicion : POST '(' condicion . ';'  (33)
+	retorno_funcion : RETURN '(' error ')' . ';'  (32)
 
-	';'  shift 230
-	')'  shift 231
+	';'  shift 232
 	.  error
 
 
 state 225
-	postcondicion : POST ':' '(' . condicion ')' ';'  (29)
-	postcondicion : POST ':' '(' . error ')' ';'  (30)
-
-	error  shift 232
-	DOUBLE  shift 61
-	ID  shift 62
-	CTE_ULONG  shift 63
-	CTE_DOUBLE  shift 64
-	CALL  shift 65
-	'-'  shift 67
-	.  error
-
-	expresion_aritmetica  goto 68
-	condicion  goto 233
-	sentencia_llamado_funcion  goto 70
-	expresion_booleana  goto 71
-	sentencia_conversion  goto 72
-	termino  goto 73
-	factor  goto 74
-
-
-state 226
-	postcondicion : POST condicion ')' . ';'  (32)
-
-	';'  shift 234
-	.  error
-
-
-state 227
-	sentencia_llamado_funcion : CALL ID '(' error ')' ';' .  (52)
-
-	.  reduce 52
-
-
-state 228
-	retorno_funcion : RETURN '(' error ')' ';' .  (25)
-
-	.  reduce 25
-
-
-state 229
-	retorno_funcion : RETURN '(' expresion_aritmetica ')' ';' .  (24)
-
-	.  reduce 24
-
-
-state 230
-	postcondicion : POST '(' condicion ';' .  (33)
+	retorno_funcion : RETURN '(' expresion_aritmetica ';' .  (33)
 
 	.  reduce 33
 
 
-state 231
-	postcondicion : POST '(' condicion ')' . ';'  (31)
+state 226
+	retorno_funcion : RETURN '(' expresion_aritmetica ')' . ';'  (31)
 
-	';'  shift 235
+	';'  shift 233
 	.  error
 
 
-state 232
-	postcondicion : POST ':' '(' error . ')' ';'  (30)
+state 227
+	retorno_funcion : RETURN expresion_aritmetica ')' ';' .  (34)
 
-	')'  shift 236
+	.  reduce 34
+
+
+state 228
+	postcondicion : POST '(' condicion . ')' ';'  (38)
+	postcondicion : POST '(' condicion . ';'  (40)
+
+	';'  shift 234
+	')'  shift 235
 	.  error
 
 
-state 233
-	postcondicion : POST ':' '(' condicion . ')' ';'  (29)
+state 229
+	postcondicion : POST ':' '(' . condicion ')' ';'  (36)
+	postcondicion : POST ':' '(' . error ')' ';'  (37)
 
-	')'  shift 237
+	error  shift 236
+	DOUBLE  shift 65
+	ID  shift 66
+	CTE_ULONG  shift 67
+	CTE_DOUBLE  shift 68
+	CALL  shift 69
+	'-'  shift 71
 	.  error
 
-
-state 234
-	postcondicion : POST condicion ')' ';' .  (32)
-
-	.  reduce 32
-
-
-state 235
-	postcondicion : POST '(' condicion ')' ';' .  (31)
-
-	.  reduce 31
+	expresion_aritmetica  goto 72
+	condicion  goto 237
+	sentencia_llamado_funcion  goto 74
+	expresion_booleana  goto 75
+	sentencia_conversion  goto 76
+	termino  goto 77
+	factor  goto 78
 
 
-state 236
-	postcondicion : POST ':' '(' error ')' . ';'  (30)
+state 230
+	postcondicion : POST condicion ')' . ';'  (39)
 
 	';'  shift 238
 	.  error
 
 
-state 237
-	postcondicion : POST ':' '(' condicion ')' . ';'  (29)
+state 231
+	sentencia_llamado_funcion : CALL ID '(' error ')' ';' .  (55)
+
+	.  reduce 55
+
+
+state 232
+	retorno_funcion : RETURN '(' error ')' ';' .  (32)
+
+	.  reduce 32
+
+
+state 233
+	retorno_funcion : RETURN '(' expresion_aritmetica ')' ';' .  (31)
+
+	.  reduce 31
+
+
+state 234
+	postcondicion : POST '(' condicion ';' .  (40)
+
+	.  reduce 40
+
+
+state 235
+	postcondicion : POST '(' condicion ')' . ';'  (38)
 
 	';'  shift 239
 	.  error
 
 
-state 238
-	postcondicion : POST ':' '(' error ')' ';' .  (30)
+state 236
+	postcondicion : POST ':' '(' error . ')' ';'  (37)
 
-	.  reduce 30
+	')'  shift 240
+	.  error
+
+
+state 237
+	postcondicion : POST ':' '(' condicion . ')' ';'  (36)
+
+	')'  shift 241
+	.  error
+
+
+state 238
+	postcondicion : POST condicion ')' ';' .  (39)
+
+	.  reduce 39
 
 
 state 239
-	postcondicion : POST ':' '(' condicion ')' ';' .  (29)
+	postcondicion : POST '(' condicion ')' ';' .  (38)
 
-	.  reduce 29
+	.  reduce 38
 
 
-42 terminals, 44 nonterminals
-118 grammar rules, 240 states
+state 240
+	postcondicion : POST ':' '(' error ')' . ';'  (37)
+
+	';'  shift 242
+	.  error
+
+
+state 241
+	postcondicion : POST ':' '(' condicion ')' . ';'  (36)
+
+	';'  shift 243
+	.  error
+
+
+state 242
+	postcondicion : POST ':' '(' error ')' ';' .  (37)
+
+	.  reduce 37
+
+
+state 243
+	postcondicion : POST ':' '(' condicion ')' ';' .  (36)
+
+	.  reduce 36
+
+
+42 terminals, 46 nonterminals
+121 grammar rules, 244 states

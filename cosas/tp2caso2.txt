@@ -28,7 +28,7 @@ entero1 := 2;
 IF ( entero1 <= 10) THEN
 	BEGIN
 		entero2 := CALL suc(entero1);
-		WHILE(DOUBLE(entero2) <= doble) DO
+		WHILE(DOUBLE(entero2) <= doble1) DO
 			entero2 := entero1 + entero2 * 3 - 1;
 	END
 ELSE
