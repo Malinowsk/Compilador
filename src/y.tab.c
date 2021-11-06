@@ -414,7 +414,7 @@ YYSTYPE yylval;
 short yyss[YYSTACKSIZE];
 YYSTYPE yyvs[YYSTACKSIZE];
 #define yystacksize YYSTACKSIZE
-#line 469 "gramatica.y"
+#line 489 "gramatica.y"
 
 ///CODIGO JAVA
 
@@ -423,6 +423,7 @@ private TablaSimbolo tablaSimbolo;
 private ArrayList<String> estructuras = new ArrayList<String>(); //Lista de las estructuras detectadas por el parser
 private ArrayList<String> erroresSintacticos = new ArrayList<String>(); //Lista de errores sintacticos detectados por el parser
 private ArrayList<String> erroresSemanticos = new ArrayList<String>(); //Lista de errores semanticos detectados por el parser
+private int indiceErrorABorrar;//entero utilizado para indicar un error a borrar que corresponde al mal uso de un identificador, en caso de que su uso sea correcto se borrara el error (esto solo sucede cuando se hace una asignacion de una un funcion a una variable de forma correcta)
 
 private ArrayList<Terceto> tercetos = new ArrayList<Terceto>(); //Lista de tercetos generados
 private Stack<Integer> pila = new Stack<Integer>(); //Pila utilizada para los tercetos
@@ -505,7 +506,7 @@ private int yylex(){
 private void yyerror(String s){
 
 }
-#line 509 "y.tab.c"
+#line 510 "y.tab.c"
 #define YYABORT goto yyabort
 #define YYACCEPT goto yyaccept
 #define YYERROR goto yyerrlab
@@ -902,38 +903,44 @@ case 51:
 		       		addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable no declarada");
 		       }
 		       else{
-		       		tablaSimbolo.borrarToken(yyvsp[-3].ival);/*se borra de la tabla de simbolos la variable duplicada de la sentencia*/
-		       		yyvsp[-3].ival=nuevaRef;/*se le asigna la referencia a la variable original en la tabla*/
+		       	       tablaSimbolo.borrarToken(yyvsp[-3].ival);/*se borra de la tabla de simbolos la variable duplicada de la sentencia*/
+		       	       yyvsp[-3].ival=nuevaRef;/*se le asigna la referencia a la variable original en la tabla*/
+
+			       if(tablaSimbolo.obtenerToken(yyvsp[-3].ival).getUso()=="funcion")
+					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el identificador a la izquierda de la asignacion no es una variable");
+
+			       if(tablaSimbolo.obtenerToken(yyvsp[-3].ival).getUso()=="funcion designada a variable")/*Solo se puede asignar una funcion*/
+					if(yyvsp[-1].ival<=0){/*$3 no hace referencia a un identificador*/
+						addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
+					}else{
+						if(tablaSimbolo.obtenerToken(yyvsp[-1].ival).getUso()!="funcion"){
+							addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
+						}else{
+							if(tablaSimbolo.obtenerToken(yyvsp[-3].ival).getTipoParametro() != tablaSimbolo.obtenerToken(yyvsp[-1].ival).getTipoParametro())
+								addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el parametro de la funcion es de distinto tipo que el del parametro de la variable");
+							this.erroresSemanticos.remove(indiceErrorABorrar);/*se borra el error ya que se hace buen uso del identificador*/
+						}
+					}
+
+			       if(tablaSimbolo.obtenerToken(yyvsp[-3].ival).getTipo()!=yyvsp[-1].sval)
+					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + tablaSimbolo.obtenerToken(yyvsp[-3].ival).getTipo() + " := " + yyvsp[-1].sval );
+
 		       }
 
- 		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
- 		       if(tablaSimbolo.obtenerToken(yyvsp[-3].ival).getUso()=="funcion")
- 		       		addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el identificador a la izquierda de la asignacion es una funcion");
- 		       if(tablaSimbolo.obtenerToken(yyvsp[-3].ival).getUso()=="funcion designada a variable")/*Solo se puede asignar una funcion*/
- 		       		if(yyvsp[-1].ival==0){/*$3 no hace referencia a un identificador*/
- 		       			addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
- 		       		}else{
- 		       			if(tablaSimbolo.obtenerToken(yyvsp[-1].ival).getUso()!="funcion")
- 		       				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
- 		       			else
- 		       				if(tablaSimbolo.obtenerToken(yyvsp[-3].ival).getTipoParametro() != tablaSimbolo.obtenerToken(yyvsp[-1].ival).getTipoParametro())
- 		       					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el parametro de la funcion es de distinto tipo que el del parametro de la variable");
- 		       		}
-		       if(tablaSimbolo.obtenerToken(yyvsp[-3].ival).getTipo()!=yyvsp[-1].sval)
-                	        addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + tablaSimbolo.obtenerToken(yyvsp[-3].ival).getTipo() + " := " + yyvsp[-1].sval );
 		       yyval = new ParserVal((double)crearTerceto(new ParserVal(ASIG), yyvsp[-3], yyvsp[-1]));
+		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
 		      }
 break;
 case 52:
-#line 238 "gramatica.y"
+#line 244 "gramatica.y"
 { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
 break;
 case 53:
-#line 239 "gramatica.y"
+#line 245 "gramatica.y"
 { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
 break;
 case 54:
-#line 242 "gramatica.y"
+#line 248 "gramatica.y"
 {
                 String auxiliar= ambitoActual;
                 int ultimoPunto = 0;
@@ -943,38 +950,45 @@ case 54:
                         auxiliar = auxiliar.substring(0, ultimoPunto);
                 }
 		int nuevaRef = tablaSimbolo.obtenerReferenciaTabla(tablaSimbolo.obtenerToken(yyvsp[-3].ival).getLexema()+'.'+auxiliar);
+
 		if(nuevaRef == -1){
 			addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", funcion no declarada");
 		}
 		else{
 			tablaSimbolo.borrarToken(yyvsp[-3].ival);/*se borra de la tabla de simbolos la variable duplicada de la sentencia*/
 			yyvsp[-3].ival=nuevaRef;/*se le asigna la referencia a la variable original en la tabla*/
-			if(yyvsp[-1].sval!=tablaSimbolo.obtenerToken(yyvsp[-3].ival).getTipoParametro())
-				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", Error en la invocacion a funcion : El tipo de parametro real no coincide con el formal");
+			Token tFuncion = tablaSimbolo.obtenerToken(yyvsp[-3].ival);
+			if(tFuncion.getUso()=="funcion" || tFuncion.getUso()=="funcion designada a variable"){
+				if(yyvsp[-1].sval!= tFuncion.getTipoParametro())
+					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", Error en la invocacion a funcion : El tipo de parametro real no coincide con el formal");
+			}else{
+				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", se intenta invocar una variable que no es funcion " + tFuncion.getLexema());
+			}
 		}
+
 		addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
 		yyval = new ParserVal((double)crearTerceto(new ParserVal(CALL), yyvsp[-3], yyvsp[-1]));
 		yyval.sval = tablaSimbolo.obtenerToken(yyvsp[-3].ival).getTipo();
 	   }
 break;
 case 55:
-#line 264 "gramatica.y"
+#line 277 "gramatica.y"
 { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
 break;
 case 56:
-#line 267 "gramatica.y"
+#line 280 "gramatica.y"
 {
  			 tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()));
  			}
 break;
 case 57:
-#line 270 "gramatica.y"
+#line 283 "gramatica.y"
 {
 			 tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()));
 			}
 break;
 case 58:
-#line 275 "gramatica.y"
+#line 288 "gramatica.y"
 {
 	tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));
 	int refTerceto =crearTerceto(new ParserVal(-2), new ParserVal(-1), new ParserVal(-1));/*-2 es BI*/
@@ -983,7 +997,7 @@ case 58:
 	}
 break;
 case 59:
-#line 283 "gramatica.y"
+#line 296 "gramatica.y"
 {
  					 int refTerceto = crearTerceto(new ParserVal(-1), yyvsp[-2], new ParserVal(-1));/*el primer-1 es BF*/
 					 pila.push(refTerceto);
@@ -991,110 +1005,110 @@ case 59:
  					 }
 break;
 case 60:
-#line 288 "gramatica.y"
+#line 301 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
 break;
 case 61:
-#line 289 "gramatica.y"
+#line 302 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 62:
-#line 290 "gramatica.y"
+#line 303 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 63:
-#line 291 "gramatica.y"
+#line 304 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia condicional invalida"); }
 break;
 case 64:
-#line 294 "gramatica.y"
+#line 307 "gramatica.y"
 {addEstructura( "Sentencia IF, en la linea: " + analizadorLexico.getNroLineaToken() );
  	  yyval = yyvsp[0];}
 break;
 case 65:
-#line 298 "gramatica.y"
+#line 311 "gramatica.y"
 {
 	  	yyval = new ParserVal((double)crearTerceto(yyvsp[-1], yyvsp[-2], yyvsp[0]));
 	  	}
 break;
 case 66:
-#line 301 "gramatica.y"
+#line 314 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 67:
-#line 304 "gramatica.y"
+#line 317 "gramatica.y"
 {
 			yyval = new ParserVal((double)crearTerceto(yyvsp[-1], yyvsp[-2], yyvsp[0]));
 			}
 break;
 case 68:
-#line 309 "gramatica.y"
+#line 322 "gramatica.y"
 {yyval.ival = COMP_MAYOR_IGUAL;}
 break;
 case 69:
-#line 310 "gramatica.y"
+#line 323 "gramatica.y"
 {yyval.ival = COMP_MENOR_IGUAL;}
 break;
 case 70:
-#line 311 "gramatica.y"
+#line 324 "gramatica.y"
 {yyval.ival = COMP_IGUAL;}
 break;
 case 71:
-#line 312 "gramatica.y"
+#line 325 "gramatica.y"
 {yyval.ival = COMP_DISTINTO;}
 break;
 case 72:
-#line 313 "gramatica.y"
+#line 326 "gramatica.y"
 {yyval.ival = '<';}
 break;
 case 73:
-#line 314 "gramatica.y"
+#line 327 "gramatica.y"
 {yyval.ival = '>';}
 break;
 case 74:
-#line 317 "gramatica.y"
+#line 330 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 75:
-#line 318 "gramatica.y"
+#line 331 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 78:
-#line 325 "gramatica.y"
+#line 338 "gramatica.y"
 {crearTerceto(yyvsp[-4], yyvsp[-2], new ParserVal(-1));}
 break;
 case 79:
-#line 326 "gramatica.y"
+#line 339 "gramatica.y"
 { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", cadena invalida"); }
 break;
 case 80:
-#line 327 "gramatica.y"
+#line 340 "gramatica.y"
 { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 81:
-#line 328 "gramatica.y"
+#line 341 "gramatica.y"
 { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 82:
-#line 329 "gramatica.y"
+#line 342 "gramatica.y"
 { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia PRINT invalida"); }
 break;
 case 83:
-#line 332 "gramatica.y"
+#line 345 "gramatica.y"
 {
  		addEstructura( "Sentencia PRINT, en la linea: " + analizadorLexico.getNroLineaToken() );
  		yyval = new ParserVal((int)PRINT);
  		}
 break;
 case 84:
-#line 338 "gramatica.y"
+#line 351 "gramatica.y"
 {
 							     tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));/*Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues de la ultima sentencia del bloque*/
 							     crearTerceto(new ParserVal(-2), new ParserVal((double)pila.pop()), new ParserVal(-1));/*-2 es BI, se crea un BI al terceto que calcula la condicion del while*/
 							    }
 break;
 case 85:
-#line 344 "gramatica.y"
+#line 357 "gramatica.y"
 {
 					 int refTerceto = crearTerceto(new ParserVal(-1), yyvsp[-2], new ParserVal(-1));/*el primer-1 es BF*/
 					 pila.push(refTerceto);
@@ -1102,33 +1116,33 @@ case 85:
 					}
 break;
 case 86:
-#line 349 "gramatica.y"
+#line 362 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia iterativa invalida"); }
 break;
 case 87:
-#line 350 "gramatica.y"
+#line 363 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
 break;
 case 88:
-#line 351 "gramatica.y"
+#line 364 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 break;
 case 89:
-#line 352 "gramatica.y"
+#line 365 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
 break;
 case 90:
-#line 354 "gramatica.y"
+#line 367 "gramatica.y"
 { addEstructura( "Sentencia WHILE, en la linea: " + analizadorLexico.getNroLineaToken() );
  		 pila.push(tercetos.size());
  	         yyval=yyvsp[0]; }
 break;
 case 101:
-#line 375 "gramatica.y"
+#line 388 "gramatica.y"
 { addEstructura( "Sentencia BREAK, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 102:
-#line 378 "gramatica.y"
+#line 391 "gramatica.y"
 {
  			 addEstructura( "Sentencia de conversion a DOUBLE, en la linea: " + analizadorLexico.getNroLineaToken() );
  			 yyval =  new ParserVal((double)crearTerceto(new ParserVal(DOUBLE), yyvsp[-1], new ParserVal(-1)));
@@ -1136,18 +1150,18 @@ case 102:
  			}
 break;
 case 103:
-#line 383 "gramatica.y"
+#line 396 "gramatica.y"
 { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
 break;
 case 104:
-#line 386 "gramatica.y"
+#line 399 "gramatica.y"
 {
  		      int t = pila.pop();
  		      tercetos.get(t).setT3(new ParserVal((double)tercetos.size()));/*Completa el BT del try*/
 		     }
 break;
 case 105:
-#line 392 "gramatica.y"
+#line 405 "gramatica.y"
 {
  		  /*Primero buscamos el id de la funcion invocada en el try recorriendo la lista de tercetos*/
 		  int i = tercetos.size()-1;
@@ -1158,19 +1172,19 @@ case 105:
 		 }
 break;
 case 106:
-#line 400 "gramatica.y"
+#line 413 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
 break;
 case 107:
-#line 401 "gramatica.y"
+#line 414 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
 break;
 case 108:
-#line 404 "gramatica.y"
+#line 417 "gramatica.y"
 { addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 109:
-#line 407 "gramatica.y"
+#line 420 "gramatica.y"
 {
                               if(yyvsp[-2].sval!=yyvsp[0].sval)
 				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + yyvsp[-2].sval + " + " + yyvsp[0].sval );
@@ -1179,7 +1193,7 @@ case 109:
  		      }
 break;
 case 110:
-#line 413 "gramatica.y"
+#line 426 "gramatica.y"
 {
 				 if(yyvsp[-2].sval!=yyvsp[0].sval)
 					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + yyvsp[-2].sval + " - " + yyvsp[0].sval );
@@ -1188,11 +1202,11 @@ case 110:
 		      }
 break;
 case 111:
-#line 419 "gramatica.y"
+#line 432 "gramatica.y"
 { yyval = yyvsp[0] ; }
 break;
 case 112:
-#line 422 "gramatica.y"
+#line 435 "gramatica.y"
 {
              if(yyvsp[-2].sval!=yyvsp[0].sval)
                    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + yyvsp[-2].sval + " * " + yyvsp[0].sval );
@@ -1201,7 +1215,7 @@ case 112:
 	 }
 break;
 case 113:
-#line 428 "gramatica.y"
+#line 441 "gramatica.y"
 {
                 if(yyvsp[-2].sval!=yyvsp[0].sval)
                      	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + yyvsp[-2].sval + " / " + yyvsp[0].sval );
@@ -1210,18 +1224,18 @@ case 113:
 	 }
 break;
 case 114:
-#line 434 "gramatica.y"
+#line 447 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 115:
-#line 435 "gramatica.y"
+#line 448 "gramatica.y"
 {
 		      yyval = new ParserVal((double)crearTerceto(new ParserVal((int)'*'), new ParserVal(-1), yyvsp[0]));
 		      yyval.sval=yyvsp[-1].sval;
 	 }
 break;
 case 116:
-#line 441 "gramatica.y"
+#line 454 "gramatica.y"
 {
        String auxiliar= ambitoActual;
        int ultimoPunto = 0;
@@ -1231,36 +1245,43 @@ case 116:
 			auxiliar = auxiliar.substring(0, ultimoPunto);
        }
        int nuevaRef = tablaSimbolo.obtenerReferenciaTabla(tablaSimbolo.obtenerToken(yyvsp[0].ival).getLexema()+'.'+auxiliar);
+
        if(nuevaRef == -1){
 		addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable no declarada");
        }
        else{
 		tablaSimbolo.borrarToken(yyvsp[0].ival);/*se borra de la tabla de simbolos la variable duplicada de la sentencia*/
 		yyvsp[0].ival=nuevaRef;/*se le asigna la referencia a la variable original en la tabla*/
+
+		Token tVariable = tablaSimbolo.obtenerToken(yyvsp[0].ival);
+		if(tVariable.getUso()!="variable" && tVariable.getUso()!="parametro"){
+			addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", mal uso del identificador " + tVariable.getLexema());/*este error puede llegar a borrarse si ocurre el unico caso en el que el identificador tiene un buen uso*/
+			indiceErrorABorrar= this.erroresSemanticos.size()-1;/*se usa para borrar el error en caso de que el uso sea correcto, es decir que se asigne correctamente a una variable de funcion designada*/
+		}
        }
        yyval = yyvsp[0];
        yyval.sval=tablaSimbolo.obtenerToken(yyvsp[0].ival).getTipo();
      }
 break;
 case 117:
-#line 460 "gramatica.y"
+#line 480 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 118:
-#line 461 "gramatica.y"
+#line 481 "gramatica.y"
 {yyval = yyvsp[0];}
 break;
 case 119:
-#line 462 "gramatica.y"
+#line 482 "gramatica.y"
 {  yyval = yyvsp[0];
                        yyval.sval="ULONG";}
 break;
 case 120:
-#line 464 "gramatica.y"
+#line 484 "gramatica.y"
 {yyval = yyvsp[0];
                       yyval.sval="DOUBLE";}
 break;
-#line 1264 "y.tab.c"
+#line 1285 "y.tab.c"
     }
     yyssp -= yym;
     yystate = *yyssp;

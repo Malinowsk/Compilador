@@ -214,26 +214,32 @@ import java.util.HashMap;
 		       		addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable no declarada");
 		       }
 		       else{
-		       		tablaSimbolo.borrarToken($1.ival);//se borra de la tabla de simbolos la variable duplicada de la sentencia
-		       		$1.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
+		       	       tablaSimbolo.borrarToken($1.ival);//se borra de la tabla de simbolos la variable duplicada de la sentencia
+		       	       $1.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
+
+			       if(tablaSimbolo.obtenerToken($1.ival).getUso()=="funcion")
+					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el identificador a la izquierda de la asignacion no es una variable");
+
+			       if(tablaSimbolo.obtenerToken($1.ival).getUso()=="funcion designada a variable")//Solo se puede asignar una funcion
+					if($3.ival<=0){//$3 no hace referencia a un identificador
+						addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
+					}else{
+						if(tablaSimbolo.obtenerToken($3.ival).getUso()!="funcion"){
+							addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
+						}else{
+							if(tablaSimbolo.obtenerToken($1.ival).getTipoParametro() != tablaSimbolo.obtenerToken($3.ival).getTipoParametro())
+								addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el parametro de la funcion es de distinto tipo que el del parametro de la variable");
+							this.erroresSemanticos.remove(indiceErrorABorrar);//se borra el error ya que se hace buen uso del identificador
+						}
+					}
+
+			       if(tablaSimbolo.obtenerToken($1.ival).getTipo()!=$3.sval)
+					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + tablaSimbolo.obtenerToken($1.ival).getTipo() + " := " + $3.sval );
+
 		       }
 
- 		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
- 		       if(tablaSimbolo.obtenerToken($1.ival).getUso()=="funcion")
- 		       		addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el identificador a la izquierda de la asignacion es una funcion");
- 		       if(tablaSimbolo.obtenerToken($1.ival).getUso()=="funcion designada a variable")//Solo se puede asignar una funcion
- 		       		if($3.ival==0){//$3 no hace referencia a un identificador
- 		       			addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
- 		       		}else{
- 		       			if(tablaSimbolo.obtenerToken($3.ival).getUso()!="funcion")
- 		       				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
- 		       			else
- 		       				if(tablaSimbolo.obtenerToken($1.ival).getTipoParametro() != tablaSimbolo.obtenerToken($3.ival).getTipoParametro())
- 		       					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el parametro de la funcion es de distinto tipo que el del parametro de la variable");
- 		       		}
-		       if(tablaSimbolo.obtenerToken($1.ival).getTipo()!=$3.sval)
-                	        addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + tablaSimbolo.obtenerToken($1.ival).getTipo() + " := " + $3.sval );
 		       $$ = new ParserVal((double)crearTerceto(new ParserVal(ASIG), $1, $3));
+		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
 		      }
  		      | ID error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
  		      | ID ASIG error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
@@ -248,15 +254,22 @@ import java.util.HashMap;
                         auxiliar = auxiliar.substring(0, ultimoPunto);
                 }
 		int nuevaRef = tablaSimbolo.obtenerReferenciaTabla(tablaSimbolo.obtenerToken($2.ival).getLexema()+'.'+auxiliar);
+
 		if(nuevaRef == -1){
 			addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", funcion no declarada");
 		}
 		else{
 			tablaSimbolo.borrarToken($2.ival);//se borra de la tabla de simbolos la variable duplicada de la sentencia
 			$2.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
-			if($4.sval!=tablaSimbolo.obtenerToken($2.ival).getTipoParametro())
-				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", Error en la invocacion a funcion : El tipo de parametro real no coincide con el formal");
+			Token tFuncion = tablaSimbolo.obtenerToken($2.ival);
+			if(tFuncion.getUso()=="funcion" || tFuncion.getUso()=="funcion designada a variable"){
+				if($4.sval!= tFuncion.getTipoParametro())
+					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", Error en la invocacion a funcion : El tipo de parametro real no coincide con el formal");
+			}else{
+				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", se intenta invocar una variable que no es funcion " + tFuncion.getLexema());
+			}
 		}
+
 		addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
 		$$ = new ParserVal((double)crearTerceto(new ParserVal(CALL), $2, $4));
 		$$.sval = tablaSimbolo.obtenerToken($2.ival).getTipo();
@@ -447,12 +460,19 @@ import java.util.HashMap;
 			auxiliar = auxiliar.substring(0, ultimoPunto);
        }
        int nuevaRef = tablaSimbolo.obtenerReferenciaTabla(tablaSimbolo.obtenerToken($1.ival).getLexema()+'.'+auxiliar);
+
        if(nuevaRef == -1){
 		addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable no declarada");
        }
        else{
 		tablaSimbolo.borrarToken($1.ival);//se borra de la tabla de simbolos la variable duplicada de la sentencia
 		$1.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
+
+		Token tVariable = tablaSimbolo.obtenerToken($1.ival);
+		if(tVariable.getUso()!="variable" && tVariable.getUso()!="parametro"){
+			addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", mal uso del identificador " + tVariable.getLexema());//este error puede llegar a borrarse si ocurre el unico caso en el que el identificador tiene un buen uso
+			indiceErrorABorrar= this.erroresSemanticos.size()-1;//se usa para borrar el error en caso de que el uso sea correcto, es decir que se asigne correctamente a una variable de funcion designada
+		}
        }
        $$ = $1;
        $$.sval=tablaSimbolo.obtenerToken($1.ival).getTipo();
@@ -474,6 +494,7 @@ private TablaSimbolo tablaSimbolo;
 private ArrayList<String> estructuras = new ArrayList<String>(); //Lista de las estructuras detectadas por el parser
 private ArrayList<String> erroresSintacticos = new ArrayList<String>(); //Lista de errores sintacticos detectados por el parser
 private ArrayList<String> erroresSemanticos = new ArrayList<String>(); //Lista de errores semanticos detectados por el parser
+private int indiceErrorABorrar;//entero utilizado para indicar un error a borrar que corresponde al mal uso de un identificador, en caso de que su uso sea correcto se borrara el error (esto solo sucede cuando se hace una asignacion de una un funcion a una variable de forma correcta)
 
 private ArrayList<Terceto> tercetos = new ArrayList<Terceto>(); //Lista de tercetos generados
 private Stack<Integer> pila = new Stack<Integer>(); //Pila utilizada para los tercetos

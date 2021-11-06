@@ -24,4 +24,11 @@ funcion_v := suc;
 funcion_w := suc;
 funcion_s := suc;
 
+entero1:= suc + funcion_v;
+
+entero1:= CALL suc(1);
+entero1:= CALL funcion_v(1);
+entero1:= CALL entero1(1);
+entero1:= CALL suc(funcion_v);
+
 END
