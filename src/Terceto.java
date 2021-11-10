@@ -4,6 +4,7 @@ public class Terceto {
     private ParserVal t1 ;
     private ParserVal t2 ;
     private ParserVal t3 ;
+    private boolean etiqueta;
 
 
     public Terceto (ParserVal t1 , ParserVal t2 , ParserVal t3){
@@ -11,6 +12,7 @@ public class Terceto {
         this.t1 = t1;
         this.t2 = t2;
         this.t3 = t3;
+        this.etiqueta= false;
     }
 
     public ParserVal getT1(){
@@ -50,6 +52,14 @@ public class Terceto {
             stringT3 = String.valueOf(this.t3.dval);
             stringT3 = '['+stringT3.substring(0, stringT3.length()-2)+']';
         }
-        return "( "+ stringT1 + ", " + stringT2 + ", " + stringT3 + ")";
+        return "( "+ stringT1 + ", " + stringT2 + ", " + stringT3 + ")" + this.etiqueta;
+    }
+
+    public boolean isEtiqueta() {
+        return etiqueta;
+    }
+
+    public void setEtiqueta() {
+        this.etiqueta = true;
     }
 }

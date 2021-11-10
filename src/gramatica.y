@@ -149,7 +149,7 @@ import java.util.HashMap;
  		 | RETURN '(' error ')' ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
  		 | RETURN '(' expresion_aritmetica ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
  		 | RETURN expresion_aritmetica ')' ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
- 		 | error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
+ 		// | error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  ;
 
  postcondicion : POST ':' '(' condicion ')' ';' {
@@ -176,11 +176,6 @@ import java.util.HashMap;
 			int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
 			postCondiciones.put(refFuncion, tercetos.size()-1);//Se guarda en el hashmap la posicion del terceto de condicion (ult terceto agregado en este punto) con la clave= ID de la funcion
 			addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre");
-		}
-	       | error ';' {
-			int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
-			postCondiciones.put(refFuncion, 0);//Se guarda en el hashmap la posicion del terceto de condicion (ult terceto agregado en este punto) con la clave= ID de la funcion
-			addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida");
 		}
  ;
 
@@ -241,8 +236,9 @@ import java.util.HashMap;
 		       $$ = new ParserVal((double)crearTerceto(new ParserVal(ASIG), $1, $3));
 		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
 		      }
- 		      | ID error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia asignacion invalida"); }
+ 		      | ID error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  		      | ID ASIG error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
+              | error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida");}
  ;
 
  sentencia_llamado_funcion : CALL ID '('expresion_aritmetica ')'{
@@ -279,15 +275,18 @@ import java.util.HashMap;
 
  sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';' {
  			 tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()));
+ 			 tercetos.get(tercetos.size()-1).setEtiqueta();
  			}//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues del ENDIF
                        | condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF ';'{
 			 tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()));
+			 tercetos.get(tercetos.size()-1).setEtiqueta();
 			}//Se modifica el BI, agregandole la referencia correspondiente al proximo terceto despues del ENDIF
  ;
 
  else: ELSE{
 	tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));
 	int refTerceto =crearTerceto(new ParserVal(-2), new ParserVal(-1), new ParserVal(-1));//-2 es BI
+	tercetos.get(tercetos.size()-1).setEtiqueta();
 	pila.push(refTerceto);
 	$$ = new ParserVal((double)refTerceto);
 	}//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues del ELSE, se crea el terceto BI y se agrega a la pila la referencia al mismo
@@ -351,6 +350,7 @@ import java.util.HashMap;
  sentencia_iterativa : iterativo bloque_ejecutable_iterativo{
 							     tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues de la ultima sentencia del bloque
 							     crearTerceto(new ParserVal(-2), new ParserVal((double)pila.pop()), new ParserVal(-1));//-2 es BI, se crea un BI al terceto que calcula la condicion del while
+							     tercetos.get(tercetos.size()-1).setEtiqueta();
 							    }
  ;
 
@@ -366,6 +366,7 @@ import java.util.HashMap;
 
  while : WHILE { addEstructura( "Sentencia WHILE, en la linea: " + analizadorLexico.getNroLineaToken() );
  		 pila.push(tercetos.size());
+ 		 tercetos.get(tercetos.size()-1).setEtiqueta();
  	         $$=$1; }
  ;
 
@@ -398,6 +399,7 @@ import java.util.HashMap;
 
  sentencia_try_catch : bifurcacion_try bloque_ejecutable{
  		      int t = pila.pop();
+ 		      tercetos.get(tercetos.size()-1).setEtiqueta();
  		      tercetos.get(t).setT3(new ParserVal((double)tercetos.size()));//Completa el BT del try
 		     }
  ;

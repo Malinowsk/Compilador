@@ -15,6 +15,7 @@ public class Main {
         al.leerNuevoArchivo(codigo);
         parser.setAnalizadorLexico(al);
         parser.yyparse();
+
         menu(al, parser);
     }
 
