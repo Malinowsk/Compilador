@@ -29,8 +29,8 @@ public class AnalizadorLexico {
         this.codigo = new ArrayList<String>();
         this.tokens = new ArrayList< Dupla<Integer, Integer> >();
         this.nroLineas = new ArrayList<Integer>();
-        //this.indiceToken = 0;
         this.errores = new ArrayList< String >();
+        this.warnings = new ArrayList< String >();
     }
 
     //Metodo que lee un codigo para generar la lista de tokens respectiva

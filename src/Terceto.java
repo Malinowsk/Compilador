@@ -4,11 +4,10 @@ public class Terceto {
     private ParserVal t1 ;
     private ParserVal t2 ;
     private ParserVal t3 ;
-    private boolean etiqueta;
+    private boolean etiqueta; //indica si luego del terceto viene una etiqueta o no
 
 
     public Terceto (ParserVal t1 , ParserVal t2 , ParserVal t3){
-
         this.t1 = t1;
         this.t2 = t2;
         this.t3 = t3;
@@ -46,16 +45,21 @@ public class Terceto {
         if(t2.ival==0) {
             stringT2 = String.valueOf(this.t2.dval);
             stringT2 = '['+stringT2.substring(0, stringT2.length()-2)+']';
+            if(t1.ival==-2)//BI
+                stringT2 = "ETIQUETA"+ stringT2;
         }
 
         if(t3.ival==0) {
             stringT3 = String.valueOf(this.t3.dval);
             stringT3 = '['+stringT3.substring(0, stringT3.length()-2)+']';
+            if((t1.ival==-1) || (t1.ival==-3))//BF o BT
+                stringT3 = "ETIQUETA"+ stringT3;
         }
-        return "( "+ stringT1 + ", " + stringT2 + ", " + stringT3 + ")" + this.etiqueta;
+
+        return "( "+ stringT1 + ", " + stringT2 + ", " + stringT3 + ")";
     }
 
-    public boolean isEtiqueta() {
+    public boolean getEtiqueta() {
         return etiqueta;
     }
 

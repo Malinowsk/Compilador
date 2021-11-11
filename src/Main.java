@@ -39,7 +39,10 @@ public class Main {
                 case 1: {al.imprimirTokens(); break;}
                 case 2: {al.getTablaSimbolo().imprimirTabla();break;}
                 case 3: {p.imprimirEstructuras(); break;}
-                case 4: {al.imprimirErroresLexicos();
+                case 4: {
+                            al.imprimirWarningsLexicos();
+                            p.imprimirWarningsSemanticos();
+                            al.imprimirErroresLexicos();
                             p.imprimirErroresSintacticos();
                             p.imprimirErroresSemanticos();
                             break;}

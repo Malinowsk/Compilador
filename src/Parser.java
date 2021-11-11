@@ -559,6 +559,7 @@ private ArrayList<String> estructuras = new ArrayList<String>(); //Lista de las 
 private ArrayList<String> erroresSintacticos = new ArrayList<String>(); //Lista de errores sintacticos detectados por el parser
 private ArrayList<String> erroresSemanticos = new ArrayList<String>(); //Lista de errores semanticos detectados por el parser
 private int indiceErrorABorrar;//entero utilizado para indicar un error a borrar que corresponde al mal uso de un identificador, en caso de que su uso sea correcto se borrara el error (esto solo sucede cuando se hace una asignacion de una un funcion a una variable de forma correcta)
+private ArrayList<String> warnings = new ArrayList<String>(); //Lista de warnings detectados por el parser
 
 private ArrayList<Terceto> tercetos = new ArrayList<Terceto>(); //Lista de tercetos generados
 private Stack<Integer> pila = new Stack<Integer>(); //Pila utilizada para los tercetos
@@ -587,8 +588,9 @@ public void imprimirTercetos(){
 	for(Terceto t : tercetos){
 		System.out.println("[" + i + "]" + t.getTerceto(tablaSimbolo));
 		i++;
-		}
-
+		if(t.getEtiqueta())
+			System.out.println("ETIQUETA[" + i + "]");
+	}
 }
 
 private void addEstructura(String e){
@@ -610,6 +612,10 @@ private void addErrorSemantico(String e){
 	erroresSemanticos.add(e);
 }
 
+private void addWarning(String w){
+	warnings.add(w);
+}
+
 //Metodo usado por el Main para imprimir los erroresSintacticos lexicos
 public void imprimirErroresSintacticos(){
         System.out.println("Se detectaron " + this.erroresSintacticos.size() + " errores sintacticos en el codigo");
@@ -624,6 +630,14 @@ public void imprimirErroresSemanticos(){
         for(String e: this.erroresSemanticos){
             System.out.println(" - " + e);
         }
+}
+
+//Metodo utilizado por el Main para imprimir los warnings semanticos detectados
+public void imprimirWarningsSemanticos(){
+	System.out.println("Se detectaron " + this.warnings.size() + " warnings semanticos en el codigo");
+	for(String w: this.warnings){
+	    System.out.println(" - " + w);
+	}
 }
 
 public boolean hayError(){
@@ -641,7 +655,7 @@ private int yylex(){
 private void yyerror(String s){
 
 }
-//#line 573 "Parser.java"
+//#line 587 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -836,7 +850,7 @@ case 14:
 			    tablaSimbolo.obtenerToken(val_peek(2).ival).setUso("variable");
 			}else{
 			    tablaSimbolo.borrarToken(val_peek(2).ival);
-			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
+			    addWarning("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada, se eliminaron las redeclaraciones pertinentes");
 			}
  		 }
 break;
@@ -850,7 +864,7 @@ case 15:
 			}
 			else{
 			    tablaSimbolo.borrarToken(val_peek(0).ival);
-			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
+			    addWarning("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada, se eliminaron las redeclaraciones pertinentes");
 			}
 	         }
 break;
@@ -883,7 +897,7 @@ case 20:
  			    tablaSimbolo.obtenerToken(val_peek(2).ival).setTipoParametro(tipoActual);
  			}else{
  			    tablaSimbolo.borrarToken(val_peek(2).ival);
- 			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
+ 			    addWarning("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada, se eliminaron las redeclaraciones pertinentes");
  			}
   		 }
 break;
@@ -898,7 +912,7 @@ case 21:
  			}
  			else{
  			    tablaSimbolo.borrarToken(val_peek(0).ival);
- 			    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada");
+ 			    addWarning("Linea " + analizadorLexico.getNroLineaToken() + ", variable redeclarada, se eliminaron las redeclaraciones pertinentes");
  			}
  	         }
 break;
@@ -1428,7 +1442,7 @@ case 119:
 {yyval = val_peek(0);
                       yyval.sval="DOUBLE";}
 break;
-//#line 1355 "Parser.java"
+//#line 1369 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####
