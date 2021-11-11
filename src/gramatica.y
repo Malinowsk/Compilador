@@ -125,6 +125,7 @@ import java.util.HashMap;
  			     ambitoActual= ambitoActual + '.' + auxiliar;
  			 }
  			 addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
+			 crearTerceto(new ParserVal(FUNC), $3, new ParserVal(-1));
  		  }
  		  | tipo error ID '(' parametro ')' { ambitoActual= ambitoActual + '.' + tablaSimbolo.obtenerToken($3.ival).getLexema(); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida");
  		  }
@@ -145,7 +146,10 @@ import java.util.HashMap;
 	}
  ;
  
- retorno_funcion : RETURN '(' expresion_aritmetica ')' ';' { addEstructura( "Sentencia RETURN, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ retorno_funcion : RETURN '(' expresion_aritmetica ')' ';' {
+ 				crearTerceto(new ParserVal(RETURN), $3, new ParserVal(-1));
+ 				addEstructura( "Sentencia RETURN, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 		 }
  		 | RETURN '(' error ')' ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
  		 | RETURN '(' expresion_aritmetica ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
  		 | RETURN expresion_aritmetica ')' ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
@@ -238,7 +242,7 @@ import java.util.HashMap;
 		      }
  		      | ID error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
  		      | ID ASIG error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
-              | error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida");}
+              	      | error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida");}
  ;
 
  sentencia_llamado_funcion : CALL ID '('expresion_aritmetica ')'{
@@ -326,8 +330,8 @@ import java.util.HashMap;
             | '>' {$$.ival = '>';}
  ;
 
- operacion_booleana : AND {$$ = $1;}
-                    | OR {$$ = $1;}
+ operacion_booleana : AND {$$.ival = AND;}
+                    | OR {$$.ival = OR;}
  ;
 
  bloque_ejecutable_condicional : BEGIN sentencias_ejecutables END
