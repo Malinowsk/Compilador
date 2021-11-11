@@ -4,8 +4,9 @@ public class Terceto {
     private ParserVal t1 ;
     private ParserVal t2 ;
     private ParserVal t3 ;
-    private boolean etiqueta; //indica si luego del terceto viene una etiqueta o no
 
+    private boolean etiqueta; //indica si luego del terceto viene una etiqueta o no
+    private String auxiliar; //nombre de la variable auxiliar que le asigna el ensamblador
 
     public Terceto (ParserVal t1 , ParserVal t2 , ParserVal t3){
         this.t1 = t1;
@@ -20,6 +21,10 @@ public class Terceto {
 
     public ParserVal getT2(){
         return this.t2;
+    }
+
+    public ParserVal getT3(){
+        return this.t3;
     }
 
     public void setT2(ParserVal t2) {
@@ -65,5 +70,13 @@ public class Terceto {
 
     public void setEtiqueta() {
         this.etiqueta = true;
+    }
+
+    public String getAuxiliar() {
+        return auxiliar;
+    }
+
+    public void setAuxiliar(String auxiliar) {
+        this.auxiliar = auxiliar;
     }
 }

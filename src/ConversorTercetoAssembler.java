@@ -4,11 +4,11 @@ import java.util.HashMap;
 public class ConversorTercetoAssembler {
 
     private ArrayList<Terceto> tercetos;
-    private HashMap<Integer,Token> tablaDeSimbolos;
+    private TablaSimbolo tablaDeSimbolos;
 
     private StringBuilder code;
 
-    public ConversorTercetoAssembler(ArrayList<Terceto> tercetos , HashMap<Integer,Token> tablaDeSimbolos ) {
+    public ConversorTercetoAssembler(ArrayList<Terceto> tercetos , TablaSimbolo tablaDeSimbolos ) {
         this.tercetos = tercetos;
         this.tablaDeSimbolos = tablaDeSimbolos;
     }
@@ -68,13 +68,40 @@ public class ConversorTercetoAssembler {
         this.code.append("START:");
         this.code.append("\n");
         Terceto tercetoActual;
+        int contadorAuxiliar=0;
         for(int i = 0; i < this.tercetos.size(); i++) // por cada uno de los tecetos vamos generando el codigo
         {
             tercetoActual = tercetos.get(i);
-            String operando = String.valueOf(tercetoActual.getT1());
-            switch (operando){
+            String operador = tablaDeSimbolos.obtenerValor(tercetoActual.getT1().ival);
+            switch (operador){
 
-                case "+": case "*": case "-": case ":=": case "<": case ">": case "<=": case ">=": case "==":
+                case "+": {
+                    //SUMA ENTRE ENTEROS
+                    String operando1="";
+                    if(tercetoActual.getT2().ival!=0) {//t2 apunta a tabla
+                        operando1 =tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival);
+                        if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso()!=null)
+                            operando1 = "_" + operando1;
+                    }else//t2 apunta a auxiliar
+                        operando1 = tercetos.get(tercetoActual.getT2().ival).getAuxiliar();
+                    this.code.append("MOV R1, "+operando1);
+
+                    String operando2="";
+                    if(tercetoActual.getT3().ival!=0) {//t3 apunta a tabla
+                        operando2 = tablaDeSimbolos.obtenerValor(tercetoActual.getT3().ival);
+                        if (tablaDeSimbolos.obtenerToken(tercetoActual.getT3().ival).getUso() != null)
+                            operando2 = "_" + operando2;
+                    }else//t3 apunta a auxiliar
+                        operando2 =tercetos.get(tercetoActual.getT3().ival).getAuxiliar();
+                    this.code.append("ADD R1, "+operando2);
+
+                    this.code.append("MOV @aux"+ contadorAuxiliar +", R1");
+                    tercetos.get(i).setAuxiliar("@aux"+contadorAuxiliar);
+                    contadorAuxiliar++;
+                    break;
+                }
+
+                case "*": case "-": case ":=": case "<": case ">": case "<=": case ">=": case "==":
 
                     break;
 
