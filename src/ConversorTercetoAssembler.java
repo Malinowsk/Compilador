@@ -19,9 +19,13 @@ public class ConversorTercetoAssembler {
         StringBuilder assembler = new StringBuilder();
         assembler.append(this.getEncabezadoAssembler());
         assembler.append("\n");
-        assembler.append(this.getZonaDatosAssembler());
+
+        String zonaCodigo = this.getZonaCodigoAssembler();
+        String zonaDatos = this.getZonaDatosAssembler();
+
+        assembler.append(zonaDatos);
         assembler.append("\n");
-        assembler.append(this.getZonaCodigoAssembler());
+        assembler.append(zonaCodigo);
         assembler.append("\n");
         return assembler.toString();
     }
@@ -78,20 +82,20 @@ public class ConversorTercetoAssembler {
                 case "+": {
                     //SUMA ENTRE ENTEROS
                     String operando1="";
-                    if(tercetoActual.getT2().ival!=0) {//t2 apunta a tabla
+                    if(tercetoActual.getT2().ival!=0) {//t2 apunta a tabla -> Siendo una variable o constante
                         operando1 =tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival);
-                        if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso()!=null)
-                            operando1 = "_" + operando1;
-                    }else//t2 apunta a auxiliar
+                        if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso()!=null) //Significa que es una variable y no una constante
+                            operando1 = "_" + operando1; // le agrego el guíon adelante por ser variable
+                    }else//t2 apunta a auxiliar -> Siendo un puntero a otro terceto
                         operando1 = tercetos.get(tercetoActual.getT2().ival).getAuxiliar();
                     this.code.append("MOV R1, "+operando1);
 
                     String operando2="";
-                    if(tercetoActual.getT3().ival!=0) {//t3 apunta a tabla
+                    if(tercetoActual.getT3().ival!=0) {//t3 apunta a tabla  -> Siendo una variable o constante
                         operando2 = tablaDeSimbolos.obtenerValor(tercetoActual.getT3().ival);
-                        if (tablaDeSimbolos.obtenerToken(tercetoActual.getT3().ival).getUso() != null)
-                            operando2 = "_" + operando2;
-                    }else//t3 apunta a auxiliar
+                        if (tablaDeSimbolos.obtenerToken(tercetoActual.getT3().ival).getUso() != null) //Significa que es una variable y no una constante
+                            operando2 = "_" + operando2; // le agrego el guíon adelante por ser variable
+                    }else//t3 apunta a auxiliar -> Siendo un puntero a otro terceto
                         operando2 =tercetos.get(tercetoActual.getT3().ival).getAuxiliar();
                     this.code.append("ADD R1, "+operando2);
 
