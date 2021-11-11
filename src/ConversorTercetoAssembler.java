@@ -6,6 +6,8 @@ public class ConversorTercetoAssembler {
     private ArrayList<Terceto> tercetos;
     private HashMap<Integer,Token> tablaDeSimbolos;
 
+    private StringBuilder code;
+
     public ConversorTercetoAssembler(ArrayList<Terceto> tercetos , HashMap<Integer,Token> tablaDeSimbolos ) {
         this.tercetos = tercetos;
         this.tablaDeSimbolos = tablaDeSimbolos;
@@ -61,6 +63,58 @@ public class ConversorTercetoAssembler {
 
     private String getZonaCodigoAssembler()
     {
+        this.code.append(".code");
+        this.code.append("\n");
+        this.code.append("START:");
+        this.code.append("\n");
+        Terceto tercetoActual;
+        for(int i = 0; i < this.tercetos.size(); i++) // por cada uno de los tecetos vamos generando el codigo
+        {
+            tercetoActual = tercetos.get(i);
+            String operando = String.valueOf(tercetoActual.getT1());
+            switch (operando){
+
+                case "+": case "*": case "-": case ":=": case "<": case ">": case "<=": case ">=": case "==":
+
+                    break;
+
+                case "/":
+
+                    break;
+
+                case "BF":
+
+                    break;
+
+                case "BI":
+
+                    break;
+
+                case "BT":
+
+                    break;
+
+                case "CALL":
+
+                    break;
+
+                case "DOBLE":
+
+                    break;
+
+                case "PRINT":
+
+                    break;
+
+                default:
+
+            }
+
+        }
+
+
+
+
         return "";
     }
 
