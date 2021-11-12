@@ -15,11 +15,11 @@ public class Main {
         al.leerNuevoArchivo(codigo);
         parser.setAnalizadorLexico(al);
         parser.yyparse();
-
-        menu(al, parser);
+        ConversorTercetoAssembler conversor = new ConversorTercetoAssembler(parser.getTercetos(), al.getTablaSimbolo());
+        menu(al, parser, conversor);
     }
 
-    public static void menu(AnalizadorLexico al, Parser p) throws InterruptedException {
+    public static void menu(AnalizadorLexico al, Parser p, ConversorTercetoAssembler c) throws InterruptedException {
         int opcion ;
         Scanner s = new Scanner (System.in);
         do {
@@ -31,7 +31,8 @@ public class Main {
             System.out.println("3- Listar estructuras");
             System.out.println("4- Listar errores");
             System.out.println("5- Listar tercetos");
-            System.out.println("6- Salir");
+            System.out.println("6- Listar instrucciones");
+            System.out.println("7- Salir");
             System.out.println("Ingrese una opción");
             opcion = s.nextInt();
             switch (opcion) {
@@ -51,10 +52,14 @@ public class Main {
                          else
                             System.out.println("No se listan los tercetos debido a que hay al menos un error, revisar el listado de errores con la opcion 4.");
                          break;}
-                case 6: {System.out.println("Fin de la ejecución."); break;}
+                case 6: {
+                        System.out.println(c.getConversionAssembler());
+                        break;
+                }
+                case 7: {System.out.println("Fin de la ejecución."); break;}
             }
             sleep(2000);
-        } while ( opcion != 6);
+        } while ( opcion != 7);
     }
 
 }

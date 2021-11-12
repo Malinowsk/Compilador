@@ -101,9 +101,11 @@ import java.util.HashMap;
 
  sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion END {
  					ambitoActual= ambitoActual.substring(0, ambitoActual.lastIndexOf('.'));
+ 					//TODO: CREARTERCETO CON RETORNOACTUAL (RETORNOACTUAL.T1, RETORNOACTUAL.T2, -1)
  				}
                                | cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END {
                                		ambitoActual= ambitoActual.substring(0, ambitoActual.lastIndexOf('.'));
+					//TODO: CREARTERCETO CON RETORNOACTUAL (RETORNOACTUAL.T1, RETORNOACTUAL.T2, -1)
                                }
  ;
 
@@ -147,7 +149,10 @@ import java.util.HashMap;
  ;
  
  retorno_funcion : RETURN '(' expresion_aritmetica ')' ';' {
- 				crearTerceto(new ParserVal(RETURN), $3, new ParserVal(-1));
+ 				int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
+ 				if(tablaSimbolo.obtenerToken(refFuncion).getTipo() != $3.sval)
+ 					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles entre el retorno de la funcion y lo retornado");//TODO: AGREGAR AL INFORME
+ 				crearTerceto(new ParserVal(RETURN), $3, new ParserVal(-1));//TODO: NO CREAR SINO GUARDAR EN AUXILIAR RETORNOACTUAL
  				addEstructura( "Sentencia RETURN, en la linea: " + analizadorLexico.getNroLineaToken() );
  		 }
  		 | RETURN '(' error ')' ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
@@ -160,6 +165,7 @@ import java.util.HashMap;
  			int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
  			postCondiciones.put(refFuncion, tercetos.size()-1);//Se guarda en el hashmap la posicion del terceto de condicion (ult terceto agregado en este punto) con la clave= ID de la funcion
  			addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 			//TODO: VER SI CREAR TERCETO PARA EL POST
  		}
 	       | POST ':' '(' error ')' ';'  {
 			int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
@@ -390,7 +396,9 @@ import java.util.HashMap;
                                 | sentencia_break
  ; 
 
- sentencia_break : BREAK ';'{ addEstructura( "Sentencia BREAK, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ sentencia_break : BREAK ';'{ addEstructura( "Sentencia BREAK, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 				//TODO: AGREGAR TERCETO PARA EL BREAK, UN BI
+ }
  ;
 
  sentencia_conversion : DOUBLE '(' expresion_aritmetica ')'{
@@ -584,6 +592,10 @@ public void imprimirWarningsSemanticos(){
 
 public boolean hayError(){
 	return ((this.erroresSintacticos.size()>0) || (this.erroresSemanticos.size()>0));
+}
+
+public ArrayList<Terceto> getTercetos(){
+	return tercetos;
 }
 
 private int yylex(){
