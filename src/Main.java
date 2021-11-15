@@ -1,31 +1,65 @@
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
-import static javax.print.attribute.standard.MediaSizeName.A;
+import static java.lang.Thread.sleep;
 
 public class Main {
 
-    public static void main(String[] args) throws FileNotFoundException {
-        
-        AnalizadorLexico a = new AnalizadorLexico();
-        a.leerNuevoArchivo("TPE-DisenioDeCompiladores/cosas/Codigo.txt");
-        a.imprimirLista();
-
-            //Inicializar
-            /*Scanner scannan = new Scanner(new File("./cosas/Acc.txt"));
-            ArrayList<String> lineas = new ArrayList<>();
-            while(scannan.hasNext()){
-                lineas.add(scannan.nextLine());
-            }
-
-            for(String a : lineas){
-                for(int i = 0; i<a.length();i++)
-                    System.out.print(a.charAt(i));
-                System.out.println();
-            }
-            */
+    public static void main(String[] args) throws FileNotFoundException, InterruptedException {
+        Parser parser = new Parser();
+        AnalizadorLexico al = new AnalizadorLexico();
+        System.out.println("A continuacion escriba el nombre del codigo a compilar mas la extension .txt, ejemplo : Codigo.txt");
+        System.out.println("(Recordar que el codigo debe estar en la misma carpeta que este ejecutable)");
+        Scanner s = new Scanner (System.in);
+        String codigo = s.nextLine();
+        al.leerNuevoArchivo(codigo);
+        parser.setAnalizadorLexico(al);
+        parser.yyparse();
+        ConversorTercetoAssembler conversor = new ConversorTercetoAssembler(parser.getTercetos(), al.getTablaSimbolo());
+        menu(al, parser, conversor);
     }
-    
+
+    public static void menu(AnalizadorLexico al, Parser p, ConversorTercetoAssembler c) throws InterruptedException {
+        int opcion ;
+        Scanner s = new Scanner (System.in);
+        do {
+            System.out.println(" ");
+            System.out.println("Elija una opcion del menu:");
+            System.out.println("0- Imprimir codigo");
+            System.out.println("1- Listar Tokens");
+            System.out.println("2- Listar tabla de simbolos");
+            System.out.println("3- Listar estructuras");
+            System.out.println("4- Listar errores");
+            System.out.println("5- Listar tercetos");
+            System.out.println("6- Listar instrucciones");
+            System.out.println("7- Salir");
+            System.out.println("Ingrese una opción");
+            opcion = s.nextInt();
+            switch (opcion) {
+                case 0: {al.imprimirCodigo(); break;}
+                case 1: {al.imprimirTokens(); break;}
+                case 2: {al.getTablaSimbolo().imprimirTabla();break;}
+                case 3: {p.imprimirEstructuras(); break;}
+                case 4: {
+                            al.imprimirWarningsLexicos();
+                            p.imprimirWarningsSemanticos();
+                            al.imprimirErroresLexicos();
+                            p.imprimirErroresSintacticos();
+                            p.imprimirErroresSemanticos();
+                            break;}
+                case 5: {if(!al.hayError() && !p.hayError())
+                            p.imprimirTercetos();
+                         else
+                            System.out.println("No se listan los tercetos debido a que hay al menos un error, revisar el listado de errores con la opcion 4.");
+                         break;}
+                case 6: {
+                        System.out.println(c.getConversionAssembler());
+                        break;
+                }
+                case 7: {System.out.println("Fin de la ejecución."); break;}
+            }
+            sleep(2000);
+        } while ( opcion != 7);
+    }
+
 }

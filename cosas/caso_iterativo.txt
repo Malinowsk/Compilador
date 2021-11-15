@@ -1,0 +1,10 @@
+programa;
+ULONG x;
+BEGIN
+WHILE (1 < 2) DO
+	WHILE(2<3)DO
+		BEGIN
+			x:=4;
+			x:=x+4;
+		END
+END

@@ -1,0 +1,21 @@
+PRINTS;
+ULONG a;
+BEGIN
+PRINT(% cadena +
+	+ bien +
++ escrita %);
+
+PRINT(%+ cadena +
++ bien +
++ escrita +
++ pero con 2 "+" de sobra+%);
+
+PRINT(% 2+2=5,+
++ 4 "+" a continuacion +
+++++++
++, cadena bien escrita%);
+
+PRINT(% cadena +
+mal +
+escrita + %);
+END;

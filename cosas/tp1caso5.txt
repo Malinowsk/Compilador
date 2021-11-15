@@ -1,0 +1,7 @@
+caso5;
+ULONG ab_12;
+ULONG f_27_alg;
+ULONG kd_sl_e21;
+BEGIN
+ ab_12 := f_27_alg + kd_sl_e21;
+END;

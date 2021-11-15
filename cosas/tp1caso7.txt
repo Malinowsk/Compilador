@@ -1,0 +1,13 @@
+palabrasreservadas;
+DOUBLE x;
+double y;
+BEGIN
+if(x <= 1) then
+ WHILE(x <= 1) DO
+  x := x +1;
+endif;
+while(x >= 2) do
+ IF(x >= 2) THEN
+  x:= x-1;
+ ENDIF;
+END;

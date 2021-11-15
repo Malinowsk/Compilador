@@ -5,7 +5,7 @@ public class Automata {
     private final int CANT_SIMBOLOS = 19;
     private final int ERROR = -2;
     private final int ESTADO_FINAL = 0;
-    private Dupla<Integer,Integer> [][] transiciones; // Matriz de transiciones
+    private Dupla<Integer,Integer> [][] transiciones; // Matriz de transiciones, fila = estado, columna = entrada
 
 
     public Automata (){
@@ -28,7 +28,7 @@ public class Automata {
 
     private int getColumna(char caracter) {
 
-        if( caracter == 32)
+        if( (caracter == 32) || (caracter == 9) )
             return 0;
         if( caracter == 10)
             return 1;
@@ -77,7 +77,7 @@ public class Automata {
         }
     }
 
-    public void cargarTransiciones(){
+    public void cargarTransiciones(){ //Se representa el error con -1
         transiciones[0][0].setPrimero(0);
         transiciones[0][1].setPrimero(0);
         transiciones[0][2].setPrimero(1);
@@ -93,10 +93,10 @@ public class Automata {
         transiciones[0][12].setPrimero(6);
         transiciones[0][13].setPrimero(7);
         transiciones[0][14].setPrimero(18);
-        transiciones[0][15].setPrimero(9);
+        transiciones[0][15].setPrimero(8);
         transiciones[0][16].setPrimero(10);
         transiciones[0][17].setPrimero(15);
-        transiciones[0][18].setPrimero(-2);
+        transiciones[0][18].setPrimero(-1);
 
         transiciones[1][0].setPrimero(0);
         transiciones[1][1].setPrimero(0);
@@ -138,65 +138,65 @@ public class Automata {
         transiciones[2][17].setPrimero(0);
         transiciones[2][18].setPrimero(0);
 
-        transiciones[3][0].setPrimero(-2);
-        transiciones[3][1].setPrimero(-2);
-        transiciones[3][2].setPrimero(-2);
-        transiciones[3][3].setPrimero(-2);
-        transiciones[3][4].setPrimero(-2);
-        transiciones[3][5].setPrimero(-2);
-        transiciones[3][6].setPrimero(-2);
-        transiciones[3][7].setPrimero(-2);
-        transiciones[3][8].setPrimero(-2);
+        transiciones[3][0].setPrimero(-1);
+        transiciones[3][1].setPrimero(-1);
+        transiciones[3][2].setPrimero(-1);
+        transiciones[3][3].setPrimero(-1);
+        transiciones[3][4].setPrimero(-1);
+        transiciones[3][5].setPrimero(-1);
+        transiciones[3][6].setPrimero(-1);
+        transiciones[3][7].setPrimero(-1);
+        transiciones[3][8].setPrimero(-1);
         transiciones[3][9].setPrimero(0);
-        transiciones[3][10].setPrimero(-2);
-        transiciones[3][11].setPrimero(-2);
-        transiciones[3][12].setPrimero(-2);
-        transiciones[3][13].setPrimero(-2);
-        transiciones[3][14].setPrimero(-2);
-        transiciones[3][15].setPrimero(-2);
-        transiciones[3][16].setPrimero(-2);
-        transiciones[3][17].setPrimero(-2);
-        transiciones[3][18].setPrimero(-2);
+        transiciones[3][10].setPrimero(-1);
+        transiciones[3][11].setPrimero(-1);
+        transiciones[3][12].setPrimero(-1);
+        transiciones[3][13].setPrimero(-1);
+        transiciones[3][14].setPrimero(-1);
+        transiciones[3][15].setPrimero(-1);
+        transiciones[3][16].setPrimero(-1);
+        transiciones[3][17].setPrimero(-1);
+        transiciones[3][18].setPrimero(-1);
 
-        transiciones[4][0].setPrimero(-2);
-        transiciones[4][1].setPrimero(-2);
-        transiciones[4][2].setPrimero(-2);
-        transiciones[4][3].setPrimero(-2);
-        transiciones[4][4].setPrimero(-2);
-        transiciones[4][5].setPrimero(-2);
-        transiciones[4][6].setPrimero(-2);
-        transiciones[4][7].setPrimero(-2);
-        transiciones[4][8].setPrimero(-2);
-        transiciones[4][9].setPrimero(-2);
+        transiciones[4][0].setPrimero(-1);
+        transiciones[4][1].setPrimero(-1);
+        transiciones[4][2].setPrimero(-1);
+        transiciones[4][3].setPrimero(-1);
+        transiciones[4][4].setPrimero(-1);
+        transiciones[4][5].setPrimero(-1);
+        transiciones[4][6].setPrimero(-1);
+        transiciones[4][7].setPrimero(-1);
+        transiciones[4][8].setPrimero(-1);
+        transiciones[4][9].setPrimero(-1);
         transiciones[4][10].setPrimero(0);
-        transiciones[4][11].setPrimero(-2);
-        transiciones[4][12].setPrimero(-2);
-        transiciones[4][13].setPrimero(-2);
-        transiciones[4][14].setPrimero(-2);
-        transiciones[4][15].setPrimero(-2);
-        transiciones[4][16].setPrimero(-2);
-        transiciones[4][17].setPrimero(-2);
-        transiciones[4][18].setPrimero(-2);
+        transiciones[4][11].setPrimero(-1);
+        transiciones[4][12].setPrimero(-1);
+        transiciones[4][13].setPrimero(-1);
+        transiciones[4][14].setPrimero(-1);
+        transiciones[4][15].setPrimero(-1);
+        transiciones[4][16].setPrimero(-1);
+        transiciones[4][17].setPrimero(-1);
+        transiciones[4][18].setPrimero(-1);
 
-        transiciones[5][0].setPrimero(-2);
-        transiciones[5][1].setPrimero(-2);
-        transiciones[5][2].setPrimero(-2);
-        transiciones[5][3].setPrimero(-2);
-        transiciones[5][4].setPrimero(-2);
-        transiciones[5][5].setPrimero(-2);
-        transiciones[5][6].setPrimero(-2);
-        transiciones[5][7].setPrimero(-2);
-        transiciones[5][8].setPrimero(-2);
-        transiciones[5][9].setPrimero(-2);
-        transiciones[5][10].setPrimero(-2);
-        transiciones[5][11].setPrimero(-2);
-        transiciones[5][12].setPrimero(-2);
-        transiciones[5][13].setPrimero(-2);
+        transiciones[5][0].setPrimero(0);
+        transiciones[5][1].setPrimero(0);
+        transiciones[5][2].setPrimero(0);
+        transiciones[5][3].setPrimero(0);
+        transiciones[5][4].setPrimero(0);
+        transiciones[5][5].setPrimero(0);
+        transiciones[5][6].setPrimero(0);
+        transiciones[5][7].setPrimero(0);
+        transiciones[5][8].setPrimero(0);
+        transiciones[5][9].setPrimero(0);
+        transiciones[5][10].setPrimero(0);
+        transiciones[5][11].setPrimero(0);
+        transiciones[5][12].setPrimero(0);
+        transiciones[5][13].setPrimero(0);
         transiciones[5][14].setPrimero(0);
-        transiciones[5][15].setPrimero(-2);
-        transiciones[5][16].setPrimero(-2);
-        transiciones[5][17].setPrimero(-2);
-        transiciones[5][18].setPrimero(-2);
+        transiciones[5][15].setPrimero(0);
+        transiciones[5][16].setPrimero(0);
+        transiciones[5][17].setPrimero(0);
+        transiciones[5][18].setPrimero(0);
 
         transiciones[6][0].setPrimero(0);
         transiciones[6][1].setPrimero(0);
@@ -278,25 +278,25 @@ public class Automata {
         transiciones[9][17].setPrimero(9);
         transiciones[9][18].setPrimero(9);
 
-        transiciones[10][0].setPrimero(-2);
-        transiciones[10][1].setPrimero(-2);
-        transiciones[10][2].setPrimero(-2);
+        transiciones[10][0].setPrimero(-1);
+        transiciones[10][1].setPrimero(-1);
+        transiciones[10][2].setPrimero(-1);
         transiciones[10][3].setPrimero(12);
-        transiciones[10][4].setPrimero(-2);
+        transiciones[10][4].setPrimero(-1);
         transiciones[10][5].setPrimero(11);
-        transiciones[10][6].setPrimero(-2);
-        transiciones[10][7].setPrimero(-2);
-        transiciones[10][8].setPrimero(-2);
-        transiciones[10][9].setPrimero(-2);
-        transiciones[10][10].setPrimero(-2);
-        transiciones[10][11].setPrimero(-2);
-        transiciones[10][12].setPrimero(-2);
-        transiciones[10][13].setPrimero(-2);
-        transiciones[10][14].setPrimero(-2);
-        transiciones[10][15].setPrimero(-2);
-        transiciones[10][16].setPrimero(-2);
-        transiciones[10][17].setPrimero(-2);
-        transiciones[10][18].setPrimero(-2);
+        transiciones[10][6].setPrimero(-1);
+        transiciones[10][7].setPrimero(-1);
+        transiciones[10][8].setPrimero(-1);
+        transiciones[10][9].setPrimero(-1);
+        transiciones[10][10].setPrimero(-1);
+        transiciones[10][11].setPrimero(-1);
+        transiciones[10][12].setPrimero(-1);
+        transiciones[10][13].setPrimero(-1);
+        transiciones[10][14].setPrimero(-1);
+        transiciones[10][15].setPrimero(-1);
+        transiciones[10][16].setPrimero(-1);
+        transiciones[10][17].setPrimero(-1);
+        transiciones[10][18].setPrimero(-1);
 
         transiciones[11][0].setPrimero(0);
         transiciones[11][1].setPrimero(0);
@@ -318,45 +318,45 @@ public class Automata {
         transiciones[11][17].setPrimero(0);
         transiciones[11][18].setPrimero(0);
 
-        transiciones[12][0].setPrimero(-2);
-        transiciones[12][1].setPrimero(-2);
-        transiciones[12][2].setPrimero(-2);
-        transiciones[12][3].setPrimero(-2);
-        transiciones[12][4].setPrimero(-2);
+        transiciones[12][0].setPrimero(-1);
+        transiciones[12][1].setPrimero(-1);
+        transiciones[12][2].setPrimero(-1);
+        transiciones[12][3].setPrimero(-1);
+        transiciones[12][4].setPrimero(-1);
         transiciones[12][5].setPrimero(14);
-        transiciones[12][6].setPrimero(-2);
+        transiciones[12][6].setPrimero(-1);
         transiciones[12][7].setPrimero(13);
         transiciones[12][8].setPrimero(13);
-        transiciones[12][9].setPrimero(-2);
-        transiciones[12][10].setPrimero(-2);
-        transiciones[12][11].setPrimero(-2);
-        transiciones[12][12].setPrimero(-2);
-        transiciones[12][13].setPrimero(-2);
-        transiciones[12][14].setPrimero(-2);
-        transiciones[12][15].setPrimero(-2);
-        transiciones[12][16].setPrimero(-2);
-        transiciones[12][17].setPrimero(-2);
-        transiciones[12][18].setPrimero(-2);
+        transiciones[12][9].setPrimero(-1);
+        transiciones[12][10].setPrimero(-1);
+        transiciones[12][11].setPrimero(-1);
+        transiciones[12][12].setPrimero(-1);
+        transiciones[12][13].setPrimero(-1);
+        transiciones[12][14].setPrimero(-1);
+        transiciones[12][15].setPrimero(-1);
+        transiciones[12][16].setPrimero(-1);
+        transiciones[12][17].setPrimero(-1);
+        transiciones[12][18].setPrimero(-1);
 
-        transiciones[13][0].setPrimero(-2);
-        transiciones[13][1].setPrimero(-2);
-        transiciones[13][2].setPrimero(-2);
-        transiciones[13][3].setPrimero(-2);
-        transiciones[13][4].setPrimero(-2);
+        transiciones[13][0].setPrimero(-1);
+        transiciones[13][1].setPrimero(-1);
+        transiciones[13][2].setPrimero(-1);
+        transiciones[13][3].setPrimero(-1);
+        transiciones[13][4].setPrimero(-1);
         transiciones[13][5].setPrimero(14);
-        transiciones[13][6].setPrimero(-2);
-        transiciones[13][7].setPrimero(-2);
-        transiciones[13][8].setPrimero(-2);
-        transiciones[13][9].setPrimero(-2);
-        transiciones[13][10].setPrimero(-2);
-        transiciones[13][11].setPrimero(-2);
-        transiciones[13][12].setPrimero(-2);
-        transiciones[13][13].setPrimero(-2);
-        transiciones[13][14].setPrimero(-2);
-        transiciones[13][15].setPrimero(-2);
-        transiciones[13][16].setPrimero(-2);
-        transiciones[13][17].setPrimero(-2);
-        transiciones[13][18].setPrimero(-2);
+        transiciones[13][6].setPrimero(-1);
+        transiciones[13][7].setPrimero(-1);
+        transiciones[13][8].setPrimero(-1);
+        transiciones[13][9].setPrimero(-1);
+        transiciones[13][10].setPrimero(-1);
+        transiciones[13][11].setPrimero(-1);
+        transiciones[13][12].setPrimero(-1);
+        transiciones[13][13].setPrimero(-1);
+        transiciones[13][14].setPrimero(-1);
+        transiciones[13][15].setPrimero(-1);
+        transiciones[13][16].setPrimero(-1);
+        transiciones[13][17].setPrimero(-1);
+        transiciones[13][18].setPrimero(-1);
 
         transiciones[14][0].setPrimero(0);
         transiciones[14][1].setPrimero(0);
@@ -379,7 +379,7 @@ public class Automata {
         transiciones[14][18].setPrimero(0);
 
         transiciones[15][0].setPrimero(15);
-        transiciones[15][1].setPrimero(15);
+        transiciones[15][1].setPrimero(-1);
         transiciones[15][2].setPrimero(15);
         transiciones[15][3].setPrimero(15);
         transiciones[15][4].setPrimero(15);
@@ -418,45 +418,45 @@ public class Automata {
         transiciones[16][17].setPrimero(0);
         transiciones[16][18].setPrimero(15);
 
-        transiciones[17][0].setPrimero(-2);
-        transiciones[17][1].setPrimero(-2);
-        transiciones[17][2].setPrimero(-2);
-        transiciones[17][3].setPrimero(-2);
-        transiciones[17][4].setPrimero(-2);
-        transiciones[17][5].setPrimero(-2);
-        transiciones[17][6].setPrimero(-2);
-        transiciones[17][7].setPrimero(-2);
+        transiciones[17][0].setPrimero(-1);
+        transiciones[17][1].setPrimero(-1);
+        transiciones[17][2].setPrimero(-1);
+        transiciones[17][3].setPrimero(-1);
+        transiciones[17][4].setPrimero(-1);
+        transiciones[17][5].setPrimero(-1);
+        transiciones[17][6].setPrimero(-1);
+        transiciones[17][7].setPrimero(-1);
         transiciones[17][8].setPrimero(15);
-        transiciones[17][9].setPrimero(-2);
-        transiciones[17][10].setPrimero(-2);
-        transiciones[17][11].setPrimero(-2);
-        transiciones[17][12].setPrimero(-2);
-        transiciones[17][13].setPrimero(-2);
-        transiciones[17][14].setPrimero(-2);
-        transiciones[17][15].setPrimero(-2);
-        transiciones[17][16].setPrimero(-2);
-        transiciones[17][17].setPrimero(-2);
-        transiciones[17][18].setPrimero(-2);
+        transiciones[17][9].setPrimero(-1);
+        transiciones[17][10].setPrimero(-1);
+        transiciones[17][11].setPrimero(-1);
+        transiciones[17][12].setPrimero(-1);
+        transiciones[17][13].setPrimero(-1);
+        transiciones[17][14].setPrimero(-1);
+        transiciones[17][15].setPrimero(-1);
+        transiciones[17][16].setPrimero(-1);
+        transiciones[17][17].setPrimero(-1);
+        transiciones[17][18].setPrimero(-1);
 
-        transiciones[18][0].setPrimero(-2);
-        transiciones[18][1].setPrimero(-2);
-        transiciones[18][2].setPrimero(-2);
-        transiciones[18][3].setPrimero(-2);
-        transiciones[18][4].setPrimero(-2);
-        transiciones[18][5].setPrimero(-2);
-        transiciones[18][6].setPrimero(-2);
-        transiciones[18][7].setPrimero(-2);
-        transiciones[18][8].setPrimero(-2);
-        transiciones[18][9].setPrimero(-2);
-        transiciones[18][10].setPrimero(-2);
-        transiciones[18][11].setPrimero(-2);
-        transiciones[18][12].setPrimero(-2);
-        transiciones[18][13].setPrimero(-2);
+        transiciones[18][0].setPrimero(-1);
+        transiciones[18][1].setPrimero(-1);
+        transiciones[18][2].setPrimero(-1);
+        transiciones[18][3].setPrimero(-1);
+        transiciones[18][4].setPrimero(-1);
+        transiciones[18][5].setPrimero(-1);
+        transiciones[18][6].setPrimero(-1);
+        transiciones[18][7].setPrimero(-1);
+        transiciones[18][8].setPrimero(-1);
+        transiciones[18][9].setPrimero(-1);
+        transiciones[18][10].setPrimero(-1);
+        transiciones[18][11].setPrimero(-1);
+        transiciones[18][12].setPrimero(-1);
+        transiciones[18][13].setPrimero(-1);
         transiciones[18][14].setPrimero(0);
-        transiciones[18][15].setPrimero(-2);
-        transiciones[18][16].setPrimero(-2);
-        transiciones[18][17].setPrimero(-2);
-        transiciones[18][18].setPrimero(-2);
+        transiciones[18][15].setPrimero(-1);
+        transiciones[18][16].setPrimero(-1);
+        transiciones[18][17].setPrimero(-1);
+        transiciones[18][18].setPrimero(-1);
     }
 
     public void cargarAccionesSemanticas(){
@@ -561,25 +561,25 @@ public class Automata {
         transiciones[4][17].setSegundo(0);
         transiciones[4][18].setSegundo(0);
 
-        transiciones[5][0].setSegundo(0);
-        transiciones[5][1].setSegundo(0);
-        transiciones[5][2].setSegundo(0);
-        transiciones[5][3].setSegundo(0);
-        transiciones[5][4].setSegundo(0);
-        transiciones[5][5].setSegundo(0);
-        transiciones[5][6].setSegundo(0);
-        transiciones[5][7].setSegundo(0);
-        transiciones[5][8].setSegundo(0);
-        transiciones[5][9].setSegundo(0);
-        transiciones[5][10].setSegundo(0);
-        transiciones[5][11].setSegundo(0);
-        transiciones[5][12].setSegundo(0);
-        transiciones[5][13].setSegundo(0);
+        transiciones[5][0].setSegundo(19);
+        transiciones[5][1].setSegundo(19);
+        transiciones[5][2].setSegundo(19);
+        transiciones[5][3].setSegundo(19);
+        transiciones[5][4].setSegundo(19);
+        transiciones[5][5].setSegundo(19);
+        transiciones[5][6].setSegundo(19);
+        transiciones[5][7].setSegundo(19);
+        transiciones[5][8].setSegundo(19);
+        transiciones[5][9].setSegundo(19);
+        transiciones[5][10].setSegundo(19);
+        transiciones[5][11].setSegundo(19);
+        transiciones[5][12].setSegundo(19);
+        transiciones[5][13].setSegundo(19);
         transiciones[5][14].setSegundo(8);
-        transiciones[5][15].setSegundo(0);
-        transiciones[5][16].setSegundo(0);
-        transiciones[5][17].setSegundo(0);
-        transiciones[5][18].setSegundo(0);
+        transiciones[5][15].setSegundo(19);
+        transiciones[5][16].setSegundo(19);
+        transiciones[5][17].setSegundo(19);
+        transiciones[5][18].setSegundo(19);
 
         transiciones[6][0].setSegundo(10);
         transiciones[6][1].setSegundo(10);
@@ -762,7 +762,7 @@ public class Automata {
         transiciones[14][18].setSegundo(15);
 
         transiciones[15][0].setSegundo(3);
-        transiciones[15][1].setSegundo(3);
+        transiciones[15][1].setSegundo(0);
         transiciones[15][2].setSegundo(3);
         transiciones[15][3].setSegundo(3);
         transiciones[15][4].setSegundo(3);

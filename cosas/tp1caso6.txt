@@ -1,0 +1,5 @@
+identificador_de_programa;
+ULONG _abc;
+BEGIN
+ _abc := DOUBLE (_abc);
+END;
