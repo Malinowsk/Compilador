@@ -101,6 +101,7 @@ public static boolean accion5(ArrayList< Dupla<Integer, Integer> > tokens, Tabla
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CONSTANTE);//se agrega identificador a la tabla
             tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setTipo("ULONG");
+            tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setUso("constante");
         }
     tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CONSTANTE, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
     lineas.add(nroLinea);
@@ -211,6 +212,7 @@ public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
         if(!tablaDeSimbolo.existeToken(auxiliar)){
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_DOUBLE);//se agrega identificador a la tabla
             tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setTipo("DOUBLE");
+            tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setUso("constante");
         }
         tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_DOUBLE, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
         lineas.add(nroLinea);
@@ -239,6 +241,7 @@ public static boolean accion17(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
     auxiliar += '%';
     if(!tablaDeSimbolo.existeToken(auxiliar)){
         tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CADENA);//se agrega identificador a la tabla
+        tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setUso("cadena");
     }
     tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CADENA, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
     lineas.add(nroLinea);
@@ -257,6 +260,7 @@ public static boolean accion18(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
     auxiliar += '%';
     if(!tablaDeSimbolo.existeToken(auxiliar)){
         tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CADENA);//se agrega identificador a la tabla
+        tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setUso("cadena");
     }
     tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CADENA, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
     lineas.add(nroLinea);

@@ -66,7 +66,42 @@ public class ConversorTercetoAssembler {
 
     private String getZonaDatosAssembler()
     {
-        return "";
+        StringBuilder datos = new StringBuilder();
+        datos.append(".data");
+        datos.append("\n");
+
+        for(int i = 287 ; i<= tablaDeSimbolos.refUltimoToken() ;i++){
+            String lexema = tablaDeSimbolos.obtenerValor(i);
+            //System.out.println(tablaDeSimbolos.obtenerToken(i).getUso());
+            //System.out.println(" ");
+            if(tablaDeSimbolos.obtenerToken(i)!=null) {
+                if (tablaDeSimbolos.obtenerToken(i).getUso() == "variable" || tablaDeSimbolos.obtenerToken(i).getUso() == "parametro") {
+                    if (tablaDeSimbolos.obtenerToken(i).getTipo() == "ULONG") {
+                        datos.append("_" + lexema + " DD ?" + "\n");
+                    } else {
+                        datos.append("_" + lexema + " DQ ?" + "\n");
+                    }
+                } else {
+                    if (tablaDeSimbolos.obtenerToken(i).getUso() == "cadena") {
+                        datos.append(lexema + " DB " + "\"" + lexema + "\"" + " , 0 " + "\n");
+                    }
+                }
+            }
+        }
+
+        for(Terceto t : tercetos){
+            if(t.getAuxiliar()!=null){
+                if(t.getT2().sval=="ULONG"){
+                    datos.append(t.getAuxiliar() + " DD ?" + "\n");
+                }
+                else{
+                    datos.append(t.getAuxiliar() + " DQ ?" + "\n");
+                }
+            }
+        }
+
+        datos.append("\n");
+        return datos.toString();
     }
 
     private String getZonaCodigoAssembler()
@@ -145,7 +180,9 @@ public class ConversorTercetoAssembler {
                     break;
 
                 case "DOUBLE": {
-                    this.code.append("FLD "+tercetos.get(tercetoActual.getT2().ival)+"\n");//TODO: NO TIENE IVAL ES DVAL (CONVERTIR EL DVAL CON VALUEOF)
+                    String referenciaTerceto = String.valueOf(tercetoActual.getT2().dval);
+                    referenciaTerceto=referenciaTerceto.substring(0,referenciaTerceto.length()-2);
+                    this.code.append("FLD "+tercetos.get(Integer.valueOf(referenciaTerceto))+"\n");
                     break;
                 }
 
@@ -161,7 +198,8 @@ public class ConversorTercetoAssembler {
             }
 
         }
-
+        this.code.append("END START");
+        this.code.append("\n");
         return this.code.toString();
     }
 
