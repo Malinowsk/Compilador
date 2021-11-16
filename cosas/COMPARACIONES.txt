@@ -11,7 +11,7 @@ ELSIF SF=1 -> A ES MENOR A B
 
 
 A >= B  = A - B >= 0
-IF ZF=0 -> A ES IGUAL A B
+IF ZF=1 -> A ES IGUAL A B
 ELSIF SF=0 -> A ES MENOR A B
 
 A <> B

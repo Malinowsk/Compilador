@@ -61,7 +61,7 @@ public class Terceto {
                 stringT3 = "ETIQUETA"+ stringT3;
         }
 
-        return "( "+ stringT1 + ", " + stringT2 + ", " + stringT3 + ")";
+        return "( "+ stringT1 + ", " + stringT2 + ", " + stringT3 + ")" + " Auxiliar: " + auxiliar ;
     }
 
     public boolean getEtiqueta() {

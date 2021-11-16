@@ -72,9 +72,11 @@ public class ConversorTercetoAssembler {
 
         for(int i = 287 ; i<= tablaDeSimbolos.refUltimoToken() ;i++){
             String lexema = tablaDeSimbolos.obtenerValor(i);
-            //System.out.println(tablaDeSimbolos.obtenerToken(i).getUso());
-            //System.out.println(" ");
+
+
             if(tablaDeSimbolos.obtenerToken(i)!=null) {
+
+                lexema = lexema.replace('.','_');
                 if (tablaDeSimbolos.obtenerToken(i).getUso() == "variable" || tablaDeSimbolos.obtenerToken(i).getUso() == "parametro") {
                     if (tablaDeSimbolos.obtenerToken(i).getTipo() == "ULONG") {
                         datos.append("_" + lexema + " DD ?" + "\n");
@@ -83,7 +85,7 @@ public class ConversorTercetoAssembler {
                     }
                 } else {
                     if (tablaDeSimbolos.obtenerToken(i).getUso() == "cadena") {
-                        datos.append(lexema + " DB " + "\"" + lexema + "\"" + " , 0 " + "\n");
+                        datos.append(lexema.replace(' ','_') + " DB " + "\"" + lexema + "\"" + " , 0 " + "\n");
                     }
                 }
             }
@@ -116,8 +118,9 @@ public class ConversorTercetoAssembler {
         {
             tercetoActual = tercetos.get(i);
             String operador = "";
-            if(tercetoActual.getT1().ival >= 0)
+            if(tercetoActual.getT1().ival >= 0){
                 operador = tablaDeSimbolos.obtenerValor(tercetoActual.getT1().ival);
+                operador = operador.replace('.','_');}
             else{
                 if(tercetoActual.getT1().ival == -1)
                     operador = "BF";
@@ -154,26 +157,41 @@ public class ConversorTercetoAssembler {
                 }
 
                 case ":=": {
-                    if(tercetoActual.getT2().sval=="ULONG")
+                    if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipo()=="ULONG")
                         asignacion(tercetoActual);
                     break;
                 }
 
-                case "<": case ">": case "<=": case ">=": case "==":
+                case "<": case ">": case "<=": case ">=": case "==": case "<>" : case "&&": case "||" :{
+                    this.comparador(operador,tercetoActual);
+                    break;}
 
-                    break;
+                case "BF":{
+                    String operando1= this.devuelveOperando(tercetoActual.getT2());
+                    this.code.append("MOV EAX, "+operando1+"\n");
+                    this.code.append("SUB EAX, 0" +"\n");
+                    String auxiliar = String.valueOf(tercetoActual.getT3().dval);
+                    String direccion = auxiliar.substring(0,auxiliar.length()-2);
+                    this.code.append("JE label_"+ direccion + "\n");
+                    this.code.append("\n");
+                    break;}
 
-                case "BF":
+                case "BI":{
+                    String auxiliar = String.valueOf(tercetoActual.getT2().dval);
+                    String direccion = auxiliar.substring(0,auxiliar.length()-2);
+                    this.code.append("JMP label_"+ direccion + "\n");
+                    this.code.append("\n");
+                    break;}
 
-                    break;
-
-                case "BI":
-
-                    break;
-
-                case "BT":
-
-                    break;
+                case "BT":{
+                    String operando1= this.devuelveOperando(tercetoActual.getT2());
+                    this.code.append("MOV EAX, "+operando1+"\n");
+                    this.code.append("SUB EAX, 0" +"\n");
+                    String auxiliar = String.valueOf(tercetoActual.getT3().dval);
+                    String direccion = auxiliar.substring(0,auxiliar.length()-2);
+                    this.code.append("JNE label_"+ direccion + "\n");
+                    this.code.append("\n");
+                    break;}
 
                 case "CALL":
 
@@ -187,6 +205,11 @@ public class ConversorTercetoAssembler {
                 }
 
                 case "PRINT":
+                    String lexema = tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival);
+                    lexema = lexema.replace(' ','_');
+                    this.code.append("invoke MessageBox, NULL, addr " + lexema + " , addr "  + lexema + " , MB_OK " + "\n");
+                    this.code.append("invoke ExitProcess, 0" + "\n");
+
 
                     break;
 
@@ -194,7 +217,7 @@ public class ConversorTercetoAssembler {
 
             }
             if(tercetoActual.getEtiqueta()){
-                this.code.append("label_"+i+":"+"\n");
+                this.code.append("label_"+(i+1)+":"+"\n");
             }
 
         }
@@ -216,24 +239,6 @@ public class ConversorTercetoAssembler {
         this.contadorAuxiliar++;
     }
 
-    private void operacionAritmeticaDividir(Terceto terceto){
-        String operando1=this.devuelveOperando(terceto.getT2());
-        this.code.append("MOV EAX, "+operando1+"\n");
-        this.code.append("MOV EDX, 0"+"\n");//Agregamos 0 para que DIV sepa que es positivo
-
-        String operando2=this.devuelveOperando(terceto.getT3());
-        if (tablaDeSimbolos.obtenerToken(terceto.getT3().ival).getUso().equals("constante"))
-        {
-            this.code.append("MOV EBX, "+operando2+"\n");
-            operando2 = "EBX";
-        }
-        this.code.append("DIV "+operando2+"\n");
-
-        this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");
-        this.code.append("\n");
-        terceto.setAuxiliar("@aux"+this.contadorAuxiliar);
-        this.contadorAuxiliar++;
-    }
 
 
     private void operacionAritmetica_Mul_Div(String operacion , Terceto terceto){
@@ -262,49 +267,91 @@ public class ConversorTercetoAssembler {
         this.code.append("MOV EAX, "+operando2+"\n");
 
         String operando1 ="_"+tablaDeSimbolos.obtenerValor(terceto.getT2().ival);//El operando 1 (izquierda de la asig) siempre va a ser una variable
+        operando1 = operando1.replace(".","_");
         this.code.append("MOV "+operando1+", EAX"+"\n");
         this.code.append("\n");
     }
 
-    /*private void comparador(String operacion, Terceto terceto){
-        String operando1="";
-        if(terceto.getT2().ival!=0) {//t2 apunta a tabla -> Siendo una variable o constante
-            operando1 =tablaDeSimbolos.obtenerValor(terceto.getT2().ival);
-            if(tablaDeSimbolos.obtenerToken(terceto.getT2().ival).getUso()!=null) //Significa que es una variable y no una constante
-                operando1 = "_" + operando1; // le agrego el guíon adelante por ser variable
-        }else {//t2 apunta a auxiliar -> Siendo un puntero a otro terceto
-            String srefTerceto = String.valueOf(terceto.getT2().dval);
-            int refTerceto = Integer.valueOf(srefTerceto.substring(0, srefTerceto.length()-2));
-            operando1 = tercetos.get(refTerceto).getAuxiliar();
-        }
+    private void comparador(String operacion, Terceto terceto){
+
+        String operando1=this.devuelveOperando(terceto.getT2());
         this.code.append("MOV EAX, "+operando1+"\n");
 
-        String operando2="";
-        if(terceto.getT3().ival!=0) {//t3 apunta a tabla  -> Siendo una variable o constante
-            operando2 = tablaDeSimbolos.obtenerValor(terceto.getT3().ival);
-            if (tablaDeSimbolos.obtenerToken(terceto.getT3().ival).getUso() != null) //Significa que es una variable y no una constante
-                operando2 = "_" + operando2; // le agrego el guíon adelante por ser variable
-        }else {//t3 apunta a auxiliar -> Siendo un puntero a otro terceto
-            String srefTerceto = String.valueOf(terceto.getT3().dval);
-            int refTerceto = Integer.valueOf(srefTerceto.substring(0, srefTerceto.length()-2));
-            operando2 = tercetos.get(refTerceto).getAuxiliar();
-        }
-        this.code.append("CMP EAX, "+operando2+"\n");
+        String operando2=this.devuelveOperando(terceto.getT3());
 
-        this.code.append("MOV EAX, 0"+"\n");//ponemos 0 en EAX
-        this.code.append("SETS EAX"+"\n");//guarda SF en EAX
+        if (operacion.equals("&&") || operacion.equals("||")){
+            if (operacion.equals("&&")){
+                this.code.append("AND EAX, " + operando2 + "\n");
+            }
+            else{
+                this.code.append("OR EAX, " + operando2 + "\n");
+            }
+        }
+        else {
+            this.code.append("CMP EAX, " + operando2 + "\n");
+            this.code.append("MOV EAX, 0" + "\n");//ponemos 0 en EAX
+
+            switch (operacion) {
+
+                case "<": {
+                    this.code.append("SETS AH" + "\n");
+                    break;
+                }
+
+                case ">": {
+                    this.code.append("MOV EBX, 0" + "\n");
+                    this.code.append("SETS AH" + "\n");
+                    this.code.append("SETZ BH" + "\n");
+                    this.code.append("ADD AH, BH" + "\n");
+                    this.code.append("SETZ AH" + "\n");
+                    break;
+                }
+
+                case "<=": {
+                    this.code.append("MOV EBX, 0" + "\n");
+                    this.code.append("SETS AH" + "\n");
+                    this.code.append("SETZ BH" + "\n");
+                    this.code.append("AND AH, BH" + "\n");
+                    break;
+                }
+
+                case ">=": {
+                    this.code.append("MOV EBX, 0" + "\n");
+                    this.code.append("SETS AH" + "\n");
+                    this.code.append("SETZ BH" + "\n");
+                    this.code.append("CMP AH, BH" + "\n");
+                    this.code.append("SETS AH" + "\n");
+                    break;
+                }
+
+                case "==": {
+                    this.code.append("SETZ AH" + "\n");
+                    break;
+                }
+
+                case "<>": {
+                    this.code.append("SETZ AH" + "\n");
+                    this.code.append("MOV EBX, 0" + "\n");
+                    this.code.append("SETZ BH" + "\n");
+                    this.code.append("ADD AH, BH" + "\n");
+                    this.code.append("SETP AH" + "\n");
+                    break;
+                }
+            }
+        }
 
         this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");
         this.code.append("\n");
         terceto.setAuxiliar("@aux"+this.contadorAuxiliar);
         this.contadorAuxiliar++;
-    }*/
+    }
 
     public String devuelveOperando(ParserVal clave){
 
         String operando="";
         if(clave.ival!=0) {//t2 apunta a tabla -> Siendo una variable o constante
             operando =tablaDeSimbolos.obtenerValor(clave.ival);
+            operando = operando.replace(".","_");
             if(tablaDeSimbolos.obtenerToken(clave.ival).getUso()!="constante") //Significa que es una variable y no una constante
                 operando = "_" + operando; // le agrego el guíon adelante por ser variable
         }else {//t2 apunta a auxiliar -> Siendo un puntero a otro terceto
