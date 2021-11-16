@@ -17,7 +17,7 @@ public class ConversorTercetoAssembler {
         this.code= new StringBuilder();
     }
 
-
+    //Metodo utiliado por el main para generar el archivo assembler
     public String getConversionAssembler()
     {
         StringBuilder assembler = new StringBuilder();
@@ -34,6 +34,7 @@ public class ConversorTercetoAssembler {
         return assembler.toString();
     }
 
+    //Metodo para generar el encabezado del archivo
     private String getEncabezadoAssembler()
     {
         StringBuilder encabezado = new StringBuilder();
@@ -64,6 +65,7 @@ public class ConversorTercetoAssembler {
         return encabezado.toString();
     }
 
+    //Metodo para generar la zona de datos del archivo
     private String getZonaDatosAssembler()
     {
         StringBuilder datos = new StringBuilder();
@@ -85,6 +87,7 @@ public class ConversorTercetoAssembler {
                     }
                 } else {
                     if (tablaDeSimbolos.obtenerToken(i).getUso() == "cadena") {
+                        lexema = lexema.substring(1, lexema.length()-1);//le sacamos los % de inicio y final
                         datos.append(lexema.replace(' ','_') + " DB " + "\"" + lexema + "\"" + " , 0 " + "\n");
                     }
                 }
@@ -106,6 +109,7 @@ public class ConversorTercetoAssembler {
         return datos.toString();
     }
 
+    //Metodo para generar la zona de codigo del archivo
     private String getZonaCodigoAssembler()
     {
         this.code.append(".code");
@@ -206,11 +210,10 @@ public class ConversorTercetoAssembler {
 
                 case "PRINT":
                     String lexema = tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival);
+                    lexema = lexema.substring(1, lexema.length()-1);//le sacamos los % de inicio y final
                     lexema = lexema.replace(' ','_');
                     this.code.append("invoke MessageBox, NULL, addr " + lexema + " , addr "  + lexema + " , MB_OK " + "\n");
                     this.code.append("invoke ExitProcess, 0" + "\n");
-
-
                     break;
 
                 default://FUNC, BREAK (TODAVIA NO ESTA)
@@ -226,6 +229,7 @@ public class ConversorTercetoAssembler {
         return this.code.toString();
     }
 
+    //Metodo para generar codigo generico de las operaciones aritmeticas
     private void operacionAritmetica(String operacion, Terceto terceto){
         String operando1= this.devuelveOperando(terceto.getT2());
         this.code.append("MOV EAX, "+operando1+"\n");
@@ -239,8 +243,7 @@ public class ConversorTercetoAssembler {
         this.contadorAuxiliar++;
     }
 
-
-
+    //Metodo para generar codigo generico de las operaciones de multiplicacion y division
     private void operacionAritmetica_Mul_Div(String operacion , Terceto terceto){
         String operando1=this.devuelveOperando(terceto.getT2());
         this.code.append("MOV EAX, "+operando1+"\n");
@@ -262,6 +265,7 @@ public class ConversorTercetoAssembler {
         this.contadorAuxiliar++;
     }
 
+    //Metodo para generar codigo de la asignacion
     private void asignacion(Terceto terceto){
         String operando2=this.devuelveOperando(terceto.getT3());
         this.code.append("MOV EAX, "+operando2+"\n");
@@ -272,6 +276,7 @@ public class ConversorTercetoAssembler {
         this.code.append("\n");
     }
 
+    //Metodo para generar codigo de las comparaciones y operaciones booleanas
     private void comparador(String operacion, Terceto terceto){
 
         String operando1=this.devuelveOperando(terceto.getT2());
@@ -280,34 +285,42 @@ public class ConversorTercetoAssembler {
         String operando2=this.devuelveOperando(terceto.getT3());
 
         if (operacion.equals("&&") || operacion.equals("||")){
-            if (operacion.equals("&&")){
-                this.code.append("AND EAX, " + operando2 + "\n");
+            if (operacion.equals("&&")){//si ambos operandos no son cero entonces devuelve 1
+                //this.code.append("AND EAX, " + operando2 + "\n");
+                this.code.append("ADD EAX, 0" + "\n");//activa flags
+                this.code.append("SETZ AH" + "\n");//guarda si es cero el operando1
+                this.code.append("MOV EBX, 0" + "\n");
+                this.code.append("MOV EBX, "+ operando2 + "\n");
+                this.code.append("ADD EBX, 0" + "\n");//activa flags
+                this.code.append("SETZ BH" + "\n");//guarda si es cero el operando2
+                this.code.append("ADD AH, BH" + "\n");//suma ambos resultados, si da 0 entonces los operandos no son 0's
+                this.code.append("SETZ AH" + "\n");//guarda el flag cero de la suma anterior, entonces si es 1 ambos operandos son verdaderos
             }
             else{
                 this.code.append("OR EAX, " + operando2 + "\n");
             }
         }
         else {
-            this.code.append("CMP EAX, " + operando2 + "\n");
+            this.code.append("CMP EAX, " + operando2 + "\n");//primero se realiza la comparacion
             this.code.append("MOV EAX, 0" + "\n");//ponemos 0 en EAX
 
             switch (operacion) {
 
-                case "<": {
+                case "<": {//guarda en AH el flag de signo
                     this.code.append("SETS AH" + "\n");
                     break;
                 }
 
-                case ">": {
+                case ">": {//guarda en AH 1 en caso de que tanto el flag de signo como el de cero sean 0
                     this.code.append("MOV EBX, 0" + "\n");
                     this.code.append("SETS AH" + "\n");
                     this.code.append("SETZ BH" + "\n");
-                    this.code.append("ADD AH, BH" + "\n");
-                    this.code.append("SETZ AH" + "\n");
+                    this.code.append("ADD AH, BH" + "\n");//sumamos ambos flags para ver si da mas de 0
+                    this.code.append("SETZ AH" + "\n");//si es 0 entonces ambos eran 0
                     break;
                 }
 
-                case "<=": {
+                case "<=": {//guarda en AH 1 en caso de que tanto el flag de signo como el de cero sean 1
                     this.code.append("MOV EBX, 0" + "\n");
                     this.code.append("SETS AH" + "\n");
                     this.code.append("SETZ BH" + "\n");
@@ -315,37 +328,38 @@ public class ConversorTercetoAssembler {
                     break;
                 }
 
-                case ">=": {
+                case ">=": {//guarda en AH 1 en caso de que el flag de signo sea 1 y el de cero sea 0
                     this.code.append("MOV EBX, 0" + "\n");
                     this.code.append("SETS AH" + "\n");
                     this.code.append("SETZ BH" + "\n");
-                    this.code.append("CMP AH, BH" + "\n");
-                    this.code.append("SETS AH" + "\n");
+                    this.code.append("CMP AH, BH" + "\n");//si el flag de signo es 1 y el de cero es 0 entonces el signo generado por el CMP va a ser 1
+                    this.code.append("SETS AH" + "\n");//entonces nos quedamos con el flag de signo del cmp entre ambos flags
                     break;
                 }
 
-                case "==": {
+                case "==": {//guarda en AH 1 en caso de que el flag de cero sea 1
                     this.code.append("SETZ AH" + "\n");
                     break;
                 }
 
-                case "<>": {
+                case "<>": {//guarda en AH 1 en caso de que el flag de cero sea 0
                     this.code.append("SETZ AH" + "\n");
                     this.code.append("MOV EBX, 0" + "\n");
                     this.code.append("SETZ BH" + "\n");
-                    this.code.append("ADD AH, BH" + "\n");
-                    this.code.append("SETP AH" + "\n");
+                    this.code.append("ADD AH, BH" + "\n");//sumamos dos veces el flag de cero, entonces si era 0 la suma da par (0) y si era 1 da impar (1)
+                    this.code.append("SETP AH" + "\n");//entonces nos quedamos con el flag de paridad de la suma anterior
                     break;
                 }
             }
         }
 
-        this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");
+        this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");//en el auxiliar se guarda todos 0 en caso de ser falsa la operacion, sino tendra almenos un 1
         this.code.append("\n");
         terceto.setAuxiliar("@aux"+this.contadorAuxiliar);
         this.contadorAuxiliar++;
     }
 
+    //Metodo generico para obtener el operando correspondiente a un termino
     public String devuelveOperando(ParserVal clave){
 
         String operando="";
