@@ -143,13 +143,13 @@ public class ConversorTercetoAssembler {
 
                 case "*": {
                     if(tercetoActual.getT2().sval=="ULONG")
-                        operacionAritmetica("MUL", tercetoActual);
+                        operacionAritmetica_Mul_Div("MUL", tercetoActual);
                     break;
                 }
 
                 case "/": {
                     if(tercetoActual.getT2().sval=="ULONG")
-                        operacionAritmeticaDividir(tercetoActual);
+                        operacionAritmetica_Mul_Div("DIV", tercetoActual);
                     break;
                 }
 
@@ -204,28 +204,10 @@ public class ConversorTercetoAssembler {
     }
 
     private void operacionAritmetica(String operacion, Terceto terceto){
-        String operando1="";
-        if(terceto.getT2().ival!=0) {//t2 apunta a tabla -> Siendo una variable o constante
-            operando1 =tablaDeSimbolos.obtenerValor(terceto.getT2().ival);
-            if(tablaDeSimbolos.obtenerToken(terceto.getT2().ival).getUso()!=null) //Significa que es una variable y no una constante
-                operando1 = "_" + operando1; // le agrego el guíon adelante por ser variable
-        }else {//t2 apunta a auxiliar -> Siendo un puntero a otro terceto
-            String srefTerceto = String.valueOf(terceto.getT2().dval);
-            int refTerceto = Integer.valueOf(srefTerceto.substring(0, srefTerceto.length()-2));
-            operando1 = tercetos.get(refTerceto).getAuxiliar();
-        }
+        String operando1= this.devuelveOperando(terceto.getT2());
         this.code.append("MOV EAX, "+operando1+"\n");
 
-        String operando2="";
-        if(terceto.getT3().ival!=0) {//t3 apunta a tabla  -> Siendo una variable o constante
-            operando2 = tablaDeSimbolos.obtenerValor(terceto.getT3().ival);
-            if (tablaDeSimbolos.obtenerToken(terceto.getT3().ival).getUso() != null) //Significa que es una variable y no una constante
-                operando2 = "_" + operando2; // le agrego el guíon adelante por ser variable
-        }else {//t3 apunta a auxiliar -> Siendo un puntero a otro terceto
-            String srefTerceto = String.valueOf(terceto.getT3().dval);
-            int refTerceto = Integer.valueOf(srefTerceto.substring(0, srefTerceto.length()-2));
-            operando2 = tercetos.get(refTerceto).getAuxiliar();
-        }
+        String operando2= this.devuelveOperando(terceto.getT3());
         this.code.append(operacion +" EAX, "+operando2+"\n");
 
         this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");
@@ -235,28 +217,15 @@ public class ConversorTercetoAssembler {
     }
 
     private void operacionAritmeticaDividir(Terceto terceto){
-        String operando1="";
-        if(terceto.getT2().ival!=0) {//t2 apunta a tabla -> Siendo una variable o constante
-            operando1 =tablaDeSimbolos.obtenerValor(terceto.getT2().ival);
-            if(tablaDeSimbolos.obtenerToken(terceto.getT2().ival).getUso()!=null) //Significa que es una variable y no una constante
-                operando1 = "_" + operando1; // le agrego el guíon adelante por ser variable
-        }else {//t2 apunta a auxiliar -> Siendo un puntero a otro terceto
-            String srefTerceto = String.valueOf(terceto.getT2().dval);
-            int refTerceto = Integer.valueOf(srefTerceto.substring(0, srefTerceto.length()-2));
-            operando1 = tercetos.get(refTerceto).getAuxiliar();
-        }
+        String operando1=this.devuelveOperando(terceto.getT2());
         this.code.append("MOV EAX, "+operando1+"\n");
         this.code.append("MOV EDX, 0"+"\n");//Agregamos 0 para que DIV sepa que es positivo
 
-        String operando2="";
-        if(terceto.getT3().ival!=0) {//t3 apunta a tabla  -> Siendo una variable o constante
-            operando2 = tablaDeSimbolos.obtenerValor(terceto.getT3().ival);
-            if (tablaDeSimbolos.obtenerToken(terceto.getT3().ival).getUso() != null) //Significa que es una variable y no una constante
-                operando2 = "_" + operando2; // le agrego el guíon adelante por ser variable
-        }else {//t3 apunta a auxiliar -> Siendo un puntero a otro terceto
-            String srefTerceto = String.valueOf(terceto.getT3().dval);
-            int refTerceto = Integer.valueOf(srefTerceto.substring(0, srefTerceto.length()-2));
-            operando2 = tercetos.get(refTerceto).getAuxiliar();
+        String operando2=this.devuelveOperando(terceto.getT3());
+        if (tablaDeSimbolos.obtenerToken(terceto.getT3().ival).getUso().equals("constante"))
+        {
+            this.code.append("MOV EBX, "+operando2+"\n");
+            operando2 = "EBX";
         }
         this.code.append("DIV "+operando2+"\n");
 
@@ -266,19 +235,31 @@ public class ConversorTercetoAssembler {
         this.contadorAuxiliar++;
     }
 
-    private void asignacion(Terceto terceto){
-        String operando2="";
-        if(terceto.getT3().ival!=0) {//t3 apunta a tabla  -> Siendo una variable o constante
-            operando2 = tablaDeSimbolos.obtenerValor(terceto.getT3().ival);
-            if (tablaDeSimbolos.obtenerToken(terceto.getT3().ival).getUso() != null) //Significa que es una variable y no una constante
-                operando2 = "_" + operando2; // le agrego el guíon adelante por ser variable
-        }else {//t3 apunta a auxiliar -> Siendo un puntero a otro terceto
-            String srefTerceto = String.valueOf(terceto.getT3().dval);
-            int refTerceto = Integer.valueOf(srefTerceto.substring(0, srefTerceto.length()-2));
-            operando2 = tercetos.get(refTerceto).getAuxiliar();
-        }
-        this.code.append("MOV EAX, "+operando2+"\n");
 
+    private void operacionAritmetica_Mul_Div(String operacion , Terceto terceto){
+        String operando1=this.devuelveOperando(terceto.getT2());
+        this.code.append("MOV EAX, "+operando1+"\n");
+
+        if(operacion.equals("DIV"))
+            this.code.append("MOV EDX, 0"+"\n");//Agregamos 0 para que DIV sepa que es positivo
+
+        String operando2=this.devuelveOperando(terceto.getT3());
+        if (tablaDeSimbolos.obtenerToken(terceto.getT3().ival).getUso().equals("constante"))
+        {
+            this.code.append("MOV EBX, "+operando2+"\n");
+            operando2 = "EBX";
+        }
+        this.code.append(operacion +" "+operando2+"\n");
+
+        this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");
+        this.code.append("\n");
+        terceto.setAuxiliar("@aux"+this.contadorAuxiliar);
+        this.contadorAuxiliar++;
+    }
+
+    private void asignacion(Terceto terceto){
+        String operando2=this.devuelveOperando(terceto.getT3());
+        this.code.append("MOV EAX, "+operando2+"\n");
 
         String operando1 ="_"+tablaDeSimbolos.obtenerValor(terceto.getT2().ival);//El operando 1 (izquierda de la asig) siempre va a ser una variable
         this.code.append("MOV "+operando1+", EAX"+"\n");
@@ -318,5 +299,21 @@ public class ConversorTercetoAssembler {
         terceto.setAuxiliar("@aux"+this.contadorAuxiliar);
         this.contadorAuxiliar++;
     }*/
+
+    public String devuelveOperando(ParserVal clave){
+
+        String operando="";
+        if(clave.ival!=0) {//t2 apunta a tabla -> Siendo una variable o constante
+            operando =tablaDeSimbolos.obtenerValor(clave.ival);
+            if(tablaDeSimbolos.obtenerToken(clave.ival).getUso()!="constante") //Significa que es una variable y no una constante
+                operando = "_" + operando; // le agrego el guíon adelante por ser variable
+        }else {//t2 apunta a auxiliar -> Siendo un puntero a otro terceto
+            String srefTerceto = String.valueOf(clave.dval);
+            int refTerceto = Integer.valueOf(srefTerceto.substring(0, srefTerceto.length()-2));
+            operando = tercetos.get(refTerceto).getAuxiliar();
+        }
+
+        return operando;
+    }
 
 }
