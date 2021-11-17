@@ -229,12 +229,16 @@ import java.util.HashMap;
 					if($3.ival<=0){//$3 no hace referencia a un identificador
 						addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
 					}else{
-						if(tablaSimbolo.obtenerToken($3.ival).getUso()!="funcion"){
+						if((tablaSimbolo.obtenerToken($3.ival).getUso()!="funcion") && (tablaSimbolo.obtenerToken($3.ival).getUso()!="funcion designada a variable")){
 							addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
 						}else{
 							if(tablaSimbolo.obtenerToken($1.ival).getTipoParametro() != tablaSimbolo.obtenerToken($3.ival).getTipoParametro())
 								addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el parametro de la funcion es de distinto tipo que el del parametro de la variable");
 							this.erroresSemanticos.remove(indiceErrorABorrar);//se borra el error ya que se hace buen uso del identificador
+							if(tablaSimbolo.obtenerToken($3.ival).getUso()=="funcion")
+								tablaSimbolo.obtenerToken($1.ival).setFuncionReferenciada(tablaSimbolo.obtenerValor($3.ival));
+							else
+								tablaSimbolo.obtenerToken($1.ival).setFuncionReferenciada(tablaSimbolo.obtenerToken($3.ival).getFuncionReferenciada());
 						}
 					}
 

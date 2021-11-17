@@ -5,7 +5,8 @@ public class Token {
 
     private String uso = null;//indica si es variable, parametro, funcion, etc.
     private String tipo = null;//tipo de variable
-    private String tipoParametro = null;
+    private String tipoParametro = null;//tipo del parametro, si el token es una funcion
+    private String funcionReferenciada = null;//funcion a la que se referencia, si el token es una variable con funcion designada
 
 
     Token(Integer n, String l){
@@ -15,7 +16,10 @@ public class Token {
 
     @Override
     public String toString() {
-        return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo;
+        if(uso=="funcion designada a variable")
+            return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo + ", funcion designada= " + funcionReferenciada;
+        else
+            return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo;
     }
 
     @Override
@@ -58,5 +62,13 @@ public class Token {
 
     public void setTipoParametro(String tipoParametro) {
         this.tipoParametro = tipoParametro;
+    }
+
+    public String getFuncionReferenciada() {
+        return funcionReferenciada;
+    }
+
+    public void setFuncionReferenciada(String funcionReferenciada) {
+        this.funcionReferenciada = funcionReferenciada;
     }
 }
