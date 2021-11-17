@@ -83,6 +83,7 @@ public class ConversorTercetoAssembler {
                     if (tablaDeSimbolos.obtenerToken(i).getTipo() == "ULONG") {
                         datos.append("_" + lexema + " DD ?" + "\n");
                     } else {
+
                         datos.append("_" + lexema + " DQ ?" + "\n");
                     }
                 } else {
@@ -100,7 +101,10 @@ public class ConversorTercetoAssembler {
                     datos.append(t.getAuxiliar() + " DD ?" + "\n");
                 }
                 else{
-                    datos.append(t.getAuxiliar() + " DQ ?" + "\n");
+                    if(t.getT2().sval=="DOUBLE")
+                        datos.append(t.getAuxiliar() + " DQ ?" + "\n");
+                    else // en este caso el auxiliar corresponde a un boleano
+                        datos.append(t.getAuxiliar() + " DD ?" + "\n");
                 }
             }
         }
@@ -286,16 +290,7 @@ public class ConversorTercetoAssembler {
 
         if (operacion.equals("&&") || operacion.equals("||")){
             if (operacion.equals("&&")){//si ambos operandos no son cero entonces devuelve 1
-                //this.code.append("AND EAX, " + operando2 + "\n");
-                this.code.append("ADD EAX, 0" + "\n");//activa flags
-                this.code.append("SETZ AH" + "\n");//guarda si es cero el operando1
-                this.code.append("MOV EBX, 0" + "\n");
-                this.code.append("MOV EBX, "+ operando2 + "\n");
-                this.code.append("ADD EBX, 0" + "\n");//activa flags
-                this.code.append("SETZ BH" + "\n");//guarda si es cero el operando2
-                this.code.append("ADD AH, BH" + "\n");//suma ambos resultados, si da 0 entonces los operandos no son 0's
-                this.code.append("SETZ AH" + "\n");//guarda el flag cero de la suma anterior, entonces si es 1 ambos operandos son verdaderos
-            }
+                this.code.append("AND EAX, " + operando2 + "\n");}
             else{
                 this.code.append("OR EAX, " + operando2 + "\n");
             }
