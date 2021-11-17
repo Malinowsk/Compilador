@@ -100,12 +100,12 @@ import java.util.HashMap;
   ;
 
  sentencia_declarativa_funcion : cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion END {
+ 					crearTerceto(new ParserVal(-4), new ParserVal(-1), new ParserVal(-1));//terceto para indicar el final de una funcion
  					ambitoActual= ambitoActual.substring(0, ambitoActual.lastIndexOf('.'));
- 					//TODO: CREARTERCETO CON RETORNOACTUAL (RETORNOACTUAL.T1, RETORNOACTUAL.T2, -1)
  				}
                                | cabecera_funcion bloque_declarativo BEGIN bloque_ejecutable_funcion retorno_funcion postcondicion END {
+                               		crearTerceto(new ParserVal(-4), new ParserVal(-1), new ParserVal(-1));//terceto para indicar el final de una funcion
                                		ambitoActual= ambitoActual.substring(0, ambitoActual.lastIndexOf('.'));
-					//TODO: CREARTERCETO CON RETORNOACTUAL (RETORNOACTUAL.T1, RETORNOACTUAL.T2, -1)
                                }
  ;
 
@@ -420,7 +420,7 @@ import java.util.HashMap;
 		  int i = tercetos.size()-1;
 		  while( (tercetos.get(i).getT1().ival != CALL) && (i >= 0) )
 			i--;
-		  //TODO: AGREGAR IF PARA VERIFICAR SI HAY POSTCONDICION O NO
+		  //TODO: AGREGAR IF PARA VERIFICAR SI HAY UN CALL CON POSTCONDICION O NO if(postCondiciones.get(tercetos.get(i).getT2().ival))==null){"error se llama a una funcion sin postcondicion"}
 		  pila.push(crearTerceto(new ParserVal(-3), new ParserVal((double)postCondiciones.get(tercetos.get(i).getT2().ival)), new ParserVal(-1)));//el primer -3 es BT, el 2do parametro hace referencia a la postcondicion de la funcion invocada
 		 }
  		 | try sentencia_asignacion error { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }

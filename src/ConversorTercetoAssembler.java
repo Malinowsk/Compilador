@@ -121,7 +121,7 @@ public class ConversorTercetoAssembler {
         this.code.append("START:");
         this.code.append("\n");
         Terceto tercetoActual;
-
+        String retornoFuncion="";
         for(int i = 0; i < this.tercetos.size(); i++) // por cada uno de los tecetos vamos generando el codigo
         {
             tercetoActual = tercetos.get(i);
@@ -136,89 +136,118 @@ public class ConversorTercetoAssembler {
                     operador = "BI";
                 if(tercetoActual.getT1().ival == -3)
                     operador = "BT";
+                if(tercetoActual.getT1().ival == -4)
+                    operador = "ENDFUNC";
             }
 
-            switch (operador){
+            switch (operador) {
 
                 case "+": {//TODO: Overflow en sumas de enteros
-                    if(tercetoActual.getT2().sval=="ULONG")
+                    if (tercetoActual.getT2().sval == "ULONG")
                         operacionAritmetica("ADD", tercetoActual);
                     break;
                 }
 
                 case "-": {
-                    if(tercetoActual.getT2().sval=="ULONG")
+                    if (tercetoActual.getT2().sval == "ULONG")
                         operacionAritmetica("SUB", tercetoActual);
                     break;
                 }
 
                 case "*": {
-                    if(tercetoActual.getT2().sval=="ULONG")
+                    if (tercetoActual.getT2().sval == "ULONG")
                         operacionAritmetica_Mul_Div("MUL", tercetoActual);
                     break;
                 }
 
                 case "/": {
-                    if(tercetoActual.getT2().sval=="ULONG")
+                    if (tercetoActual.getT2().sval == "ULONG")
                         operacionAritmetica_Mul_Div("DIV", tercetoActual);
                     break;
                 }
 
                 case ":=": {
-                    if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipo()=="ULONG")
+                    if (tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipo() == "ULONG")
                         asignacion(tercetoActual);
                     break;
                 }
 
-                case "<": case ">": case "<=": case ">=": case "==": case "<>" : case "&&": case "||" :{
-                    this.comparador(operador,tercetoActual);
-                    break;}
-
-                case "BF":{
-                    String operando1= this.devuelveOperando(tercetoActual.getT2());
-                    this.code.append("MOV EAX, "+operando1+"\n");
-                    this.code.append("SUB EAX, 0" +"\n");
-                    String auxiliar = String.valueOf(tercetoActual.getT3().dval);
-                    String direccion = auxiliar.substring(0,auxiliar.length()-2);
-                    this.code.append("JE label_"+ direccion + "\n");
-                    this.code.append("\n");
-                    break;}
-
-                case "BI":{
-                    String auxiliar = String.valueOf(tercetoActual.getT2().dval);
-                    String direccion = auxiliar.substring(0,auxiliar.length()-2);
-                    this.code.append("JMP label_"+ direccion + "\n");
-                    this.code.append("\n");
-                    break;}
-
-                case "BT":{
-                    String operando1= this.devuelveOperando(tercetoActual.getT2());
-                    this.code.append("MOV EAX, "+operando1+"\n");
-                    this.code.append("SUB EAX, 0" +"\n");
-                    String auxiliar = String.valueOf(tercetoActual.getT3().dval);
-                    String direccion = auxiliar.substring(0,auxiliar.length()-2);
-                    this.code.append("JNE label_"+ direccion + "\n");
-                    this.code.append("\n");
-                    break;}
-
-                case "CALL":
-
-                    break;
-
-                case "DOUBLE": {
-                    String referenciaTerceto = String.valueOf(tercetoActual.getT2().dval);
-                    referenciaTerceto=referenciaTerceto.substring(0,referenciaTerceto.length()-2);
-                    this.code.append("FLD "+tercetos.get(Integer.valueOf(referenciaTerceto))+"\n");
+                case "<":
+                case ">":
+                case "<=":
+                case ">=":
+                case "==":
+                case "<>":
+                case "&&":
+                case "||": {
+                    this.comparador(operador, tercetoActual);
                     break;
                 }
 
-                case "PRINT":
+                case "BF": {
+                    String operando1 = this.devuelveOperando(tercetoActual.getT2());
+                    this.code.append("MOV EAX, " + operando1 + "\n");
+                    this.code.append("SUB EAX, 0" + "\n");
+                    String auxiliar = String.valueOf(tercetoActual.getT3().dval);
+                    String direccion = auxiliar.substring(0, auxiliar.length() - 2);
+                    this.code.append("JE label_" + direccion + "\n");
+                    this.code.append("\n");
+                    break;
+                }
+
+                case "BI": {
+                    String auxiliar = String.valueOf(tercetoActual.getT2().dval);
+                    String direccion = auxiliar.substring(0, auxiliar.length() - 2);
+                    this.code.append("JMP label_" + direccion + "\n");
+                    this.code.append("\n");
+                    break;
+                }
+
+                case "BT": {
+                    String operando1 = this.devuelveOperando(tercetoActual.getT2());
+                    this.code.append("MOV EAX, " + operando1 + "\n");
+                    this.code.append("SUB EAX, 0" + "\n");
+                    String auxiliar = String.valueOf(tercetoActual.getT3().dval);
+                    String direccion = auxiliar.substring(0, auxiliar.length() - 2);
+                    this.code.append("JNE label_" + direccion + "\n");
+                    this.code.append("\n");
+                    break;
+                }
+                case "DOUBLE": {
+                    String referenciaTerceto = String.valueOf(tercetoActual.getT2().dval);
+                    referenciaTerceto = referenciaTerceto.substring(0, referenciaTerceto.length() - 2);
+                    this.code.append("FLD " + tercetos.get(Integer.valueOf(referenciaTerceto)) + "\n");
+                    break;
+                }
+
+                case "PRINT": {
                     String lexema = tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival);
-                    lexema = lexema.substring(1, lexema.length()-1);//le sacamos los % de inicio y final
-                    lexema = lexema.replace(' ','_');
-                    this.code.append("invoke MessageBox, NULL, addr " + lexema + " , addr "  + lexema + " , MB_OK " + "\n");
+                    lexema = lexema.substring(1, lexema.length() - 1);//le sacamos los % de inicio y final
+                    lexema = lexema.replace(' ', '_');
+                    this.code.append("invoke MessageBox, NULL, addr " + lexema + " , addr " + lexema + " , MB_OK " + "\n");
                     this.code.append("invoke ExitProcess, 0" + "\n");
                     break;
+                }
+
+                case "FUNC":{
+                    this.code.append(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival) + ":"+"\n");
+                    break;
+                }
+
+                case "RETURN": {//Guardo el retorno por si hay una postcondicion
+                    retornoFuncion="MOV EAX, "+this.devuelveOperando(tercetoActual.getT2());
+                    break;
+                }
+
+                case "ENDFUNC": {
+                    this.code.append(retornoFuncion);
+                    this.code.append("\n"+"ret"+"\n");
+                    this.code.append("\n");
+                }
+
+                case "CALL": {
+
+                }break;
 
                 default://FUNC, BREAK (TODAVIA NO ESTA)
 
@@ -319,16 +348,14 @@ public class ConversorTercetoAssembler {
                     this.code.append("MOV EBX, 0" + "\n");
                     this.code.append("SETS AH" + "\n");
                     this.code.append("SETZ BH" + "\n");
-                    this.code.append("AND AH, BH" + "\n");
+                    this.code.append("OR AH, BH" + "\n");
                     break;
                 }
 
-                case ">=": {//guarda en AH 1 en caso de que el flag de signo sea 1 y el de cero sea 0
-                    this.code.append("MOV EBX, 0" + "\n");
+                case ">=": {//guarda en AH 1 en caso de que el flag de signo sea 0
                     this.code.append("SETS AH" + "\n");
-                    this.code.append("SETZ BH" + "\n");
-                    this.code.append("CMP AH, BH" + "\n");//si el flag de signo es 1 y el de cero es 0 entonces el signo generado por el CMP va a ser 1
-                    this.code.append("SETS AH" + "\n");//entonces nos quedamos con el flag de signo del cmp entre ambos flags
+                    this.code.append("CMP AH, 0" + "\n");//compara el flag de signo del anterior con 0 y actualiza flags
+                    this.code.append("SETZ AH" + "\n");//si la cmp da 0 entonces se guarda 1
                     break;
                 }
 
@@ -339,10 +366,8 @@ public class ConversorTercetoAssembler {
 
                 case "<>": {//guarda en AH 1 en caso de que el flag de cero sea 0
                     this.code.append("SETZ AH" + "\n");
-                    this.code.append("MOV EBX, 0" + "\n");
-                    this.code.append("SETZ BH" + "\n");
-                    this.code.append("ADD AH, BH" + "\n");//sumamos dos veces el flag de cero, entonces si era 0 la suma da par (0) y si era 1 da impar (1)
-                    this.code.append("SETP AH" + "\n");//entonces nos quedamos con el flag de paridad de la suma anterior
+                    this.code.append("ADD AH, 0" + "\n");//suma el flag de cero del anterior con 0 y actualiza flags
+                    this.code.append("SETZ AH" + "\n");//entonces nos quedamos con el flag de paridad de la suma anterior
                     break;
                 }
             }
