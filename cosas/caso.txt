@@ -1,21 +1,24 @@
-ProgramaEjemplo4;
+f1
 
-ULONG FUNC suc ( ULONG param )
-ULONG x;
-BEGIN
-x:= param +1;
-RETURN (x);
-END;
+f1_1
+...
+ret f1_1
 
-ULONG FUNC (ULONG) funcion_v ;
-ULONG FUNC (ULONG) funcion_w ;
+f1_2
 
-**Inicio del main
-BEGIN
+f1_2_1
+...
+ret f1_2_1
+...
+ret f1_2
+...
+ret f1
 
-funcion_v := suc;
-funcion_w := funcion_v;
+f2
+...
+ret f2
 
 
 
-END
+
+START:

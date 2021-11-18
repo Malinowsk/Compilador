@@ -247,7 +247,8 @@ import java.util.HashMap;
 					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + tablaSimbolo.obtenerToken($1.ival).getTipo() + " := " + $3.sval );
 
 		       }
-		       $$ = new ParserVal((double)crearTerceto(new ParserVal(ASIG), $1, $3));
+		       if(tablaSimbolo.obtenerToken($1.ival).getUso()!="funcion designada a variable")
+		       		$$ = new ParserVal((double)crearTerceto(new ParserVal(ASIG), $1, $3));
 		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
 		      }
  		      | ID error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }

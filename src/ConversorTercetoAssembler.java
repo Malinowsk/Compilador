@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Stack;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
@@ -123,11 +123,16 @@ public class ConversorTercetoAssembler {
         this.code.append("\n");
         Terceto tercetoActual= tercetos.get(0);
         String retornoFuncion="";
-        if (tablaDeSimbolos.obtenerValor(tercetoActual.getT1().ival)!="FUNC")
+        Stack<String> pilaFunciones = new Stack<String>(); //Pila utilizada para las etiquetas de las funciones
+
+        if (tablaDeSimbolos.obtenerValor(tercetoActual.getT1().ival)!="FUNC")//inicia en el main
             {
                 this.code.append("START:");
                 this.code.append("\n");
             }
+        else//se declaran funciones antes del main
+            pilaFunciones.push("START:");
+
         for(int i = 0; i < this.tercetos.size(); i++) // por cada uno de los tecetos vamos generando el codigo
         {
 
@@ -237,8 +242,10 @@ public class ConversorTercetoAssembler {
                 }
 
                 case "FUNC":{
-
-                    this.code.append(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".","_") + ":"+"\n");
+                    if(tablaDeSimbolos.obtenerValor(tercetos.get(i+1).getT1().ival)!="FUNC")//no hay declaracion de funciones dentro de la funcion
+                        this.code.append(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".","_") + ":"+"\n");
+                    else//hay declaracion de funciones dentro de la funcion, entonces guardamos la etiqueta en la pila
+                        pilaFunciones.push(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".","_") + ":"+"\n");
                     break;
                 }
 
@@ -252,11 +259,11 @@ public class ConversorTercetoAssembler {
                     this.code.append(retornoFuncion);
                     this.code.append("\n"+"ret"+"\n");
                     this.code.append("\n");
-                    if (tablaDeSimbolos.obtenerValor(tercetos.get(i+1).getT1().ival)!="FUNC") //verificamos que el sig corresponda a una declaracion de funcion
+                    if (tablaDeSimbolos.obtenerValor(tercetos.get(i+1).getT1().ival)!="FUNC") //viene el bloque ejecutable de la funcion que la declaro
                     {
-                        this.code.append("START:");
+                        this.code.append(pilaFunciones.pop());//se añade la etiqueta de la funcion madre
                         this.code.append("\n");
-                    }
+                    }//en el caso que se declare otra funcion en el mismo bloque declarativo no se toca la pila
                     break;
                 }
 
