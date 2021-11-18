@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 public class ConversorTercetoAssembler {
 
@@ -31,6 +33,7 @@ public class ConversorTercetoAssembler {
         assembler.append("\n");
         assembler.append(zonaCodigo);
         assembler.append("\n");
+        this.generarArchivoCodigo(assembler.toString());
         return assembler.toString();
     }
 
@@ -118,12 +121,16 @@ public class ConversorTercetoAssembler {
     {
         this.code.append(".code");
         this.code.append("\n");
-        this.code.append("START:");
-        this.code.append("\n");
-        Terceto tercetoActual;
+        Terceto tercetoActual= tercetos.get(0);
         String retornoFuncion="";
+        if (tablaDeSimbolos.obtenerValor(tercetoActual.getT1().ival)!="FUNC")
+            {
+                this.code.append("START:");
+                this.code.append("\n");
+            }
         for(int i = 0; i < this.tercetos.size(); i++) // por cada uno de los tecetos vamos generando el codigo
         {
+
             tercetoActual = tercetos.get(i);
             String operador = "";
             if(tercetoActual.getT1().ival >= 0){
@@ -230,12 +237,14 @@ public class ConversorTercetoAssembler {
                 }
 
                 case "FUNC":{
-                    this.code.append(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival) + ":"+"\n");
+
+                    this.code.append(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".","_") + ":"+"\n");
                     break;
                 }
 
                 case "RETURN": {//Guardo el retorno por si hay una postcondicion
                     retornoFuncion="MOV EAX, "+this.devuelveOperando(tercetoActual.getT2());
+
                     break;
                 }
 
@@ -243,11 +252,30 @@ public class ConversorTercetoAssembler {
                     this.code.append(retornoFuncion);
                     this.code.append("\n"+"ret"+"\n");
                     this.code.append("\n");
+                    if (tablaDeSimbolos.obtenerValor(tercetos.get(i+1).getT1().ival)!="FUNC") //verificamos que el sig corresponda a una declaracion de funcion
+                    {
+                        this.code.append("START:");
+                        this.code.append("\n");
+                    }
+                    break;
                 }
 
                 case "CALL": {
+                    String parametro= this.devuelveOperando(tercetoActual.getT3());
+                    String referenciaFuncion = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getLexema();
+                    if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso()!="funcion")
+                        referenciaFuncion = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getFuncionReferenciada();
+                    String parametroFuncion = "_" + tablaDeSimbolos.obtenerToken(tablaDeSimbolos.obtenerReferenciaTabla(referenciaFuncion)).getParametro().replace(".","_");
+                    this.code.append("MOV EAX, "+ parametro + "\n");
+                    this.code.append("MOV "+ parametroFuncion + ", EAX"+ "\n");
+                    this.code.append("CALL "+ referenciaFuncion.replace(".","_") +"\n");
 
-                }break;
+                    this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");
+                    this.code.append("\n");
+                    tercetoActual.setAuxiliar("@aux"+this.contadorAuxiliar);
+                    this.contadorAuxiliar++;
+                    break;
+                }
 
                 default://FUNC, BREAK (TODAVIA NO ESTA)
 
@@ -385,6 +413,7 @@ public class ConversorTercetoAssembler {
         String operando="";
         if(clave.ival!=0) {//t2 apunta a tabla -> Siendo una variable o constante
             operando =tablaDeSimbolos.obtenerValor(clave.ival);
+
             operando = operando.replace(".","_");
             if(tablaDeSimbolos.obtenerToken(clave.ival).getUso()!="constante") //Significa que es una variable y no una constante
                 operando = "_" + operando; // le agrego el guíon adelante por ser variable
@@ -395,6 +424,18 @@ public class ConversorTercetoAssembler {
         }
 
         return operando;
+    }
+
+    public void generarArchivoCodigo ( String codigo ) {
+        PrintWriter arch = null;
+        try {
+            arch = new PrintWriter ("Assembler.asm");
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        arch.println(codigo);
+        arch.close();
     }
 
 }

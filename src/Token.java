@@ -7,7 +7,7 @@ public class Token {
     private String tipo = null;//tipo de variable
     private String tipoParametro = null;//tipo del parametro, si el token es una funcion
     private String funcionReferenciada = null;//funcion a la que se referencia, si el token es una variable con funcion designada
-
+    private String parametro = null;
 
     Token(Integer n, String l){
         this.numero= n;
@@ -70,5 +70,13 @@ public class Token {
 
     public void setFuncionReferenciada(String funcionReferenciada) {
         this.funcionReferenciada = funcionReferenciada;
+    }
+
+    public String getParametro() {
+        return parametro;
+    }
+
+    public void setParametro(String parametro) {
+        this.parametro = parametro;
     }
 }

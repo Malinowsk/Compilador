@@ -118,6 +118,7 @@ import java.util.HashMap;
 			    tablaSimbolo.obtenerToken($3.ival).setTipoParametro(tablaSimbolo.obtenerToken($5.ival).getTipo());
 			    ambitoActual= ambitoActual + '.' + auxiliar;
 			    tablaSimbolo.obtenerToken($5.ival).setLexema(tablaSimbolo.obtenerToken($5.ival).getLexema()+'.'+ambitoActual);
+			    tablaSimbolo.obtenerToken($3.ival).setParametro(tablaSimbolo.obtenerToken($5.ival).getLexema());
  			 }
  			 else
  			 {
