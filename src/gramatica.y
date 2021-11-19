@@ -424,7 +424,8 @@ import java.util.HashMap;
 		  int i = tercetos.size()-1;
 		  while( (tercetos.get(i).getT1().ival != CALL) && (i >= 0) )
 			i--;
-		  //TODO: AGREGAR IF PARA VERIFICAR SI HAY UN CALL CON POSTCONDICION O NO if(postCondiciones.get(tercetos.get(i).getT2().ival))==null){"error se llama a una funcion sin postcondicion"}
+		  if(postCondiciones.get(tercetos.get(i).getT2().ival))==null)
+		  	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", la funcion invocada no tiene post condicion");
 		  pila.push(crearTerceto(new ParserVal(-3), new ParserVal((double)postCondiciones.get(tercetos.get(i).getT2().ival)), new ParserVal(-1)));//el primer -3 es BT, el 2do parametro hace referencia a la postcondicion de la funcion invocada
 		 }
  		 | try sentencia_asignacion error { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }

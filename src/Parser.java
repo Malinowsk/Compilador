@@ -549,7 +549,7 @@ final static String yyrule[] = {
 "factor : CTE_DOUBLE",
 };
 
-//#line 506 "gramatica.y"
+//#line 507 "gramatica.y"
 
 ///CODIGO JAVA
 
@@ -1347,24 +1347,25 @@ case 104:
 		  int i = tercetos.size()-1;
 		  while( (tercetos.get(i).getT1().ival != CALL) && (i >= 0) )
 			i--;
-		  /*TODO: AGREGAR IF PARA VERIFICAR SI HAY UN CALL CON POSTCONDICION O NO if(postCondiciones.get(tercetos.get(i).getT2().ival))==null){"error se llama a una funcion sin postcondicion"}*/
+		  if(postCondiciones.get(tercetos.get(i).getT2().ival))==null)
+		  	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", la funcion invocada no tiene post condicion");
 		  pila.push(crearTerceto(new ParserVal(-3), new ParserVal((double)postCondiciones.get(tercetos.get(i).getT2().ival)), new ParserVal(-1)));/*el primer -3 es BT, el 2do parametro hace referencia a la postcondicion de la funcion invocada*/
 		 }
 break;
 case 105:
-//#line 430 "gramatica.y"
-{ pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
-break;
-case 106:
 //#line 431 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
 break;
+case 106:
+//#line 432 "gramatica.y"
+{ pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
+break;
 case 107:
-//#line 434 "gramatica.y"
+//#line 435 "gramatica.y"
 { addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
 break;
 case 108:
-//#line 437 "gramatica.y"
+//#line 438 "gramatica.y"
 {
                               if(val_peek(2).sval!=val_peek(0).sval)
 				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + val_peek(2).sval + " + " + val_peek(0).sval );
@@ -1373,7 +1374,7 @@ case 108:
  		      }
 break;
 case 109:
-//#line 443 "gramatica.y"
+//#line 444 "gramatica.y"
 {
 				 if(val_peek(2).sval!=val_peek(0).sval)
 					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + val_peek(2).sval + " - " + val_peek(0).sval );
@@ -1382,11 +1383,11 @@ case 109:
 		      }
 break;
 case 110:
-//#line 449 "gramatica.y"
+//#line 450 "gramatica.y"
 { yyval = val_peek(0) ; }
 break;
 case 111:
-//#line 452 "gramatica.y"
+//#line 453 "gramatica.y"
 {
              if(val_peek(2).sval!=val_peek(0).sval)
                    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + val_peek(2).sval + " * " + val_peek(0).sval );
@@ -1395,7 +1396,7 @@ case 111:
 	 }
 break;
 case 112:
-//#line 458 "gramatica.y"
+//#line 459 "gramatica.y"
 {
                 if(val_peek(2).sval!=val_peek(0).sval)
                      	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + val_peek(2).sval + " / " + val_peek(0).sval );
@@ -1404,18 +1405,18 @@ case 112:
 	 }
 break;
 case 113:
-//#line 464 "gramatica.y"
+//#line 465 "gramatica.y"
 {yyval = val_peek(0);}
 break;
 case 114:
-//#line 465 "gramatica.y"
+//#line 466 "gramatica.y"
 {
 		      yyval = new ParserVal((double)crearTerceto(new ParserVal((int)'*'), new ParserVal(-1), val_peek(0)));
 		      yyval.sval=val_peek(1).sval;
 	 }
 break;
 case 115:
-//#line 471 "gramatica.y"
+//#line 472 "gramatica.y"
 {
        String auxiliar= ambitoActual;
        int ultimoPunto = 0;
@@ -1444,24 +1445,24 @@ case 115:
      }
 break;
 case 116:
-//#line 497 "gramatica.y"
-{yyval = val_peek(0);}
-break;
-case 117:
 //#line 498 "gramatica.y"
 {yyval = val_peek(0);}
 break;
-case 118:
+case 117:
 //#line 499 "gramatica.y"
+{yyval = val_peek(0);}
+break;
+case 118:
+//#line 500 "gramatica.y"
 {  yyval = val_peek(0);
                        yyval.sval="ULONG";}
 break;
 case 119:
-//#line 501 "gramatica.y"
+//#line 502 "gramatica.y"
 {yyval = val_peek(0);
                       yyval.sval="DOUBLE";}
 break;
-//#line 1388 "Parser.java"
+//#line 1389 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####
