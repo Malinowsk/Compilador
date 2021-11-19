@@ -76,10 +76,10 @@ public class ConversorTercetoAssembler {
         datos.append("\n");
 
         datos.append("_funcion_actual DD ?" + "\n");
-        datos.append("ERROR_EN_EJECUCION DB \" ERROR EN EJECUCION \" , 0 " + "\n");
-        datos.append("Division_por_cero DB \" Division por cero \" , 0 " + "\n");
-        datos.append("Overflow_en_suma_de_enteros DB \" Overflow en suma de enteros \" , 0 " + "\n");
-        datos.append("Recursion_en_una_funcion DB \" Recursion en una funcion \" , 0 " + "\n");
+        datos.append("ERROR_EN_EJECUCION DB \"ERROR EN EJECUCION\" , 0 " + "\n");
+        datos.append("Division_por_cero DB \"Division por cero\" , 0 " + "\n");
+        datos.append("Overflow_en_suma_de_enteros DB \"Overflow en suma de enteros\" , 0 " + "\n");
+        datos.append("Recursion_en_una_funcion DB \"Recursion en una funcion\" , 0 " + "\n");
 
         for(int i = 287 ; i<= tablaDeSimbolos.refUltimoToken() ;i++){
             String lexema = tablaDeSimbolos.obtenerValor(i);
@@ -489,7 +489,7 @@ public class ConversorTercetoAssembler {
         this.code.append("error_division_por_cero:"+"\n");
         this.code.append("CMP EAX, 0"+"\n");
         this.code.append("JNE fin_funcion_division_por_cero"+"\n");
-        this.code.append("invoke MessageBox, NULL, addr " + "ERROR_EN_EJECUCION" + " , addr " + "Division_por_cero" + " , MB_OK " + "\n");
+        this.code.append("invoke MessageBox, NULL, addr " + "Division_por_cero" + " , addr " + "ERROR_EN_EJECUCION" + " , MB_OK " + "\n");
         this.code.append("JMP fin_ejecucion" + "\n");
         this.code.append("fin_funcion_division_por_cero:"+"\n");
         this.code.append("ret" + "\n");
@@ -499,7 +499,7 @@ public class ConversorTercetoAssembler {
     private void funcionErrorOverflowSumaEntero(){
         this.code.append("error_overflow_suma_entero:"+"\n");
         this.code.append("JNC fin_overflow_suma_entero"+"\n");
-        this.code.append("invoke MessageBox, NULL, addr " + "ERROR_EN_EJECUCION" + " , addr " + "Overflow_en_suma_de_enteros" + " , MB_OK " + "\n");
+        this.code.append("invoke MessageBox, NULL, addr " + "Overflow_en_suma_de_enteros" + " , addr " + "ERROR_EN_EJECUCION" + " , MB_OK " + "\n");
         this.code.append("JMP fin_ejecucion" + "\n");
         this.code.append("fin_overflow_suma_entero:"+"\n");
         this.code.append("ret" + "\n");
@@ -510,7 +510,7 @@ public class ConversorTercetoAssembler {
         this.code.append("error_recursion:"+"\n");
         this.code.append("CMP EAX, _funcion_actual"+"\n");
         this.code.append("JNE fin_recursion"+"\n");
-        this.code.append("invoke MessageBox, NULL, addr " + "ERROR_EN_EJECUCION" + " , addr " + "Recursion_en_una_funcion" + " , MB_OK " + "\n");
+        this.code.append("invoke MessageBox, NULL, addr " + "Recursion_en_una_funcion" + " , addr " + "ERROR_EN_EJECUCION" + " , MB_OK " + "\n");
         this.code.append("JMP fin_ejecucion" + "\n");
         this.code.append("fin_recursion:"+"\n");
         this.code.append("ret" + "\n");
