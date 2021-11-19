@@ -549,7 +549,7 @@ final static String yyrule[] = {
 "factor : CTE_DOUBLE",
 };
 
-//#line 507 "gramatica.y"
+//#line 518 "gramatica.y"
 
 ///CODIGO JAVA
 
@@ -567,8 +567,10 @@ private Stack<Integer> pila = new Stack<Integer>(); //Pila utilizada para los te
 private HashMap<Integer, Integer> postCondiciones = new HashMap<Integer, Integer>();//Hashmap utilizado para guardar el id de las funciones junto a las referencias de sus postcondicion
 
 private String ambitoActual;
-private String tipoActual;
-private String tipoActualdeFuncion;
+private String tipoActual; //variable para saber el ultimo tipo leido
+private String tipoActualdeFuncion; //Variable para saber el ultimo tipo de funcion leido
+
+private int ultimoTry; //variable para saber cual es el ultimo terceto antes de un try, sirve por si no se encuentra ningun CALL dentro de un TRY
 
 public void setAnalizadorLexico(AnalizadorLexico al){
 	this.analizadorLexico = al;
@@ -659,7 +661,7 @@ private int yylex(){
 private void yyerror(String s){
 
 }
-//#line 591 "Parser.java"
+//#line 593 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -1345,27 +1347,38 @@ case 104:
 {
  		  /*Primero buscamos el id de la funcion invocada en el try recorriendo la lista de tercetos*/
 		  int i = tercetos.size()-1;
-		  while( (tercetos.get(i).getT1().ival != CALL) && (i >= 0) )
+		  boolean noHayCallConPost = (tercetos.get(i).getT1().ival != CALL);
+		  while( noHayCallConPost && (i > ultimoTry) ){
 			i--;
-		  if(postCondiciones.get(tercetos.get(i).getT2().ival))==null)
-		  	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", la funcion invocada no tiene post condicion");
-		  pila.push(crearTerceto(new ParserVal(-3), new ParserVal((double)postCondiciones.get(tercetos.get(i).getT2().ival)), new ParserVal(-1)));/*el primer -3 es BT, el 2do parametro hace referencia a la postcondicion de la funcion invocada*/
+			if(tercetos.get(i).getT1().ival == CALL)
+				noHayCallConPost= (postCondiciones.get(tercetos.get(i).getT2().ival)==null);/*si el call no tiene post condicion*/
+		  }
+		  /*Verificamos que haya un llamado a funcion con postcondicion*/
+		  if(noHayCallConPost){
+			addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", no se invoca funcion con post condicion dentro del TRY");
+			pila.push(crearTerceto(new ParserVal(-3), new ParserVal((double)0), new ParserVal(-1)));/*el primer -3 es BT, el 2do parametro es erroneo*/
+		  }else{
+			pila.push(crearTerceto(new ParserVal(-3), new ParserVal((double)postCondiciones.get(tercetos.get(i).getT2().ival)), new ParserVal(-1)));/*el primer -3 es BT, el 2do parametro hace referencia a la postcondicion de la funcion invocada*/
+		  }
 		 }
 break;
 case 105:
-//#line 431 "gramatica.y"
+//#line 439 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
 break;
 case 106:
-//#line 432 "gramatica.y"
+//#line 440 "gramatica.y"
 { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
 break;
 case 107:
-//#line 435 "gramatica.y"
-{ addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+//#line 443 "gramatica.y"
+{
+ 	addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 	ultimoTry = tercetos.size()-1;/*Se guarda la referencia del ultimo tercetos antes del try*/
+ }
 break;
 case 108:
-//#line 438 "gramatica.y"
+//#line 449 "gramatica.y"
 {
                               if(val_peek(2).sval!=val_peek(0).sval)
 				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + val_peek(2).sval + " + " + val_peek(0).sval );
@@ -1374,7 +1387,7 @@ case 108:
  		      }
 break;
 case 109:
-//#line 444 "gramatica.y"
+//#line 455 "gramatica.y"
 {
 				 if(val_peek(2).sval!=val_peek(0).sval)
 					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + val_peek(2).sval + " - " + val_peek(0).sval );
@@ -1383,11 +1396,11 @@ case 109:
 		      }
 break;
 case 110:
-//#line 450 "gramatica.y"
+//#line 461 "gramatica.y"
 { yyval = val_peek(0) ; }
 break;
 case 111:
-//#line 453 "gramatica.y"
+//#line 464 "gramatica.y"
 {
              if(val_peek(2).sval!=val_peek(0).sval)
                    addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + val_peek(2).sval + " * " + val_peek(0).sval );
@@ -1396,7 +1409,7 @@ case 111:
 	 }
 break;
 case 112:
-//#line 459 "gramatica.y"
+//#line 470 "gramatica.y"
 {
                 if(val_peek(2).sval!=val_peek(0).sval)
                      	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + val_peek(2).sval + " / " + val_peek(0).sval );
@@ -1405,18 +1418,18 @@ case 112:
 	 }
 break;
 case 113:
-//#line 465 "gramatica.y"
+//#line 476 "gramatica.y"
 {yyval = val_peek(0);}
 break;
 case 114:
-//#line 466 "gramatica.y"
+//#line 477 "gramatica.y"
 {
 		      yyval = new ParserVal((double)crearTerceto(new ParserVal((int)'*'), new ParserVal(-1), val_peek(0)));
 		      yyval.sval=val_peek(1).sval;
 	 }
 break;
 case 115:
-//#line 472 "gramatica.y"
+//#line 483 "gramatica.y"
 {
        String auxiliar= ambitoActual;
        int ultimoPunto = 0;
@@ -1445,24 +1458,24 @@ case 115:
      }
 break;
 case 116:
-//#line 498 "gramatica.y"
+//#line 509 "gramatica.y"
 {yyval = val_peek(0);}
 break;
 case 117:
-//#line 499 "gramatica.y"
+//#line 510 "gramatica.y"
 {yyval = val_peek(0);}
 break;
 case 118:
-//#line 500 "gramatica.y"
+//#line 511 "gramatica.y"
 {  yyval = val_peek(0);
                        yyval.sval="ULONG";}
 break;
 case 119:
-//#line 502 "gramatica.y"
+//#line 513 "gramatica.y"
 {yyval = val_peek(0);
                       yyval.sval="DOUBLE";}
 break;
-//#line 1389 "Parser.java"
+//#line 1402 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

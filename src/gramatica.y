@@ -422,17 +422,28 @@ import java.util.HashMap;
  bifurcacion_try : try sentencia_asignacion CATCH {
  		  //Primero buscamos el id de la funcion invocada en el try recorriendo la lista de tercetos
 		  int i = tercetos.size()-1;
-		  while( (tercetos.get(i).getT1().ival != CALL) && (i >= 0) )
+		  boolean noHayCallConPost = (tercetos.get(i).getT1().ival != CALL);
+		  while( noHayCallConPost && (i > ultimoTry) ){
 			i--;
-		  if(postCondiciones.get(tercetos.get(i).getT2().ival))==null)
-		  	addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", la funcion invocada no tiene post condicion");
-		  pila.push(crearTerceto(new ParserVal(-3), new ParserVal((double)postCondiciones.get(tercetos.get(i).getT2().ival)), new ParserVal(-1)));//el primer -3 es BT, el 2do parametro hace referencia a la postcondicion de la funcion invocada
+			if(tercetos.get(i).getT1().ival == CALL)
+				noHayCallConPost= (postCondiciones.get(tercetos.get(i).getT2().ival)==null);//si el call no tiene post condicion
+		  }
+		  //Verificamos que haya un llamado a funcion con postcondicion
+		  if(noHayCallConPost){
+			addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", no se invoca funcion con post condicion dentro del TRY");
+			pila.push(crearTerceto(new ParserVal(-3), new ParserVal((double)0), new ParserVal(-1)));//el primer -3 es BT, el 2do parametro es erroneo
+		  }else{
+			pila.push(crearTerceto(new ParserVal(-3), new ParserVal((double)postCondiciones.get(tercetos.get(i).getT2().ival)), new ParserVal(-1)));//el primer -3 es BT, el 2do parametro hace referencia a la postcondicion de la funcion invocada
+		  }
 		 }
  		 | try sentencia_asignacion error { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
   		 | try sentencia_asignacion { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia TRY-CATCH invalida"); }
  ;
 
- try : TRY { addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() ); }
+ try : TRY {
+ 	addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 	ultimoTry = tercetos.size()-1;//Se guarda la referencia del ultimo tercetos antes del try
+ }
  ; 
 
  expresion_aritmetica : expresion_aritmetica '+' termino {
@@ -521,8 +532,10 @@ private Stack<Integer> pila = new Stack<Integer>(); //Pila utilizada para los te
 private HashMap<Integer, Integer> postCondiciones = new HashMap<Integer, Integer>();//Hashmap utilizado para guardar el id de las funciones junto a las referencias de sus postcondicion
 
 private String ambitoActual;
-private String tipoActual;
-private String tipoActualdeFuncion;
+private String tipoActual; //variable para saber el ultimo tipo leido
+private String tipoActualdeFuncion; //Variable para saber el ultimo tipo de funcion leido
+
+private int ultimoTry; //variable para saber cual es el ultimo terceto antes de un try, sirve por si no se encuentra ningun CALL dentro de un TRY
 
 public void setAnalizadorLexico(AnalizadorLexico al){
 	this.analizadorLexico = al;
