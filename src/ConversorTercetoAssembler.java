@@ -75,6 +75,12 @@ public class ConversorTercetoAssembler {
         datos.append(".data");
         datos.append("\n");
 
+        datos.append("_funcion_actual DD ?" + "\n");
+        datos.append("ERROR_EN_EJECUCION DB \" ERROR EN EJECUCION \" , 0 " + "\n");
+        datos.append("Division_por_cero DB \" Division por cero \" , 0 " + "\n");
+        datos.append("Overflow_en_suma_de_enteros DB \" Overflow en suma de enteros \" , 0 " + "\n");
+        datos.append("Recursion_en_una_funcion DB \" Recursion en una funcion \" , 0 " + "\n");
+
         for(int i = 287 ; i<= tablaDeSimbolos.refUltimoToken() ;i++){
             String lexema = tablaDeSimbolos.obtenerValor(i);
 
@@ -93,6 +99,9 @@ public class ConversorTercetoAssembler {
                     if (tablaDeSimbolos.obtenerToken(i).getUso() == "cadena") {
                         lexema = lexema.substring(1, lexema.length()-1);//le sacamos los % de inicio y final
                         datos.append(lexema.replace(' ','_') + " DB " + "\"" + lexema + "\"" + " , 0 " + "\n");
+                    }
+                    if(tablaDeSimbolos.obtenerToken(i).getUso() == "funcion designada a variable"){
+                        datos.append("_" + lexema + " DD ?" + "\n");
                     }
                 }
             }
@@ -120,18 +129,25 @@ public class ConversorTercetoAssembler {
     private String getZonaCodigoAssembler()
     {
         this.code.append(".code");
-        this.code.append("\n");
+        this.code.append("\n"+ "\n");
         Terceto tercetoActual= tercetos.get(0);
-        String retornoFuncion="";
+        String retornoFuncion=""; //variable utilizada para guardar la instruccion de retorno de una funcion temporalmente
         Stack<String> pilaFunciones = new Stack<String>(); //Pila utilizada para las etiquetas de las funciones
+
+        this.funcionErrorDivisonPorCero();
+        this.funcionErrorOverflowSumaEntero();
+        this.funcionErrorRecursion();
 
         if (tablaDeSimbolos.obtenerValor(tercetoActual.getT1().ival)!="FUNC")//inicia en el main
             {
-                this.code.append("START:");
-                this.code.append("\n");
+                this.code.append("START:"+ "\n");
+
+                //Una vez declarada la etiqueta cambio la funcion actual en el assembler
+                this.code.append("MOV EAX, START" + "\n");
+                this.code.append("MOV _funcion_actual, EAX" + "\n" + "\n");
             }
         else//se declaran funciones antes del main
-            pilaFunciones.push("START:");
+            pilaFunciones.push("START:"+ "\n");
 
         for(int i = 0; i < this.tercetos.size(); i++) // por cada uno de los tecetos vamos generando el codigo
         {
@@ -154,7 +170,7 @@ public class ConversorTercetoAssembler {
 
             switch (operador) {
 
-                case "+": {//TODO: Overflow en sumas de enteros
+                case "+": {
                     if (tercetoActual.getT2().sval == "ULONG")
                         operacionAritmetica("ADD", tercetoActual);
                     break;
@@ -179,8 +195,16 @@ public class ConversorTercetoAssembler {
                 }
 
                 case ":=": {
-                    if (tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipo() == "ULONG")
-                        asignacion(tercetoActual);
+                    if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso() != "funcion designada a variable") {
+                        if (tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipo() == "ULONG")
+                            asignacion(tercetoActual);
+                    }else{
+                            if(tablaDeSimbolos.obtenerToken(tercetoActual.getT3().ival).getUso()=="funcion")
+                                this.code.append("MOV EAX, "+ tablaDeSimbolos.obtenerValor(tercetoActual.getT3().ival).replace(".","_") + "\n");
+                            else//sino es variable con funcion designada, le agrego "_"
+                                this.code.append("MOV EAX, _"+ tablaDeSimbolos.obtenerValor(tercetoActual.getT3().ival).replace(".","_") + "\n");
+                            this.code.append("MOV _"+ tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".","_")+ ", EAX" + "\n"+ "\n");
+                    }
                     break;
                 }
 
@@ -237,16 +261,18 @@ public class ConversorTercetoAssembler {
                     lexema = lexema.substring(1, lexema.length() - 1);//le sacamos los % de inicio y final
                     lexema = lexema.replace(' ', '_');
                     this.code.append("invoke MessageBox, NULL, addr " + lexema + " , addr " + lexema + " , MB_OK " + "\n");
-                    this.code.append("invoke ExitProcess, 0" + "\n");
                     break;
                 }
 
                 case "FUNC":{
-                    if(tablaDeSimbolos.obtenerValor(tercetos.get(i+1).getT1().ival)!="FUNC")//no hay declaracion de funciones dentro de la funcion
-                        this.code.append(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".","_") + ":"+"\n");
-                    else//hay declaracion de funciones dentro de la funcion, entonces guardamos la etiqueta en la pila
-                        pilaFunciones.push(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".","_") + ":"+"\n");
-                    break;
+                    if(tablaDeSimbolos.obtenerValor(tercetos.get(i+1).getT1().ival)!="FUNC") {//no hay declaracion de funciones dentro de la funcion
+                        this.code.append(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".", "_") + ":" + "\n" + "\n");
+                        //Una vez declarada la etiqueta cambio la funcion actual en el assembler
+                        this.code.append("MOV EAX, "+tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".", "_")  + "\n");
+                        this.code.append("MOV _funcion_actual, EAX" + "\n" + "\n");
+                    }else {//hay declaracion de funciones dentro de la funcion, entonces guardamos la etiqueta en la pila
+                        pilaFunciones.push(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".", "_") + ":" + "\n");
+                    }break;
                 }
 
                 case "RETURN": {//Guardo el retorno por si hay una postcondicion
@@ -256,26 +282,39 @@ public class ConversorTercetoAssembler {
                 }
 
                 case "ENDFUNC": {
+                    this.code.append("\n");
+                    //Una terminado el bloque de la funcion, se vuelve a actualizar la funcion
+                    this.code.append("MOV EAX, "+ pilaFunciones.peek().substring(0, pilaFunciones.peek().length()-2)  + "\n");
+                    this.code.append("MOV _funcion_actual, EAX" + "\n" + "\n");
+
                     this.code.append(retornoFuncion);
                     this.code.append("\n"+"ret"+"\n");
                     this.code.append("\n");
                     if (tablaDeSimbolos.obtenerValor(tercetos.get(i+1).getT1().ival)!="FUNC") //viene el bloque ejecutable de la funcion que la declaro
                     {
-                        this.code.append(pilaFunciones.pop());//se añade la etiqueta de la funcion madre
-                        this.code.append("\n");
+                        String etiqueta = pilaFunciones.pop();
+                        this.code.append(etiqueta);//se añade la etiqueta de la funcion madre
+
+                        //Una vez declarada la etiqueta cambio la funcion actual en el assembler
+                        this.code.append("MOV EAX, "+ etiqueta.substring(0, etiqueta.length()-2)  + "\n");
+                        this.code.append("MOV _funcion_actual, EAX" + "\n" + "\n");
                     }//en el caso que se declare otra funcion en el mismo bloque declarativo no se toca la pila
                     break;
                 }
 
                 case "CALL": {
                     String parametro= this.devuelveOperando(tercetoActual.getT3());
-                    String referenciaFuncion = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getLexema();
+                    String etiquetaFuncion = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getLexema().replace(".","_");
                     if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso()!="funcion")
-                        referenciaFuncion = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getFuncionReferenciada();
-                    String parametroFuncion = "_" + tablaDeSimbolos.obtenerToken(tablaDeSimbolos.obtenerReferenciaTabla(referenciaFuncion)).getParametro().replace(".","_");
+                        etiquetaFuncion = "_"+etiquetaFuncion;
+
+                    this.code.append("MOV EAX, "+ etiquetaFuncion + "\n");
+                    this.code.append("CALL error_recursion"+"\n");
+
+                    String parametroFuncion = "_" + tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getParametro().replace(".","_");
                     this.code.append("MOV EAX, "+ parametro + "\n");
                     this.code.append("MOV "+ parametroFuncion + ", EAX"+ "\n");
-                    this.code.append("CALL "+ referenciaFuncion.replace(".","_") +"\n");
+                    this.code.append("CALL "+ etiquetaFuncion +"\n");
 
                     this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");
                     this.code.append("\n");
@@ -292,6 +331,9 @@ public class ConversorTercetoAssembler {
             }
 
         }
+
+        this.code.append("fin_ejecucion:" + "\n");
+        this.code.append("invoke ExitProcess, 0" + "\n");
         this.code.append("END START");
         this.code.append("\n");
         return this.code.toString();
@@ -305,6 +347,9 @@ public class ConversorTercetoAssembler {
         String operando2= this.devuelveOperando(terceto.getT3());
         this.code.append(operacion +" EAX, "+operando2+"\n");
 
+        if(operacion == "ADD")
+            this.code.append("CALL error_overflow_suma_entero" + "\n");
+
         this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");
         this.code.append("\n");
         terceto.setAuxiliar("@aux"+this.contadorAuxiliar);
@@ -313,13 +358,19 @@ public class ConversorTercetoAssembler {
 
     //Metodo para generar codigo generico de las operaciones de multiplicacion y division
     private void operacionAritmetica_Mul_Div(String operacion , Terceto terceto){
+        String operando2=this.devuelveOperando(terceto.getT3());
+        if(operacion=="DIV") {
+            this.code.append("MOV EAX, " + operando2 + "\n");
+            this.code.append("CALL error_division_por_cero" + "\n");
+        }
+
         String operando1=this.devuelveOperando(terceto.getT2());
         this.code.append("MOV EAX, "+operando1+"\n");
 
         if(operacion.equals("DIV"))
             this.code.append("MOV EDX, 0"+"\n");//Agregamos 0 para que DIV sepa que es positivo
 
-        String operando2=this.devuelveOperando(terceto.getT3());
+        //String operando2=this.devuelveOperando(terceto.getT3());
         if (tablaDeSimbolos.obtenerToken(terceto.getT3().ival).getUso().equals("constante"))
         {
             this.code.append("MOV EBX, "+operando2+"\n");
@@ -432,6 +483,40 @@ public class ConversorTercetoAssembler {
 
         return operando;
     }
+
+    //Metodo para generar codigo de la asignacion
+    private void funcionErrorDivisonPorCero(){
+        this.code.append("error_division_por_cero:"+"\n");
+        this.code.append("CMP EAX, 0"+"\n");
+        this.code.append("JNE fin_funcion_division_por_cero"+"\n");
+        this.code.append("invoke MessageBox, NULL, addr " + "ERROR_EN_EJECUCION" + " , addr " + "Division_por_cero" + " , MB_OK " + "\n");
+        this.code.append("JMP fin_ejecucion" + "\n");
+        this.code.append("fin_funcion_division_por_cero:"+"\n");
+        this.code.append("ret" + "\n");
+        this.code.append("\n");
+    }
+
+    private void funcionErrorOverflowSumaEntero(){
+        this.code.append("error_overflow_suma_entero:"+"\n");
+        this.code.append("JNC fin_overflow_suma_entero"+"\n");
+        this.code.append("invoke MessageBox, NULL, addr " + "ERROR_EN_EJECUCION" + " , addr " + "Overflow_en_suma_de_enteros" + " , MB_OK " + "\n");
+        this.code.append("JMP fin_ejecucion" + "\n");
+        this.code.append("fin_overflow_suma_entero:"+"\n");
+        this.code.append("ret" + "\n");
+        this.code.append("\n");
+    }
+
+    private void funcionErrorRecursion(){
+        this.code.append("error_recursion:"+"\n");
+        this.code.append("CMP EAX, _funcion_actual"+"\n");
+        this.code.append("JNE fin_recursion"+"\n");
+        this.code.append("invoke MessageBox, NULL, addr " + "ERROR_EN_EJECUCION" + " , addr " + "Recursion_en_una_funcion" + " , MB_OK " + "\n");
+        this.code.append("JMP fin_ejecucion" + "\n");
+        this.code.append("fin_recursion:"+"\n");
+        this.code.append("ret" + "\n");
+        this.code.append("\n");
+    }
+
 
     public void generarArchivoCodigo ( String codigo ) {
         PrintWriter arch = null;

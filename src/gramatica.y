@@ -236,10 +236,9 @@ import java.util.HashMap;
 							if(tablaSimbolo.obtenerToken($1.ival).getTipoParametro() != tablaSimbolo.obtenerToken($3.ival).getTipoParametro())
 								addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el parametro de la funcion es de distinto tipo que el del parametro de la variable");
 							this.erroresSemanticos.remove(indiceErrorABorrar);//se borra el error ya que se hace buen uso del identificador
-							if(tablaSimbolo.obtenerToken($3.ival).getUso()=="funcion")
-								tablaSimbolo.obtenerToken($1.ival).setFuncionReferenciada(tablaSimbolo.obtenerValor($3.ival));
-							else
-								tablaSimbolo.obtenerToken($1.ival).setFuncionReferenciada(tablaSimbolo.obtenerToken($3.ival).getFuncionReferenciada());
+
+							tablaSimbolo.obtenerToken($1.ival).setParametro(tablaSimbolo.obtenerToken($3.ival).getParametro());
+							tablaSimbolo.obtenerToken($1.ival).setTipoParametro(tablaSimbolo.obtenerToken($3.ival).getTipoParametro());
 						}
 					}
 
@@ -247,8 +246,7 @@ import java.util.HashMap;
 					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + tablaSimbolo.obtenerToken($1.ival).getTipo() + " := " + $3.sval );
 
 		       }
-		       if(tablaSimbolo.obtenerToken($1.ival).getUso()!="funcion designada a variable")
-		       		$$ = new ParserVal((double)crearTerceto(new ParserVal(ASIG), $1, $3));
+		       $$ = new ParserVal((double)crearTerceto(new ParserVal(ASIG), $1, $3));
 		       addEstructura( "Sentencia de asignacion, en la linea: " + analizadorLexico.getNroLineaToken() );
 		      }
  		      | ID error ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia invalida"); }
