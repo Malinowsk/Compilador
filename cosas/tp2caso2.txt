@@ -30,13 +30,17 @@ IF ( entero1 <= 10 && entero2 <=100 ) THEN
 	BEGIN
 		entero2 := CALL suc(entero1);
 		WHILE(DOUBLE(entero2) <= doble1) DO
+		BEGIN
 			entero2 := entero1 + entero2 * 3 - 1;
+			BREAK;
+		END
 	END
 ELSE
 	TRY
 		entero2 := CALL prec(entero1);
 	CATCH
 	BEGIN
+		BREAK;
 		WHILE(entero1 <= 10) DO
 		BEGIN
 			PRINT(%prec es predecesor y +
@@ -45,5 +49,5 @@ ELSE
 		END
 	END
 ENDIF;
-
+entero2:=0;
 END

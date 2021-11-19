@@ -287,17 +287,26 @@ import java.util.HashMap;
  ;
 
  sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';' {
- 			 tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()));
+ 			 if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
+ 			 	tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()+1));//Completo el BI del break
+
+ 			 tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()));//Completo el BF del if
  			 tercetos.get(tercetos.size()-1).setEtiqueta();
  			}//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues del ENDIF
                        | condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF ';'{
-			 tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()));
+                         if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
+                        	tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()+1));//Completo el BI del break
+
+			 tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()));//Completo el BI del else
 			 tercetos.get(tercetos.size()-1).setEtiqueta();
 			}//Se modifica el BI, agregandole la referencia correspondiente al proximo terceto despues del ENDIF
  ;
 
  else: ELSE{
-	tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));
+ 	if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
+        	tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()+1));//Completo el BI del break
+
+	tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));//Completo el BF del if
 	int refTerceto =crearTerceto(new ParserVal(-2), new ParserVal(-1), new ParserVal(-1));//-2 es BI
 	tercetos.get(tercetos.size()-1).setEtiqueta();
 	pila.push(refTerceto);
@@ -352,7 +361,7 @@ import java.util.HashMap;
  		    | print '(' CADENA ';'{ addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
  		    | print CADENA ')' ';'{ addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
  		    | print error ';'{ addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", sentencia PRINT invalida"); }
- ; 
+ ;
 
  print : PRINT {
  		addEstructura( "Sentencia PRINT, en la linea: " + analizadorLexico.getNroLineaToken() );
@@ -361,10 +370,13 @@ import java.util.HashMap;
  ;
 
  sentencia_iterativa : iterativo bloque_ejecutable_iterativo{
-							     tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues de la ultima sentencia del bloque
-							     crearTerceto(new ParserVal(-2), new ParserVal((double)pila.pop()), new ParserVal(-1));//-2 es BI, se crea un BI al terceto que calcula la condicion del while
-							     tercetos.get(tercetos.size()-1).setEtiqueta();
-							    }
+ 	     if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
+		    tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()+1));//Completo el BI del break
+
+	     tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));//Completo el BF del while
+	     crearTerceto(new ParserVal(-2), new ParserVal((double)pila.pop()), new ParserVal(-1));//-2 es BI
+	     tercetos.get(tercetos.size()-1).setEtiqueta();
+ }
  ;
 
  iterativo : while '(' condicion ')' DO {
@@ -376,6 +388,7 @@ import java.util.HashMap;
 	   | while '(' error ')' DO { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", condicion invalida"); }
 	   | while '(' condicion DO { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
 	   | while condicion ')' DO { pila.push(0); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
+;
 
  while : WHILE { addEstructura( "Sentencia WHILE, en la linea: " + analizadorLexico.getNroLineaToken() );
  		 pila.push(tercetos.size());
@@ -386,7 +399,7 @@ import java.util.HashMap;
  bloque_ejecutable_iterativo : BEGIN sentencias_ejecutables_iterativas END
  			     | sentencia_ejecutable_iterativa
  ;
- 
+
  sentencias_ejecutables_iterativas : sentencia_ejecutable_iterativa sentencias_ejecutables_iterativas
                         | sentencia_ejecutable_iterativa
  ;
@@ -397,10 +410,12 @@ import java.util.HashMap;
                                 | sentencia_iterativa
                                 | sentencia_try_catch
                                 | sentencia_break
- ; 
+ ;
 
- sentencia_break : BREAK ';'{ addEstructura( "Sentencia BREAK, en la linea: " + analizadorLexico.getNroLineaToken() );
- 				//TODO: AGREGAR TERCETO PARA EL BREAK, UN BI
+ sentencia_break : BREAK ';'{
+ 			addEstructura( "Sentencia BREAK, en la linea: " + analizadorLexico.getNroLineaToken() );
+ 			int refTerceto =crearTerceto(new ParserVal(-2), new ParserVal(-2), new ParserVal(-1));//El primer -2 es BI, el segundo es para diferenciarlo de otros BI (luego se pisa por la dir a saltar)
+			pila.push(refTerceto);
  }
  ;
 
@@ -413,9 +428,11 @@ import java.util.HashMap;
  ;
 
  sentencia_try_catch : bifurcacion_try bloque_ejecutable{
- 		      int t = pila.pop();
+ 		      if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
+                             tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()+1));//Completo el BI del break
+
  		      tercetos.get(tercetos.size()-1).setEtiqueta();
- 		      tercetos.get(t).setT3(new ParserVal((double)tercetos.size()));//Completa el BT del try
+ 		      tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()));//Completa el BT del try
 		     }
  ;
 
@@ -444,7 +461,7 @@ import java.util.HashMap;
  	addEstructura( "Sentencia TRY-CATCH, en la linea: " + analizadorLexico.getNroLineaToken() );
  	ultimoTry = tercetos.size()-1;//Se guarda la referencia del ultimo tercetos antes del try
  }
- ; 
+ ;
 
  expresion_aritmetica : expresion_aritmetica '+' termino {
                               if($1.sval!=$3.sval)
