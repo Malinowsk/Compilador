@@ -302,7 +302,7 @@ public class ConversorTercetoAssembler {
                     break;
                 }
 
-                case "CALL": {
+                case "CALL": { //TODO: NO AGREGAR LLAMADO A FUNCION A ERROR EN EL MAIN
                     String parametro= this.devuelveOperando(tercetoActual.getT3());
                     String etiquetaFuncion = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getLexema().replace(".","_");
                     if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso()!="funcion")
