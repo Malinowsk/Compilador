@@ -103,20 +103,29 @@ public class ConversorTercetoAssembler {
                     if(tablaDeSimbolos.obtenerToken(i).getUso() == "funcion designada a variable"){
                         datos.append("_" + lexema + " DD ?" + "\n");
                     }
+                    if((tablaDeSimbolos.obtenerToken(i).getUso() == "constante") && (tablaDeSimbolos.obtenerToken(i).getTipo() == "DOUBLE")){
+                        String constante = tablaDeSimbolos.obtenerValor(i);
+                        if(constante.charAt(0)=='.')
+                            constante = "0"+constante;
+                        datos.append("_" + lexema + " DQ "+ constante + "\n");
+                    }
                 }
             }
         }
 
         for(Terceto t : tercetos){
             if(t.getAuxiliar()!=null){
-                if(t.getT2().sval=="ULONG"){
-                    datos.append(t.getAuxiliar() + " DD ?" + "\n");
-                }
-                else{
-                    if(t.getT2().sval=="DOUBLE")
-                        datos.append(t.getAuxiliar() + " DQ ?" + "\n");
-                    else // en este caso el auxiliar corresponde a un boleano
+                if(tablaDeSimbolos.obtenerValor(t.getT1().ival)!="DOUBLE") {
+                    if (t.getT2().sval == "ULONG") {
                         datos.append(t.getAuxiliar() + " DD ?" + "\n");
+                    } else {
+                        if (t.getT2().sval == "DOUBLE")
+                            datos.append(t.getAuxiliar() + " DQ ?" + "\n");
+                        else // en este caso el auxiliar corresponde a un booleano (comparaciones o operaciones booleanas)
+                            datos.append(t.getAuxiliar() + " DD ?" + "\n");
+                    }
+                }else{
+                    datos.append(t.getAuxiliar() + " DQ ?" + "\n");
                 }
             }
         }
@@ -134,7 +143,8 @@ public class ConversorTercetoAssembler {
         String retornoFuncion=""; //variable utilizada para guardar la instruccion de retorno de una funcion temporalmente
         Stack<String> pilaFunciones = new Stack<String>(); //Pila utilizada para las etiquetas de las funciones
 
-        this.funcionErrorDivisonPorCero();
+        this.funcionErrorDivisonPorCero("ULONG");
+        this.funcionErrorDivisonPorCero("DOUBLE");
         this.funcionErrorOverflowSumaEntero();
         this.funcionErrorRecursion();
 
@@ -173,37 +183,44 @@ public class ConversorTercetoAssembler {
                 case "+": {
                     if (tercetoActual.getT2().sval == "ULONG")
                         operacionAritmetica("ADD", tercetoActual);
+                    else
+                        operacionAritmetica("FADD", tercetoActual);
                     break;
                 }
 
                 case "-": {
                     if (tercetoActual.getT2().sval == "ULONG")
                         operacionAritmetica("SUB", tercetoActual);
+                    else
+                        operacionAritmetica("FSUB", tercetoActual);
                     break;
                 }
 
                 case "*": {
                     if (tercetoActual.getT2().sval == "ULONG")
                         operacionAritmetica_Mul_Div("MUL", tercetoActual);
+                    else
+                        operacionAritmetica("FMUL", tercetoActual);
                     break;
                 }
 
                 case "/": {
                     if (tercetoActual.getT2().sval == "ULONG")
                         operacionAritmetica_Mul_Div("DIV", tercetoActual);
+                    else
+                        operacionAritmetica("FDIV", tercetoActual);
                     break;
                 }
 
                 case ":=": {
                     if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso() != "funcion designada a variable") {
-                        if (tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipo() == "ULONG")
-                            asignacion(tercetoActual);
+                        asignacion(tercetoActual);
                     }else{
-                            if(tablaDeSimbolos.obtenerToken(tercetoActual.getT3().ival).getUso()=="funcion")
-                                this.code.append("MOV EAX, "+ tablaDeSimbolos.obtenerValor(tercetoActual.getT3().ival).replace(".","_") + "\n");
-                            else//sino es variable con funcion designada, le agrego "_"
-                                this.code.append("MOV EAX, _"+ tablaDeSimbolos.obtenerValor(tercetoActual.getT3().ival).replace(".","_") + "\n");
-                            this.code.append("MOV _"+ tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".","_")+ ", EAX" + "\n"+ "\n");
+                        if(tablaDeSimbolos.obtenerToken(tercetoActual.getT3().ival).getUso()=="funcion")
+                            this.code.append("MOV EAX, "+ tablaDeSimbolos.obtenerValor(tercetoActual.getT3().ival).replace(".","_") + "\n");
+                        else//sino es variable con funcion designada, le agrego "_"
+                            this.code.append("MOV EAX, _"+ tablaDeSimbolos.obtenerValor(tercetoActual.getT3().ival).replace(".","_") + "\n");
+                        this.code.append("MOV _"+ tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".","_")+ ", EAX" + "\n"+ "\n");
                     }
                     break;
                 }
@@ -216,7 +233,7 @@ public class ConversorTercetoAssembler {
                 case "<>":
                 case "&&":
                 case "||": {
-                    this.comparador(operador, tercetoActual);
+                    this.comparador(operador, tercetoActual);//TODO: COMPLETAR PARA PUNTO FLOTANTE
                     break;
                 }
 
@@ -249,10 +266,15 @@ public class ConversorTercetoAssembler {
                     this.code.append("\n");
                     break;
                 }
+
                 case "DOUBLE": {
                     String referenciaTerceto = String.valueOf(tercetoActual.getT2().dval);
                     referenciaTerceto = referenciaTerceto.substring(0, referenciaTerceto.length() - 2);
                     this.code.append("FLD " + tercetos.get(Integer.valueOf(referenciaTerceto)) + "\n");
+                    this.code.append("FSTP @aux" + this.contadorAuxiliar + "\n");
+                    this.code.append("\n");
+                    tercetoActual.setAuxiliar("@aux" + this.contadorAuxiliar);
+                    this.contadorAuxiliar++;
                     break;
                 }
 
@@ -276,8 +298,10 @@ public class ConversorTercetoAssembler {
                 }
 
                 case "RETURN": {//Guardo el retorno por si hay una postcondicion
-                    retornoFuncion="MOV EAX, "+this.devuelveOperando(tercetoActual.getT2());
-
+                    if(tercetoActual.getT2().sval=="ULONG")
+                        retornoFuncion="MOV EAX, "+this.devuelveOperando(tercetoActual.getT2());
+                    else
+                        retornoFuncion="FLD "+this.devuelveOperando(tercetoActual.getT2());
                     break;
                 }
 
@@ -303,27 +327,38 @@ public class ConversorTercetoAssembler {
                 }
 
                 case "CALL": { //TODO: NO AGREGAR LLAMADO A FUNCION A ERROR EN EL MAIN
-                    String parametro= this.devuelveOperando(tercetoActual.getT3());
-                    String etiquetaFuncion = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getLexema().replace(".","_");
+                    String parametro= this.devuelveOperando(tercetoActual.getT3());//parametro con el que se invoca a la func
+                    String etiquetaFuncion = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getLexema().replace(".","_");//nombre de la etiqueta de la func
+                    String parametroFuncion = "_" + tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getParametro().replace(".","_");//Variable del parametro
+
                     if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso()!="funcion")
                         etiquetaFuncion = "_"+etiquetaFuncion;
+
 
                     this.code.append("MOV EAX, "+ etiquetaFuncion + "\n");
                     this.code.append("CALL error_recursion"+"\n");
 
-                    String parametroFuncion = "_" + tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getParametro().replace(".","_");
-                    this.code.append("MOV EAX, "+ parametro + "\n");
-                    this.code.append("MOV "+ parametroFuncion + ", EAX"+ "\n");
-                    this.code.append("CALL "+ etiquetaFuncion +"\n");
+                    if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipo()=="ULONG") {
+                        this.code.append("MOV EAX, " + parametro + "\n");
+                        this.code.append("MOV " + parametroFuncion + ", EAX" + "\n");
+                        this.code.append("CALL " + etiquetaFuncion + "\n");
 
-                    this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");
+                        this.code.append("MOV @aux" + this.contadorAuxiliar + ", EAX" + "\n");
+                    }else{
+                        this.code.append("FLD, " + parametro + "\n");
+                        this.code.append("FSTP " + parametroFuncion + "\n");
+                        this.code.append("CALL " + etiquetaFuncion + "\n");
+
+                        this.code.append("FSTP @aux" + this.contadorAuxiliar + "\n");
+                    }
+
                     this.code.append("\n");
                     tercetoActual.setAuxiliar("@aux"+this.contadorAuxiliar);
                     this.contadorAuxiliar++;
                     break;
                 }
 
-                default://FUNC, BREAK (TODAVIA NO ESTA)
+                default://TODO: COMPARACIONES PARA DOUBLE
 
             }
             if(tercetoActual.getEtiqueta()){
@@ -341,18 +376,31 @@ public class ConversorTercetoAssembler {
 
     //Metodo para generar codigo generico de las operaciones aritmeticas
     private void operacionAritmetica(String operacion, Terceto terceto){
-        String operando1= this.devuelveOperando(terceto.getT2());
-        this.code.append("MOV EAX, "+operando1+"\n");
+        String operando1 = this.devuelveOperando(terceto.getT2());
+        String operando2 = this.devuelveOperando(terceto.getT3());
+        if(terceto.getT2().sval=="ULONG") {///CASO ENTERO
+            this.code.append("MOV EAX, " + operando1 + "\n");
 
-        String operando2= this.devuelveOperando(terceto.getT3());
-        this.code.append(operacion +" EAX, "+operando2+"\n");
+            this.code.append(operacion + " EAX, " + operando2 + "\n");
 
-        if(operacion == "ADD")
-            this.code.append("CALL error_overflow_suma_entero" + "\n");
+            if (operacion == "ADD")
+                this.code.append("CALL error_overflow_suma_entero" + "\n");
 
-        this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");
+            this.code.append("MOV @aux" + this.contadorAuxiliar + ", EAX" + "\n");
+        }
+        else{///CASO FLOTANTE
+            if(operacion=="FDIV") {
+                this.code.append("MOV EAX, " + operando2 + "\n");
+                this.code.append("CALL error_division_por_cero" + "\n");
+            }
+            this.code.append("FLD " + operando1 + "\n");
+            this.code.append("FLD " + operando2 + "\n");
+
+            this.code.append(operacion + "\n");
+            this.code.append("FSTP @aux" + this.contadorAuxiliar + "\n");
+        }
         this.code.append("\n");
-        terceto.setAuxiliar("@aux"+this.contadorAuxiliar);
+        terceto.setAuxiliar("@aux" + this.contadorAuxiliar);
         this.contadorAuxiliar++;
     }
 
@@ -386,12 +434,19 @@ public class ConversorTercetoAssembler {
 
     //Metodo para generar codigo de la asignacion
     private void asignacion(Terceto terceto){
-        String operando2=this.devuelveOperando(terceto.getT3());
-        this.code.append("MOV EAX, "+operando2+"\n");
+        String operando2 = this.devuelveOperando(terceto.getT3());
+        String operando1 = "_" + tablaDeSimbolos.obtenerValor(terceto.getT2().ival);//El operando 1 (izquierda de la asig) siempre va a ser una variable
+        operando1 = operando1.replace(".", "_");
+        if (tablaDeSimbolos.obtenerToken(terceto.getT2().ival).getTipo() == "ULONG") {
+            this.code.append("MOV EAX, " + operando2 + "\n");
 
-        String operando1 ="_"+tablaDeSimbolos.obtenerValor(terceto.getT2().ival);//El operando 1 (izquierda de la asig) siempre va a ser una variable
-        operando1 = operando1.replace(".","_");
-        this.code.append("MOV "+operando1+", EAX"+"\n");
+            this.code.append("MOV " + operando1 + ", EAX" + "\n");
+        }
+        else{
+            this.code.append("FLD " + operando2 + "\n");
+
+            this.code.append("FSTP " + operando1 + "\n");
+        }
         this.code.append("\n");
     }
 
@@ -473,7 +528,7 @@ public class ConversorTercetoAssembler {
             operando =tablaDeSimbolos.obtenerValor(clave.ival);
 
             operando = operando.replace(".","_");
-            if(tablaDeSimbolos.obtenerToken(clave.ival).getUso()!="constante") //Significa que es una variable y no una constante
+            if(tablaDeSimbolos.obtenerToken(clave.ival).getUso()!="constante" || tablaDeSimbolos.obtenerToken(clave.ival).getUso()=="DOUBLE") //Significa que es una variable o una constante double
                 operando = "_" + operando; // le agrego el guíon adelante por ser variable
         }else {//t2 apunta a auxiliar -> Siendo un puntero a otro terceto
             String srefTerceto = String.valueOf(clave.dval);
@@ -485,9 +540,15 @@ public class ConversorTercetoAssembler {
     }
 
     //Metodo para generar codigo de la asignacion
-    private void funcionErrorDivisonPorCero(){
+    private void funcionErrorDivisonPorCero(String tipo){//TODO: ESTA INCOMPLETO
+        String comparacion;
+        if(tipo=="ULONG")
+            comparacion = "CMP EAX, 0";
+        else
+            comparacion = "FTST";
+
         this.code.append("error_division_por_cero:"+"\n");
-        this.code.append("CMP EAX, 0"+"\n");
+        this.code.append(comparacion+"\n");
         this.code.append("JNE fin_funcion_division_por_cero"+"\n");
         this.code.append("invoke MessageBox, NULL, addr " + "Division_por_cero" + " , addr " + "ERROR_EN_EJECUCION" + " , MB_OK " + "\n");
         this.code.append("JMP fin_ejecucion" + "\n");
