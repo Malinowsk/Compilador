@@ -287,15 +287,17 @@ import java.util.HashMap;
  ;
 
  sentencia_condicional : condicional bloque_ejecutable_condicional ENDIF ';' {
- 			 if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
+ 			 /*if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
  			 	tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()+1));//Completo el BI del break
+			 */
 
  			 tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()));//Completo el BF del if
  			 tercetos.get(tercetos.size()-1).setEtiqueta();
  			}//Se modifica el BF, agregandole la referencia correspondiente al proximo terceto despues del ENDIF
                        | condicional bloque_ejecutable_condicional else bloque_ejecutable_condicional ENDIF ';'{
-                         if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
+                         /*if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
                         	tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()+1));//Completo el BI del break
+			 */
 
 			 tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()));//Completo el BI del else
 			 tercetos.get(tercetos.size()-1).setEtiqueta();
@@ -303,8 +305,9 @@ import java.util.HashMap;
  ;
 
  else: ELSE{
- 	if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
+ 	/*if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
         	tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()+1));//Completo el BI del break
+	*/
 
 	tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));//Completo el BF del if
 	int refTerceto =crearTerceto(new ParserVal(-2), new ParserVal(-1), new ParserVal(-1));//-2 es BI
@@ -370,7 +373,7 @@ import java.util.HashMap;
  ;
 
  sentencia_iterativa : iterativo bloque_ejecutable_iterativo{
- 	     if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
+ 	     while(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
 		    tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()+1));//Completo el BI del break
 
 	     tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()+1));//Completo el BF del while
@@ -428,8 +431,9 @@ import java.util.HashMap;
  ;
 
  sentencia_try_catch : bifurcacion_try bloque_ejecutable{
- 		      if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
+ 		      /*if(tercetos.get(pila.peek()).getT2().ival==-2)//verifico si el bloque tiene break
                              tercetos.get(pila.pop()).setT2(new ParserVal((double)tercetos.size()+1));//Completo el BI del break
+                      */
 
  		      tercetos.get(tercetos.size()-1).setEtiqueta();
  		      tercetos.get(pila.pop()).setT3(new ParserVal((double)tercetos.size()));//Completa el BT del try
