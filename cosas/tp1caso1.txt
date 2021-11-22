@@ -1,9 +1,38 @@
 programa;
 ULONG x;
 DOUBLE y;
-DOUBLE z;
 BEGIN
-x := 4294967295;
-y := 2.2250738585072015E-308;
-z := 1.7976931348623156E+308;
+
+x := 2;
+y := 4.00;
+
+WHILE(DOUBLE(x) <= y)DO
+BEGIN
+	
+	PRINT(%SDFSDFSDF%);
+	
+	IF(DOUBLE(x)==2.00)THEN
+		PRINT(%Sx2%);
+	ENDIF;
+
+	IF(DOUBLE(x)==3.00)THEN
+		PRINT(%Sx3%);
+	ENDIF;
+
+	IF(DOUBLE(x)==4.00)THEN
+		PRINT(%Sx4%);
+	ENDIF;
+
+	x:=x+1;
+END
+
+IF(x==4)THEN
+	PRINT(%SF4%);
+ENDIF;
+
+
+IF(x==5)THEN
+	PRINT(%SF5%);
+ENDIF;
+
 END

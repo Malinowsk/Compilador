@@ -22,6 +22,8 @@ public class ConversorTercetoAssembler {
     //Metodo utiliado por el main para generar el archivo assembler
     public String getConversionAssembler()
     {
+        contadorAuxiliar=0;
+        this.code= new StringBuilder();
         StringBuilder assembler = new StringBuilder();
         assembler.append(this.getEncabezadoAssembler());
         assembler.append("\n");
@@ -80,6 +82,7 @@ public class ConversorTercetoAssembler {
         datos.append("Division_por_cero DB \"Division por cero\" , 0 " + "\n");
         datos.append("Overflow_en_suma_de_enteros DB \"Overflow en suma de enteros\" , 0 " + "\n");
         datos.append("Recursion_en_una_funcion DB \"Recursion en una funcion\" , 0 " + "\n");
+        datos.append("aux_mem_2bytes DW ?" + "\n");
 
         for(int i = 287 ; i<= tablaDeSimbolos.refUltimoToken() ;i++){
             String lexema = tablaDeSimbolos.obtenerValor(i);
@@ -88,8 +91,8 @@ public class ConversorTercetoAssembler {
             if(tablaDeSimbolos.obtenerToken(i)!=null) {
 
                 lexema = lexema.replace('.','_');
-                if (tablaDeSimbolos.obtenerToken(i).getUso() == "variable" || tablaDeSimbolos.obtenerToken(i).getUso() == "parametro") {
-                    if (tablaDeSimbolos.obtenerToken(i).getTipo() == "ULONG") {
+                if ( (tablaDeSimbolos.obtenerToken(i).getUso() == "variable") || (tablaDeSimbolos.obtenerToken(i).getUso() == "parametro") || (tablaDeSimbolos.obtenerToken(i).getUso() == "funcion designada a variable") ) {
+                    if (tablaDeSimbolos.obtenerToken(i).getTipo() == "ULONG"  || (tablaDeSimbolos.obtenerToken(i).getUso() == "funcion designada a variable")) {
                         datos.append("_" + lexema + " DD ?" + "\n");
                     } else {
 
@@ -99,9 +102,6 @@ public class ConversorTercetoAssembler {
                     if (tablaDeSimbolos.obtenerToken(i).getUso() == "cadena") {
                         lexema = lexema.substring(1, lexema.length()-1);//le sacamos los % de inicio y final
                         datos.append(lexema.replace(' ','_') + " DB " + "\"" + lexema + "\"" + " , 0 " + "\n");
-                    }
-                    if(tablaDeSimbolos.obtenerToken(i).getUso() == "funcion designada a variable"){
-                        datos.append("_" + lexema + " DD ?" + "\n");
                     }
                     if((tablaDeSimbolos.obtenerToken(i).getUso() == "constante") && (tablaDeSimbolos.obtenerToken(i).getTipo() == "DOUBLE")){
                         String constante = tablaDeSimbolos.obtenerValor(i);
@@ -115,17 +115,20 @@ public class ConversorTercetoAssembler {
 
         for(Terceto t : tercetos){
             if(t.getAuxiliar()!=null){
-                if(tablaDeSimbolos.obtenerValor(t.getT1().ival)!="DOUBLE") {
-                    if (t.getT2().sval == "ULONG") {
-                        datos.append(t.getAuxiliar() + " DD ?" + "\n");
-                    } else {
-                        if (t.getT2().sval == "DOUBLE")
-                            datos.append(t.getAuxiliar() + " DQ ?" + "\n");
-                        else // en este caso el auxiliar corresponde a un booleano (comparaciones o operaciones booleanas)
+                String operador = tablaDeSimbolos.obtenerValor(t.getT1().ival);
+                if(operador!="DOUBLE") {
+                    if(operador=="+" || operador=="-" || operador=="*" || operador=="/" || operador=="CALL") {
+                        if (t.getT2().sval == "ULONG") {
                             datos.append(t.getAuxiliar() + " DD ?" + "\n");
+                        } else {
+                                datos.append(t.getAuxiliar() + " DQ ?" + "\n");
+                        }
+                    }
+                    else {
+                        datos.append(t.getAuxiliar() + " DD ?" + "\n"); // en este caso el auxiliar corresponde a un booleano (comparaciones o operaciones booleanas)
                     }
                 }else{
-                    datos.append(t.getAuxiliar() + " DQ ?" + "\n");
+                    datos.append(t.getAuxiliar() + " DQ ?" + "\n"); // para la conversion
                 }
             }
         }
@@ -198,7 +201,7 @@ public class ConversorTercetoAssembler {
 
                 case "*": {
                     if (tercetoActual.getT2().sval == "ULONG")
-                        operacionAritmetica_Mul_Div("MUL", tercetoActual);
+                        operacionAritmetica_Mul_Div_Entero("MUL", tercetoActual);
                     else
                         operacionAritmetica("FMUL", tercetoActual);
                     break;
@@ -206,7 +209,7 @@ public class ConversorTercetoAssembler {
 
                 case "/": {
                     if (tercetoActual.getT2().sval == "ULONG")
-                        operacionAritmetica_Mul_Div("DIV", tercetoActual);
+                        operacionAritmetica_Mul_Div_Entero("DIV", tercetoActual);
                     else
                         operacionAritmetica("FDIV", tercetoActual);
                     break;
@@ -268,10 +271,9 @@ public class ConversorTercetoAssembler {
                 }
 
                 case "DOUBLE": {
-                    String referenciaTerceto = String.valueOf(tercetoActual.getT2().dval);
-                    referenciaTerceto = referenciaTerceto.substring(0, referenciaTerceto.length() - 2);
-                    this.code.append("FLD " + tercetos.get(Integer.valueOf(referenciaTerceto)) + "\n");
-                    this.code.append("FSTP @aux" + this.contadorAuxiliar + "\n");
+                    String operando = this.devuelveOperando(tercetoActual.getT2());
+                    this.code.append("FILD " + operando + "\n");
+                    this.code.append("FST @aux" + this.contadorAuxiliar + "\n");
                     this.code.append("\n");
                     tercetoActual.setAuxiliar("@aux" + this.contadorAuxiliar);
                     this.contadorAuxiliar++;
@@ -379,7 +381,7 @@ public class ConversorTercetoAssembler {
         String operando1 = this.devuelveOperando(terceto.getT2());
         String operando2 = this.devuelveOperando(terceto.getT3());
         if(terceto.getT2().sval=="ULONG") {///CASO ENTERO
-            this.code.append("MOV EAX, " + operando1 + "\n");
+            this.code.append("MOV EAX, " + operando1 +" ; " + operacion + "ENTEROS entre " + operando1 + " y " + operando2 + "\n");
 
             this.code.append(operacion + " EAX, " + operando2 + "\n");
 
@@ -390,7 +392,7 @@ public class ConversorTercetoAssembler {
         }
         else{///CASO FLOTANTE
             if(operacion=="FDIV") {
-                this.code.append("MOV EAX, " + operando2 + "\n");
+                this.code.append("FLD" + operando2 + "\n");
                 this.code.append("CALL error_division_por_cero" + "\n");
             }
             this.code.append("FLD " + operando1 + "\n");
@@ -405,7 +407,7 @@ public class ConversorTercetoAssembler {
     }
 
     //Metodo para generar codigo generico de las operaciones de multiplicacion y division
-    private void operacionAritmetica_Mul_Div(String operacion , Terceto terceto){
+    private void operacionAritmetica_Mul_Div_Entero(String operacion , Terceto terceto){
         String operando2=this.devuelveOperando(terceto.getT3());
         if(operacion=="DIV") {
             this.code.append("MOV EAX, " + operando2 + "\n");
@@ -453,68 +455,126 @@ public class ConversorTercetoAssembler {
     //Metodo para generar codigo de las comparaciones y operaciones booleanas
     private void comparador(String operacion, Terceto terceto){
 
-        String operando1=this.devuelveOperando(terceto.getT2());
-        this.code.append("MOV EAX, "+operando1+"\n");
 
+        String operando1=this.devuelveOperando(terceto.getT2());
         String operando2=this.devuelveOperando(terceto.getT3());
 
         if (operacion.equals("&&") || operacion.equals("||")){
+            this.code.append("MOV EAX, "+operando1+"\n");
             if (operacion.equals("&&")){//si ambos operandos no son cero entonces devuelve 1
                 this.code.append("AND EAX, " + operando2 + "\n");}
             else{
                 this.code.append("OR EAX, " + operando2 + "\n");
             }
+            this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");//en el auxiliar se guarda todos 0 en caso de ser falsa la operacion, sino tendra almenos un 1
         }
         else {
-            this.code.append("CMP EAX, " + operando2 + "\n");//primero se realiza la comparacion
-            this.code.append("MOV EAX, 0" + "\n");//ponemos 0 en EAX
+            if (terceto.getT2().sval == "ULONG") {
+                this.code.append("MOV EAX, "+operando1+"\n");
+                this.code.append("CMP EAX, " + operando2 + "\n");//primero se realiza la comparacion
+                this.code.append("MOV EAX, 0" + "\n");//ponemos 0 en EAX
 
-            switch (operacion) {
+                switch (operacion) {
 
-                case "<": {//guarda en AH el flag de signo
-                    this.code.append("SETS AH" + "\n");
-                    break;
+                    case "<": {//guarda en AH el flag de signo
+                        this.code.append("SETS AH" + "\n");
+                        break;
+                    }
+
+                    case ">": {//guarda en AH 1 en caso de que tanto el flag de signo como el de cero sean 0
+                        this.code.append("MOV EBX, 0" + "\n");
+                        this.code.append("SETS AH" + "\n");
+                        this.code.append("SETZ BH" + "\n");
+                        this.code.append("ADD AH, BH" + "\n");//sumamos ambos flags para ver si da mas de 0
+                        this.code.append("SETZ AH" + "\n");//si es 0 entonces ambos eran 0
+                        break;
+                    }
+
+                    case "<=": {//guarda en AH 1 en caso de que tanto el flag de signo como el de cero sean 1
+                        this.code.append("MOV EBX, 0" + "\n");
+                        this.code.append("SETS AH" + "\n");
+                        this.code.append("SETZ BH" + "\n");
+                        this.code.append("OR AH, BH" + "\n");
+                        break;
+                    }
+
+                    case ">=": {//guarda en AH 1 en caso de que el flag de signo sea 0
+                        this.code.append("SETS AH" + "\n");
+                        this.code.append("CMP AH, 0" + "\n");//compara el flag de signo del anterior con 0 y actualiza flags
+                        this.code.append("SETZ AH" + "\n");//si la cmp da 0 entonces se guarda 1
+                        break;
+                    }
+
+                    case "==": {//guarda en AH 1 en caso de que el flag de cero sea 1
+                        this.code.append("SETZ AH" + "\n");
+                        break;
+                    }
+
+                    case "<>": {//guarda en AH 1 en caso de que el flag de cero sea 0
+                        this.code.append("SETZ AH" + "\n");
+                        this.code.append("ADD AH, 0" + "\n");//suma el flag de cero del anterior con 0 y actualiza flags
+                        this.code.append("SETZ AH" + "\n");//entonces nos quedamos con el flag de paridad de la suma anterior
+                        break;
+                    }
                 }
+                this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");//en el auxiliar se guarda todos 0 en caso de ser falsa la operacion, sino tendra almenos un 1
+            }
+            else{
 
-                case ">": {//guarda en AH 1 en caso de que tanto el flag de signo como el de cero sean 0
-                    this.code.append("MOV EBX, 0" + "\n");
-                    this.code.append("SETS AH" + "\n");
-                    this.code.append("SETZ BH" + "\n");
-                    this.code.append("ADD AH, BH" + "\n");//sumamos ambos flags para ver si da mas de 0
-                    this.code.append("SETZ AH" + "\n");//si es 0 entonces ambos eran 0
-                    break;
-                }
+                this.code.append("FLD " + operando1 + "\n");
+                this.code.append("FCOM " + operando2 + "\n");
+                this.code.append("MOV EAX, 0" + "\n");
+                this.code.append("FSTSW aux_mem_2bytes" + "\n");  // guarda la palabra de estado
+                this.code.append("MOV AX , aux_mem_2bytes" + "\n"); // guarda en un registro
+                this.code.append("SAHF" + "\n"); // actualiza los flags
+                this.code.append("MOV EBX, 0" + "\n");
+                switch (operacion) {
 
-                case "<=": {//guarda en AH 1 en caso de que tanto el flag de signo como el de cero sean 1
-                    this.code.append("MOV EBX, 0" + "\n");
-                    this.code.append("SETS AH" + "\n");
-                    this.code.append("SETZ BH" + "\n");
-                    this.code.append("OR AH, BH" + "\n");
-                    break;
-                }
+                    case "<": {//guarda en BH el flag de signo
+                        this.code.append("SETC BH" + "\n");
+                        break;
+                    }
 
-                case ">=": {//guarda en AH 1 en caso de que el flag de signo sea 0
-                    this.code.append("SETS AH" + "\n");
-                    this.code.append("CMP AH, 0" + "\n");//compara el flag de signo del anterior con 0 y actualiza flags
-                    this.code.append("SETZ AH" + "\n");//si la cmp da 0 entonces se guarda 1
-                    break;
-                }
+                    case ">": {//guarda en BH 1 en caso de que tanto el flag de signo como el de cero sean 0
+                        this.code.append("MOV ECX, 0" + "\n");
+                        this.code.append("SETC BH" + "\n");
+                        this.code.append("SETZ CH" + "\n");
+                        this.code.append("ADD BH, CH" + "\n");//sumamos ambos flags para ver si da mas de 0
+                        this.code.append("SETZ BH" + "\n");//si es 0 entonces ambos eran 0
+                        break;
+                    }
 
-                case "==": {//guarda en AH 1 en caso de que el flag de cero sea 1
-                    this.code.append("SETZ AH" + "\n");
-                    break;
-                }
+                    case "<=": {//guarda en BH 1 en caso de que tanto el flag de signo como el de cero sean 1
+                        this.code.append("MOV ECX, 0" + "\n");
+                        this.code.append("SETC BH" + "\n");
+                        this.code.append("SETZ CH" + "\n");
+                        this.code.append("OR BH, CH" + "\n");
+                        break;
+                    }
 
-                case "<>": {//guarda en AH 1 en caso de que el flag de cero sea 0
-                    this.code.append("SETZ AH" + "\n");
-                    this.code.append("ADD AH, 0" + "\n");//suma el flag de cero del anterior con 0 y actualiza flags
-                    this.code.append("SETZ AH" + "\n");//entonces nos quedamos con el flag de paridad de la suma anterior
-                    break;
+                    case ">=": {//guarda en BH 1 en caso de que el flag de signo sea 0
+                        this.code.append("SETC BH" + "\n");
+                        this.code.append("CMP BH, 0" + "\n");//compara el flag de signo del anterior con 0 y actualiza flags
+                        this.code.append("SETZ BH" + "\n");//si la cmp da 0 entonces se guarda 1
+                        break;
+                    }
+
+                    case "==": {//guarda en BH 1 en caso de que el flag de cero sea 1
+                        this.code.append("SETZ BH" + "\n");
+                        break;
+                    }
+
+                    case "<>": {//guarda en BH 1 en caso de que el flag de cero sea 0
+                        this.code.append("SETZ BH" + "\n");
+                        this.code.append("ADD BH, 0" + "\n");//suma el flag de cero del anterior con 0 y actualiza flags
+                        this.code.append("SETZ BH" + "\n");//entonces nos quedamos con el flag de paridad de la suma anterior
+                        break;
+                    }
                 }
+                this.code.append("MOV @aux"+ this.contadorAuxiliar +", EBX"+"\n");
             }
         }
 
-        this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");//en el auxiliar se guarda todos 0 en caso de ser falsa la operacion, sino tendra almenos un 1
         this.code.append("\n");
         terceto.setAuxiliar("@aux"+this.contadorAuxiliar);
         this.contadorAuxiliar++;
@@ -528,7 +588,7 @@ public class ConversorTercetoAssembler {
             operando =tablaDeSimbolos.obtenerValor(clave.ival);
 
             operando = operando.replace(".","_");
-            if(tablaDeSimbolos.obtenerToken(clave.ival).getUso()!="constante" || tablaDeSimbolos.obtenerToken(clave.ival).getUso()=="DOUBLE") //Significa que es una variable o una constante double
+            if(tablaDeSimbolos.obtenerToken(clave.ival).getUso()!="constante" || tablaDeSimbolos.obtenerToken(clave.ival).getTipo()=="DOUBLE") //Significa que es una variable o una constante double
                 operando = "_" + operando; // le agrego el guíon adelante por ser variable
         }else {//t2 apunta a auxiliar -> Siendo un puntero a otro terceto
             String srefTerceto = String.valueOf(clave.dval);
@@ -539,20 +599,27 @@ public class ConversorTercetoAssembler {
         return operando;
     }
 
-    //Metodo para generar codigo de la asignacion
-    private void funcionErrorDivisonPorCero(String tipo){//TODO: ESTA INCOMPLETO
+    // metodo para generar la funcion de errores para ULONG y DOUBLE
+    private void funcionErrorDivisonPorCero(String tipo){
         String comparacion;
         if(tipo=="ULONG")
             comparacion = "CMP EAX, 0";
         else
-            comparacion = "FTST";
+            comparacion = "FTST"; // compara con 0
 
-        this.code.append("error_division_por_cero:"+"\n");
+        this.code.append("error_division_por_cero_" + tipo + ":" +"\n");
         this.code.append(comparacion+"\n");
-        this.code.append("JNE fin_funcion_division_por_cero"+"\n");
+        if(tipo=="DOUBLE")
+        {
+            this.code.append("MOV EAX, 0" + "\n");
+            this.code.append("FSTSW aux_mem_2bytes" + "\n");  // guarda la palabra de estado
+            this.code.append("MOV AX , aux_mem_2bytes" + "\n"); // guarda en un registro
+            this.code.append("SAHF" + "\n"); // actualiza los flags
+        }
+        this.code.append("JNE fin_funcion_division_por_cero_" + tipo +"\n");
         this.code.append("invoke MessageBox, NULL, addr " + "Division_por_cero" + " , addr " + "ERROR_EN_EJECUCION" + " , MB_OK " + "\n");
         this.code.append("JMP fin_ejecucion" + "\n");
-        this.code.append("fin_funcion_division_por_cero:"+"\n");
+        this.code.append("fin_funcion_division_por_cero_" + tipo + ":" + "\n");
         this.code.append("ret" + "\n");
         this.code.append("\n");
     }

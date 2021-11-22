@@ -272,6 +272,7 @@ import java.util.HashMap;
 			$2.ival=nuevaRef;//se le asigna la referencia a la variable original en la tabla
 			Token tFuncion = tablaSimbolo.obtenerToken($2.ival);
 			if(tFuncion.getUso()=="funcion" || tFuncion.getUso()=="funcion designada a variable"){
+			    $2.sval = tFuncion.getTipo();
 				if($4.sval!= tFuncion.getTipoParametro())
 					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", Error en la invocacion a funcion : El tipo de parametro real no coincide con el formal");
 			}else{
@@ -280,7 +281,7 @@ import java.util.HashMap;
 		}
 
 		addEstructura( "Sentencia de llamado a funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
-		$$ = new ParserVal((double)crearTerceto(new ParserVal(CALL), $2, $4));
+ 		$$ = new ParserVal((double)crearTerceto(new ParserVal(CALL), $2, $4));
 		$$.sval = tablaSimbolo.obtenerToken($2.ival).getTipo();
 	   }
 	   | CALL ID '(' error ')' ';'{ addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
