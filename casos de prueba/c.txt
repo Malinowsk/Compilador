@@ -1,0 +1,52 @@
+ProgramaEjemplo4;
+
+ULONG FUNC dos ( ULONG param )
+ULONG x;
+BEGIN
+
+x:= 2;
+
+RETURN (x);
+POST:(x==2);
+END;
+
+ULONG FUNC uno ( ULONG param )
+ULONG x;
+BEGIN
+
+x:= 2;
+
+RETURN (x);
+POST:(x==2);
+END;
+
+ULONG entero1;
+ULONG FUNC (ULONG) a;
+
+
+**Inicio del main
+BEGIN
+
+TRY
+ entero1:= 1 + CALL uno(0) + CALL dos(0);
+CATCH
+BEGIN
+ entero1:= 0;
+END
+
+TRY
+ entero1:= 1 + CALL dos(0);
+CATCH
+BEGIN
+ entero1:= 0;
+END
+
+**Este tiene error
+TRY
+ entero1:= 1 + CALL uno(0);
+CATCH
+BEGIN
+ entero1:= 0;
+END
+
+END

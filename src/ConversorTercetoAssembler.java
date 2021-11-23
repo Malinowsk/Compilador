@@ -82,6 +82,7 @@ public class ConversorTercetoAssembler {
         datos.append("Division_por_cero DB \"Division por cero\" , 0 " + "\n");
         datos.append("Overflow_en_suma_de_enteros DB \"Overflow en suma de enteros\" , 0 " + "\n");
         datos.append("Recursion_en_una_funcion DB \"Recursion en una funcion\" , 0 " + "\n");
+        datos.append("PRINT DB \"Impresion por pantalla\" , 0 " + "\n");
         datos.append("aux_mem_2bytes DW ?" + "\n");
 
         for(int i = 287 ; i<= tablaDeSimbolos.refUltimoToken() ;i++){
@@ -101,13 +102,13 @@ public class ConversorTercetoAssembler {
                 } else {
                     if (tablaDeSimbolos.obtenerToken(i).getUso() == "cadena") {
                         lexema = lexema.substring(1, lexema.length()-1);//le sacamos los % de inicio y final
-                        datos.append(lexema.replace(' ','_') + " DB " + "\"" + lexema + "\"" + " , 0 " + "\n");
+                        datos.append(tablaDeSimbolos.obtenerToken(i).getNombre() + " DB " + "\"" + lexema + "\"" + " , 0 " + "\n");
                     }
                     if((tablaDeSimbolos.obtenerToken(i).getUso() == "constante") && (tablaDeSimbolos.obtenerToken(i).getTipo() == "DOUBLE")){
-                        String constante = tablaDeSimbolos.obtenerValor(i);
-                        if(constante.charAt(0)=='.')
-                            constante = "0"+constante;
-                        datos.append("_" + lexema + " DQ "+ constante + "\n");
+                        String valor = tablaDeSimbolos.obtenerValor(i);
+                        if(valor.charAt(0)=='.')
+                            valor = "0"+valor;
+                        datos.append("_" + tablaDeSimbolos.obtenerToken(i).getNombre() + " DQ "+ valor + "\n");
                     }
                 }
             }
@@ -275,10 +276,8 @@ public class ConversorTercetoAssembler {
                 }
 
                 case "PRINT": {
-                    String lexema = tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival);
-                    lexema = lexema.substring(1, lexema.length() - 1);//le sacamos los % de inicio y final
-                    lexema = lexema.replace(' ', '_');
-                    this.code.append("invoke MessageBox, NULL, addr " + lexema + " , addr " + lexema + " , MB_OK " + "\n");
+                    String cadena = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getNombre();
+                    this.code.append("invoke MessageBox, NULL, addr " + cadena + " , addr PRINT , MB_OK " + "\n");
                     break;
                 }
 
@@ -322,7 +321,7 @@ public class ConversorTercetoAssembler {
                     break;
                 }
 
-                case "CALL": { //TODO: NO AGREGAR LLAMADO A FUNCION A ERROR EN EL MAIN
+                case "CALL": { //TODO: NO AGREGAR LLAMADO A FUNCION A ERROR EN EL MAIN (por cuestiones de tiempo queda pendiente ya que no genera ningun)
                     String parametro= this.devuelveOperando(tercetoActual.getT3());//parametro con el que se invoca a la func
                     String etiquetaFuncion = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getLexema().replace(".","_");//nombre de la etiqueta de la func
                     String parametroFuncion = "_" + tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getParametro().replace(".","_");//Variable del parametro
@@ -419,11 +418,12 @@ public class ConversorTercetoAssembler {
         if(operacion.equals("DIV"))
             this.code.append("MOV EDX, 0"+"\n");//Agregamos 0 para que DIV sepa que es positivo
 
-        if (tablaDeSimbolos.obtenerToken(terceto.getT3().ival).getUso().equals("constante"))
-        {
-            this.code.append("MOV EBX, "+operando2+"\n");
-            operando2 = "EBX";
-        }
+        if (terceto.getT3().ival!=0)//para el caso que sea referencia a la tabla de simbolo
+            if(tablaDeSimbolos.obtenerToken(terceto.getT3().ival).getUso()=="constante")
+            {
+                this.code.append("MOV EBX, "+operando2+"\n");
+                operando2 = "EBX";
+            }
         this.code.append(operacion +" "+operando2+"\n");
 
         this.code.append("MOV @aux"+ this.contadorAuxiliar +", EAX"+"\n");
@@ -581,7 +581,10 @@ public class ConversorTercetoAssembler {
 
         String operando="";
         if(clave.ival!=0) {//t2 apunta a tabla -> Siendo una variable o constante
-            operando =tablaDeSimbolos.obtenerValor(clave.ival);
+            if(tablaDeSimbolos.obtenerToken(clave.ival).getUso()=="constante" && tablaDeSimbolos.obtenerToken(clave.ival).getTipo()=="DOUBLE")
+                operando =tablaDeSimbolos.obtenerToken(clave.ival).getNombre();//en cado der ser una cte flotante se obtiene el nombre asignado
+            else
+                operando =tablaDeSimbolos.obtenerValor(clave.ival);
 
             operando = operando.replace(".","_");
             if(tablaDeSimbolos.obtenerToken(clave.ival).getUso()!="constante" || tablaDeSimbolos.obtenerToken(clave.ival).getTipo()=="DOUBLE") //Significa que es una variable o una constante double

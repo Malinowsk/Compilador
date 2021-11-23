@@ -29,6 +29,9 @@ private static final Integer MULTIPLICACION = 42;
 private static final Integer DOS_PUNTOS = 58;
 private static final Integer DISTINTO = 284;
 
+private static Integer contadorCadena = 0;//Contador utilizado para asignarle un nombre unico a cada cadena
+private static Integer contadorConstante = 0;//Contador utilizado para asignarle un nombre unico a cada constante DOUBLE
+
 //Aclaracion, siempre que se agrega un token también se agrega el nro de linea correspondiente
 
 /*
@@ -213,6 +216,8 @@ public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_DOUBLE);//se agrega identificador a la tabla
             tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setTipo("DOUBLE");
             tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setUso("constante");
+            tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setNombre("constante"+contadorConstante);
+            contadorConstante++;
         }
         tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_DOUBLE, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
         lineas.add(nroLinea);
@@ -242,6 +247,8 @@ public static boolean accion17(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
     if(!tablaDeSimbolo.existeToken(auxiliar)){
         tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CADENA);//se agrega identificador a la tabla
         tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setUso("cadena");
+        tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setNombre("cadena"+contadorCadena);
+        contadorCadena++;
     }
     tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CADENA, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
     lineas.add(nroLinea);
@@ -261,6 +268,8 @@ public static boolean accion18(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
     if(!tablaDeSimbolo.existeToken(auxiliar)){
         tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_CADENA);//se agrega identificador a la tabla
         tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setUso("cadena");
+        tablaDeSimbolo.obtenerToken(tablaDeSimbolo.refUltimoToken()).setNombre("cadena"+contadorCadena);
+        contadorCadena++;
     }
     tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CADENA, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
     lineas.add(nroLinea);
