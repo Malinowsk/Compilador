@@ -153,7 +153,7 @@ import java.util.HashMap;
  				int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
  				if(tablaSimbolo.obtenerToken(refFuncion).getTipo() != $3.sval)
  					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles entre el retorno de la funcion y lo retornado");
- 				crearTerceto(new ParserVal(RETURN), $3, new ParserVal(-1));//TODO: NO CREAR SINO GUARDAR EN AUXILIAR RETORNOACTUAL
+ 				crearTerceto(new ParserVal(RETURN), $3, new ParserVal(-1));
  				addEstructura( "Sentencia RETURN, en la linea: " + analizadorLexico.getNroLineaToken() );
  		 }
  		 | RETURN '(' error ')' ';' { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", expresion aritmetica invalida"); }
@@ -166,7 +166,6 @@ import java.util.HashMap;
  			int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
  			postCondiciones.put(refFuncion, tercetos.size()-1);//Se guarda en el hashmap la posicion del terceto de condicion (ult terceto agregado en este punto) con la clave= ID de la funcion
  			addEstructura( "Sentencia POST, en la linea: " + analizadorLexico.getNroLineaToken() );
- 			//TODO: VER SI CREAR TERCETO PARA EL POST
  		}
 	       | POST ':' '(' error ')' ';'  {
 			int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));

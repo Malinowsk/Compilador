@@ -29,7 +29,7 @@ public class Main {
             System.out.println("1- Listar tabla de simbolos");
             System.out.println("2- Listar errores");
             System.out.println("3- Listar tercetos");
-            System.out.println("4- Listar instrucciones assembler");
+            System.out.println("4- Generar y mostrar el archivo assembler");
             System.out.println("5- Salir");
             System.out.println("Ingrese una opción");
             opcion = s.nextInt();
