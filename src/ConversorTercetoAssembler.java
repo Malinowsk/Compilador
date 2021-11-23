@@ -327,26 +327,30 @@ public class ConversorTercetoAssembler {
                     String etiquetaFuncion = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getLexema().replace(".","_");//nombre de la etiqueta de la func
                     String parametroFuncion = "_" + tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getParametro().replace(".","_");//Variable del parametro
 
-                    if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso()!="funcion")
+                    if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso()!="funcion")//Sino es una funcion no se tiene la etiqueta sino una variable que apunta a la etiqueta
                         etiquetaFuncion = "_"+etiquetaFuncion;
 
-
+                    //Llamamos a la funcion que chequea el error por recursion
                     this.code.append("MOV EAX, "+ etiquetaFuncion + "\n");
                     this.code.append("CALL error_recursion"+"\n");
 
-                    if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipo()=="ULONG") {
+                    //guardamos el parametro con el que se invoca dependiendo del tipo
+                    if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipoParametro()=="ULONG") {
                         this.code.append("MOV EAX, " + parametro + "\n");
                         this.code.append("MOV " + parametroFuncion + ", EAX" + "\n");
-                        this.code.append("CALL " + etiquetaFuncion + "\n");
-
-                        this.code.append("MOV @aux" + this.contadorAuxiliar + ", EAX" + "\n");
                     }else{
                         this.code.append("FLD, " + parametro + "\n");
                         this.code.append("FSTP " + parametroFuncion + "\n");
-                        this.code.append("CALL " + etiquetaFuncion + "\n");
-
-                        this.code.append("FSTP @aux" + this.contadorAuxiliar + "\n");
                     }
+
+                    //llamamos a la funcion
+                    this.code.append("CALL " + etiquetaFuncion + "\n");
+
+                    //obtenemos el retorno de la funcion segun el tipo de retorno
+                    if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipo()=="ULONG")
+                        this.code.append("MOV @aux" + this.contadorAuxiliar + ", EAX" + "\n");
+                    else
+                        this.code.append("FSTP @aux" + this.contadorAuxiliar + "\n");
 
                     this.code.append("\n");
                     tercetoActual.setAuxiliar("@aux"+this.contadorAuxiliar);
