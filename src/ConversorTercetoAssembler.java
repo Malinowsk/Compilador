@@ -141,7 +141,7 @@ public class ConversorTercetoAssembler {
     private String getZonaCodigoAssembler()
     {
         this.code.append(".code" + "\n");
-        this.code.append("F[N]INIT" + "\n"+ "\n");
+        this.code.append("FNINIT" + "\n"+ "\n");
 
         Terceto tercetoActual= tercetos.get(0);
         String retornoFuncion=""; //variable utilizada para guardar la instruccion de retorno de una funcion temporalmente
@@ -237,7 +237,7 @@ public class ConversorTercetoAssembler {
                 case "<>":
                 case "&&":
                 case "||": {
-                    this.comparador(operador, tercetoActual);//TODO: COMPLETAR PARA PUNTO FLOTANTE
+                    this.comparador(operador, tercetoActual);
                     break;
                 }
 
@@ -361,7 +361,7 @@ public class ConversorTercetoAssembler {
                     break;
                 }
 
-                default://TODO: COMPARACIONES PARA DOUBLE
+                default:
 
             }
             if(tercetoActual.getEtiqueta()){
@@ -371,7 +371,7 @@ public class ConversorTercetoAssembler {
         }
 
         this.code.append("fin_ejecucion:" + "\n");
-        this.code.append("F[N]INIT" + "\n");
+        this.code.append("FNINIT" + "\n");
         this.code.append("invoke ExitProcess, 0" + "\n");
         this.code.append("END START");
         this.code.append("\n");
@@ -599,7 +599,7 @@ public class ConversorTercetoAssembler {
         return operando;
     }
 
-    // metodo para generar la funcion de errores para ULONG y DOUBLE
+    //Metodo para generar la funcion de errores para ULONG y DOUBLE
     private void funcionErrorDivisonPorCero(String tipo){
         String comparacion;
         if(tipo=="ULONG")
@@ -624,6 +624,7 @@ public class ConversorTercetoAssembler {
         this.code.append("\n");
     }
 
+    //Metodo usado una unica vez para agregar la funcion de error de overflow por suma de enteros
     private void funcionErrorOverflowSumaEntero(){
         this.code.append("error_overflow_suma_entero:"+"\n");
         this.code.append("JNC fin_overflow_suma_entero"+"\n");
@@ -634,6 +635,7 @@ public class ConversorTercetoAssembler {
         this.code.append("\n");
     }
 
+    //Metodo usado una unica vez para agregar la funcion de error de recursion en una funcion
     private void funcionErrorRecursion(){
         this.code.append("error_recursion:"+"\n");
         this.code.append("CMP EAX, _funcion_actual"+"\n");
@@ -645,7 +647,7 @@ public class ConversorTercetoAssembler {
         this.code.append("\n");
     }
 
-
+    //Metodo que genera el archivo .ASM
     public void generarArchivoCodigo ( String codigo ) {
         PrintWriter arch = null;
         try {
