@@ -152,7 +152,7 @@ import java.util.HashMap;
  retorno_funcion : RETURN '(' expresion_aritmetica ')' ';' {
  				int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
  				if(tablaSimbolo.obtenerToken(refFuncion).getTipo() != $3.sval)
- 					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles entre el retorno de la funcion y lo retornado");//TODO: AGREGAR AL INFORME
+ 					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles entre el retorno de la funcion y lo retornado");
  				crearTerceto(new ParserVal(RETURN), $3, new ParserVal(-1));//TODO: NO CREAR SINO GUARDAR EN AUXILIAR RETORNOACTUAL
  				addEstructura( "Sentencia RETURN, en la linea: " + analizadorLexico.getNroLineaToken() );
  		 }
@@ -340,8 +340,10 @@ import java.util.HashMap;
  ;
 
  expresion_booleana : expresion_aritmetica comparador expresion_aritmetica{
+ 			if($1.sval!=$3.sval)
+				addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles en la comparacion");
 			$$ = new ParserVal((double)crearTerceto($2, $1, $3));
-			}
+		}
  ;
 
  comparador : COMP_MAYOR_IGUAL {$$.ival = COMP_MAYOR_IGUAL;}

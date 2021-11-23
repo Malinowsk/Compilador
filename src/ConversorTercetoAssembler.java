@@ -142,7 +142,7 @@ public class ConversorTercetoAssembler {
     {
         this.code.append(".code" + "\n");
         this.code.append("F[N]INIT" + "\n"+ "\n");
-        
+
         Terceto tercetoActual= tercetos.get(0);
         String retornoFuncion=""; //variable utilizada para guardar la instruccion de retorno de una funcion temporalmente
         Stack<String> pilaFunciones = new Stack<String>(); //Pila utilizada para las etiquetas de las funciones
