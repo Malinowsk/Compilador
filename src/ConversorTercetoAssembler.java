@@ -241,13 +241,17 @@ public class ConversorTercetoAssembler {
                     break;
                 }
 
+                case "BT":
                 case "BF": {
+                    String salto = "JE";//Si es BF, salto cuando el booleano es igual 0
+                    if(operador=="BT")
+                        salto= "JNE";//Si es BT, salto cuando el booleano es distinto a 0
                     String operando1 = this.devuelveOperando(tercetoActual.getT2());
                     this.code.append("MOV EAX, " + operando1 + "\n");
                     this.code.append("SUB EAX, 0" + "\n");
                     String auxiliar = String.valueOf(tercetoActual.getT3().dval);
                     String direccion = auxiliar.substring(0, auxiliar.length() - 2);
-                    this.code.append("JE label_" + direccion + "\n");
+                    this.code.append(salto+ " label_" + direccion + "\n");
                     this.code.append("\n");
                     break;
                 }
@@ -256,17 +260,6 @@ public class ConversorTercetoAssembler {
                     String auxiliar = String.valueOf(tercetoActual.getT2().dval);
                     String direccion = auxiliar.substring(0, auxiliar.length() - 2);
                     this.code.append("JMP label_" + direccion + "\n");
-                    this.code.append("\n");
-                    break;
-                }
-
-                case "BT": {
-                    String operando1 = this.devuelveOperando(tercetoActual.getT2());
-                    this.code.append("MOV EAX, " + operando1 + "\n");
-                    this.code.append("SUB EAX, 0" + "\n");
-                    String auxiliar = String.valueOf(tercetoActual.getT3().dval);
-                    String direccion = auxiliar.substring(0, auxiliar.length() - 2);
-                    this.code.append("JNE label_" + direccion + "\n");
                     this.code.append("\n");
                     break;
                 }
