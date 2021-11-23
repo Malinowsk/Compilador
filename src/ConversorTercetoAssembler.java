@@ -84,6 +84,7 @@ public class ConversorTercetoAssembler {
         datos.append("Recursion_en_una_funcion DB \"Recursion en una funcion\" , 0 " + "\n");
         datos.append("PRINT DB \"Impresion por pantalla\" , 0 " + "\n");
         datos.append("aux_mem_2bytes DW ?" + "\n");
+        datos.append("_aux_conversion DD ?" + "\n");
 
         for(int i = 287 ; i<= tablaDeSimbolos.refUltimoToken() ;i++){
             String lexema = tablaDeSimbolos.obtenerValor(i);
@@ -267,6 +268,14 @@ public class ConversorTercetoAssembler {
 
                 case "DOUBLE": {
                     String operando = this.devuelveOperando(tercetoActual.getT2());
+
+                    if(tercetoActual.getT2().ival>0)
+                        if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso()=="constante" && tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipo()=="ULONG") {
+                            this.code.append("MOV _aux_conversion, 0" + "\n");//Para estar seguros que no queda basura en el auxiliar
+                            this.code.append("MOV _aux_conversion, " + operando + "\n"); //usamos el auxiliar como intermediario entre la cte y la pila
+                            operando = "_aux_conversion";
+                        }
+
                     this.code.append("FILD " + operando + "\n");
                     this.code.append("FSTP @aux" + this.contadorAuxiliar + "\n");
                     this.code.append("\n");
@@ -284,7 +293,13 @@ public class ConversorTercetoAssembler {
                 case "FUNC":{
                     if(tablaDeSimbolos.obtenerValor(tercetos.get(i+1).getT1().ival)!="FUNC") {//no hay declaracion de funciones dentro de la funcion
                         this.code.append(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".", "_") + ":" + "\n" + "\n");
-                        //Una vez declarada la etiqueta cambio la funcion actual en el assembler
+                        //Una vez declarada la etiqueta cambio la funcion actual en el assembler se guarda el parametro
+                        String parametroFuncion = "_" + tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getParametro().replace(".","_");//Variable del parametro
+                        if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipoParametro()=="ULONG")
+                            this.code.append("MOV " + parametroFuncion+ ", EAX" + "\n");
+                        else
+                            this.code.append("FSTP " + parametroFuncion + "\n");
+                        //Se actualiza la funcion actual
                         this.code.append("MOV EAX, "+tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".", "_")  + "\n");
                         this.code.append("MOV _funcion_actual, EAX" + "\n" + "\n");
                     }else {//hay declaracion de funciones dentro de la funcion, entonces guardamos la etiqueta en la pila
@@ -324,7 +339,6 @@ public class ConversorTercetoAssembler {
                 case "CALL": { //TODO: NO AGREGAR LLAMADO A FUNCION A ERROR EN EL MAIN (por cuestiones de tiempo queda pendiente ya que no genera ningun)
                     String parametro= this.devuelveOperando(tercetoActual.getT3());//parametro con el que se invoca a la func
                     String etiquetaFuncion = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getLexema().replace(".","_");//nombre de la etiqueta de la func
-                    String parametroFuncion = "_" + tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getParametro().replace(".","_");//Variable del parametro
 
                     if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getUso()!="funcion")//Sino es una funcion no se tiene la etiqueta sino una variable que apunta a la etiqueta
                         etiquetaFuncion = "_"+etiquetaFuncion;
@@ -336,10 +350,8 @@ public class ConversorTercetoAssembler {
                     //guardamos el parametro con el que se invoca dependiendo del tipo
                     if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipoParametro()=="ULONG") {
                         this.code.append("MOV EAX, " + parametro + "\n");
-                        this.code.append("MOV " + parametroFuncion + ", EAX" + "\n");
                     }else{
                         this.code.append("FLD, " + parametro + "\n");
-                        this.code.append("FSTP " + parametroFuncion + "\n");
                     }
 
                     //llamamos a la funcion

@@ -15,13 +15,12 @@ BEGIN
 
 aux := 1.5E+2 ;
 aux2 := 1;
-f2 := f1;
 
 IF ( aux >= DOUBLE(aux2+1)) THEN
 BEGIN
 
 	PRINT(%Entra al if%);
-	WHILE (aux > aux2) DO
+	WHILE (aux > DOUBLE(aux2)) DO
 	BEGIN
 		PRINT(%Entra al while%);
         	BREAK;
@@ -30,11 +29,11 @@ END
 ENDIF;
 
 TRY
-    aux := 1 / CALL f2( aux2 );
+    aux2 := 1 / CALL f1( aux2 );
 CATCH
 BEGIN
 		PRINT(%Entra al CATCH%);**No entra porque la postcondicion da verdadero
-		aux := 0;
+		aux2 := 0;
 END
 
 PRINT(%todo +

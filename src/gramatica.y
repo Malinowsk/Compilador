@@ -32,7 +32,7 @@ import java.util.HashMap;
  ;
  
  sentencia_declarativa : tipo lista_variables { addEstructura( "Declaracion de variables, en la linea: " + analizadorLexico.getNroLineaToken() ); }
-                       | tipo_funcion lista_funcion_como_variables
+                       | tipo_funcion '(' tipo ')' lista_funcion_como_variables
                        | sentencia_declarativa_funcion
                        | error lista_variables { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable invalido"); }
                        | tipo error lista_variables { addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida"); }
@@ -65,13 +65,10 @@ import java.util.HashMap;
 	         }
  ;
 
- tipo_funcion: tipo FUNC '(' tipo ')'{
+ tipo_funcion: tipo FUNC {
 		tipoActualdeFuncion= $1.sval;
 		addEstructura( "Declaracion de funciones como variables, en la linea: " + analizadorLexico.getNroLineaToken() );
  }
- | tipo FUNC tipo ')' lista_variables { tipoActualdeFuncion=tablaSimbolo.obtenerValor($1.ival); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura"); }
- | tipo FUNC '(' error ')' lista_variables { tipoActualdeFuncion=tablaSimbolo.obtenerValor($1.ival); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", tipo de variable invalido"); }
- | tipo FUNC '(' tipo  lista_variables { tipoActualdeFuncion=tablaSimbolo.obtenerValor($1.ival); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre"); }
  ;
 
   lista_funcion_como_variables : ID ',' lista_funcion_como_variables {
@@ -109,36 +106,32 @@ import java.util.HashMap;
                                }
  ;
 
- cabecera_funcion : tipo FUNC ID '(' parametro ')' {
-			 String auxiliar = tablaSimbolo.obtenerToken($3.ival).getLexema();
+ cabecera_funcion : tipo_funcion ID '(' parametro ')' {
+			 String auxiliar = tablaSimbolo.obtenerToken($2.ival).getLexema();
 			 if(!tablaSimbolo.existeToken(auxiliar + '.' + ambitoActual)){
-			    tablaSimbolo.obtenerToken($3.ival).setLexema(auxiliar+'.'+ambitoActual);
-			    tablaSimbolo.obtenerToken($3.ival).setTipo(tipoActual);
-			    tablaSimbolo.obtenerToken($3.ival).setUso("funcion");
-			    tablaSimbolo.obtenerToken($3.ival).setTipoParametro(tablaSimbolo.obtenerToken($5.ival).getTipo());
+			    tablaSimbolo.obtenerToken($2.ival).setLexema(auxiliar+'.'+ambitoActual);
+			    tablaSimbolo.obtenerToken($2.ival).setTipo(tipoActualdeFuncion);
+			    tablaSimbolo.obtenerToken($2.ival).setUso("funcion");
+			    tablaSimbolo.obtenerToken($2.ival).setTipoParametro(tablaSimbolo.obtenerToken($4.ival).getTipo());
 			    ambitoActual= ambitoActual + '.' + auxiliar;
-			    tablaSimbolo.obtenerToken($5.ival).setLexema(tablaSimbolo.obtenerToken($5.ival).getLexema()+'.'+ambitoActual);
-			    tablaSimbolo.obtenerToken($3.ival).setParametro(tablaSimbolo.obtenerToken($5.ival).getLexema());
+			    tablaSimbolo.obtenerToken($4.ival).setLexema(tablaSimbolo.obtenerToken($4.ival).getLexema()+'.'+ambitoActual);
+			    tablaSimbolo.obtenerToken($2.ival).setParametro(tablaSimbolo.obtenerToken($4.ival).getLexema());
  			 }
  			 else
  			 {
- 			     tablaSimbolo.borrarToken($3.ival);
+ 			     tablaSimbolo.borrarToken($2.ival);
                  	     addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", funcion redeclarada");
- 			     $3.ival=tablaSimbolo.obtenerReferenciaTabla(auxiliar+'.'+ ambitoActual);
+ 			     $2.ival=tablaSimbolo.obtenerReferenciaTabla(auxiliar+'.'+ ambitoActual);
  			     ambitoActual= ambitoActual + '.' + auxiliar;
  			 }
  			 addEstructura( "Declaracion de funcion, en la linea: " + analizadorLexico.getNroLineaToken() );
-			 crearTerceto(new ParserVal(FUNC), $3, new ParserVal(-1));
+			 crearTerceto(new ParserVal(FUNC), $2, new ParserVal(-1));
  		  }
- 		  | tipo error ID '(' parametro ')' { ambitoActual= ambitoActual + '.' + tablaSimbolo.obtenerToken($3.ival).getLexema(); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", declaracion invalida");
+ 		  | tipo_funcion ID '(' error ')' { ambitoActual= ambitoActual + '.' + tablaSimbolo.obtenerToken($2.ival).getLexema(); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", parametro invalido");
  		  }
- 		  | tipo FUNC error '(' parametro ')' { ambitoActual= ambitoActual + '.' + "error"; addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", identificador invalido");
+ 		  | tipo_funcion ID parametro ')' { ambitoActual= ambitoActual + '.' + tablaSimbolo.obtenerToken($2.ival).getLexema(); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura");
  		  }
- 		  | tipo FUNC ID '(' error ')' { ambitoActual= ambitoActual + '.' + tablaSimbolo.obtenerToken($3.ival).getLexema(); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", parametro invalido");
- 		  }
- 		  | tipo FUNC ID parametro ')' { ambitoActual= ambitoActual + '.' + tablaSimbolo.obtenerToken($3.ival).getLexema(); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de apertura");
- 		  }
- 		  | tipo FUNC ID '(' parametro { ambitoActual= ambitoActual + '.' + tablaSimbolo.obtenerToken($3.ival).getLexema(); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre");
+ 		  | tipo_funcion ID '(' parametro { ambitoActual= ambitoActual + '.' + tablaSimbolo.obtenerToken($2.ival).getLexema(); addErrorSintactico("Linea " + analizadorLexico.getNroLineaToken() + ", falta parentesis de cierre");
  		  }
  ;
 
@@ -151,6 +144,7 @@ import java.util.HashMap;
  
  retorno_funcion : RETURN '(' expresion_aritmetica ')' ';' {
  				int refFuncion= tablaSimbolo.obtenerReferenciaTabla(ambitoActual.substring(ambitoActual.lastIndexOf('.')+1, ambitoActual.length())+'.'+ambitoActual.substring(0, ambitoActual.lastIndexOf('.')));
+
  				if(tablaSimbolo.obtenerToken(refFuncion).getTipo() != $3.sval)
  					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles entre el retorno de la funcion y lo retornado");
  				crearTerceto(new ParserVal(RETURN), $3, new ParserVal(-1));
@@ -225,7 +219,7 @@ import java.util.HashMap;
 			       if(tablaSimbolo.obtenerToken($1.ival).getUso()=="funcion")
 					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el identificador a la izquierda de la asignacion no es una variable");
 
-			       if(tablaSimbolo.obtenerToken($1.ival).getUso()=="funcion designada a variable")//Solo se puede asignar una funcion
+			       if(tablaSimbolo.obtenerToken($1.ival).getUso()=="funcion designada a variable"){//Solo se puede asignar una funcion
 					if($3.ival<=0){//$3 no hace referencia a un identificador
 						addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", solo se le puede asignar una funcion a esta variable");
 					}else{
@@ -235,11 +229,9 @@ import java.util.HashMap;
 							if(tablaSimbolo.obtenerToken($1.ival).getTipoParametro() != tablaSimbolo.obtenerToken($3.ival).getTipoParametro())
 								addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", el parametro de la funcion es de distinto tipo que el del parametro de la variable");
 							this.erroresSemanticos.remove(indiceErrorABorrar);//se borra el error ya que se hace buen uso del identificador
-
-							tablaSimbolo.obtenerToken($1.ival).setParametro(tablaSimbolo.obtenerToken($3.ival).getParametro());
-							tablaSimbolo.obtenerToken($1.ival).setTipoParametro(tablaSimbolo.obtenerToken($3.ival).getTipoParametro());
 						}
 					}
+				}
 
 			       if(tablaSimbolo.obtenerToken($1.ival).getTipo()!=$3.sval)
 					addErrorSemantico("Linea " + analizadorLexico.getNroLineaToken() + ", tipos incompatibles " + tablaSimbolo.obtenerToken($1.ival).getTipo() + " := " + $3.sval );
@@ -573,7 +565,6 @@ public int crearTerceto(ParserVal t1, ParserVal t2, ParserVal t3){
 //Metodo usado por el Main para imprimir los tercetos
 public void imprimirTercetos(){
 	tablaSimbolo= analizadorLexico.getTablaSimbolo();
-	System.out.println("Cantidad de tercetos generados: " + tercetos.size());
 	int i = 0;
 	for(Terceto t : tercetos){
 		System.out.println("[" + i + "]" + t.getTerceto(tablaSimbolo));

@@ -13,14 +13,18 @@ public class Token {
     Token(Integer n, String l){
         this.numero= n;
         this.lexema= l;
+
     }
 
     @Override
     public String toString() {
-        if(nombre != null)
-            return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo+ ", nombre= " + nombre;
-        else
+        if(nombre != null) {
+            return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo + ", nombre= " + nombre;
+        }else {
+            if(tipoParametro!=null)
+                return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo + ", tipoParametro= " + tipoParametro + ", parametro= " + parametro;
             return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo;
+        }
     }
 
     @Override
