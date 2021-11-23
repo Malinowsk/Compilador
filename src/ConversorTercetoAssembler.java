@@ -164,7 +164,7 @@ public class ConversorTercetoAssembler {
             pilaFunciones.push("START:"+ "\n");
 
         for(int i = 0; i < this.tercetos.size(); i++) // por cada uno de los tecetos vamos generando el codigo
-        {
+        {//TODO: AGREGAR COMENTARIOS PARA CADA BLOQUE DE INSTRUCCIONES INDICANDO A QUE TIPO DE TERCETO PERTENECEN
 
             tercetoActual = tercetos.get(i);
             String operador = "";
@@ -383,7 +383,7 @@ public class ConversorTercetoAssembler {
         String operando1 = this.devuelveOperando(terceto.getT2());
         String operando2 = this.devuelveOperando(terceto.getT3());
         if(terceto.getT2().sval=="ULONG") {///CASO ENTERO
-            this.code.append("MOV EAX, " + operando1 +" ; " + operacion + "ENTEROS entre " + operando1 + " y " + operando2 + "\n");
+            this.code.append("MOV EAX, " + operando1 +" ; " + "\n");
 
             this.code.append(operacion + " EAX, " + operando2 + "\n");
 
