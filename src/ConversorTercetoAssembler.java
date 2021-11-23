@@ -140,8 +140,9 @@ public class ConversorTercetoAssembler {
     //Metodo para generar la zona de codigo del archivo
     private String getZonaCodigoAssembler()
     {
-        this.code.append(".code");
-        this.code.append("\n"+ "\n");
+        this.code.append(".code" + "\n");
+        this.code.append("F[N]INIT" + "\n"+ "\n");
+        
         Terceto tercetoActual= tercetos.get(0);
         String retornoFuncion=""; //variable utilizada para guardar la instruccion de retorno de una funcion temporalmente
         Stack<String> pilaFunciones = new Stack<String>(); //Pila utilizada para las etiquetas de las funciones
@@ -273,7 +274,7 @@ public class ConversorTercetoAssembler {
                 case "DOUBLE": {
                     String operando = this.devuelveOperando(tercetoActual.getT2());
                     this.code.append("FILD " + operando + "\n");
-                    this.code.append("FST @aux" + this.contadorAuxiliar + "\n");
+                    this.code.append("FSTP @aux" + this.contadorAuxiliar + "\n");
                     this.code.append("\n");
                     tercetoActual.setAuxiliar("@aux" + this.contadorAuxiliar);
                     this.contadorAuxiliar++;
@@ -370,6 +371,7 @@ public class ConversorTercetoAssembler {
         }
 
         this.code.append("fin_ejecucion:" + "\n");
+        this.code.append("F[N]INIT" + "\n");
         this.code.append("invoke ExitProcess, 0" + "\n");
         this.code.append("END START");
         this.code.append("\n");
@@ -454,8 +456,6 @@ public class ConversorTercetoAssembler {
 
     //Metodo para generar codigo de las comparaciones y operaciones booleanas
     private void comparador(String operacion, Terceto terceto){
-
-
         String operando1=this.devuelveOperando(terceto.getT2());
         String operando2=this.devuelveOperando(terceto.getT3());
 
@@ -522,10 +522,10 @@ public class ConversorTercetoAssembler {
             else{
 
                 this.code.append("FLD " + operando1 + "\n");
-                this.code.append("FCOM " + operando2 + "\n");
+                this.code.append("FCOMP " + operando2 + "\n");
                 this.code.append("MOV EAX, 0" + "\n");
                 this.code.append("FSTSW aux_mem_2bytes" + "\n");  // guarda la palabra de estado
-                this.code.append("MOV AX , aux_mem_2bytes" + "\n"); // guarda en un registro
+                this.code.append("MOV AX, aux_mem_2bytes" + "\n"); // guarda en un registro
                 this.code.append("SAHF" + "\n"); // actualiza los flags
                 this.code.append("MOV EBX, 0" + "\n");
                 switch (operacion) {
