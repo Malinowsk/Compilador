@@ -395,7 +395,7 @@ public class ConversorTercetoAssembler {
         else{///CASO FLOTANTE
             if(operacion=="FDIV") {
                 this.code.append("FLD" + operando2 + "\n");
-                this.code.append("CALL error_division_por_cero" + "\n");
+                this.code.append("CALL error_division_por_cero_DOUBLE" + "\n");
             }
             this.code.append("FLD " + operando1 + "\n");
             this.code.append("FLD " + operando2 + "\n");
@@ -413,7 +413,7 @@ public class ConversorTercetoAssembler {
         String operando2=this.devuelveOperando(terceto.getT3());
         if(operacion=="DIV") {
             this.code.append("MOV EAX, " + operando2 + "\n");
-            this.code.append("CALL error_division_por_cero" + "\n");
+            this.code.append("CALL error_division_por_cero_ULONG" + "\n");
         }
 
         String operando1=this.devuelveOperando(terceto.getT2());
@@ -422,7 +422,6 @@ public class ConversorTercetoAssembler {
         if(operacion.equals("DIV"))
             this.code.append("MOV EDX, 0"+"\n");//Agregamos 0 para que DIV sepa que es positivo
 
-        //String operando2=this.devuelveOperando(terceto.getT3());
         if (tablaDeSimbolos.obtenerToken(terceto.getT3().ival).getUso().equals("constante"))
         {
             this.code.append("MOV EBX, "+operando2+"\n");
