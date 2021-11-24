@@ -1,0 +1,40 @@
+ProgramaEjemplo5;
+
+ULONG FUNC f( ULONG param )
+ULONG x;
+BEGIN
+x:= param +1;
+RETURN (x);
+END;
+
+ULONG FUNC f( ULONG parametro )
+ULONG y;
+BEGIN
+y:= param * 10;
+RETURN (y);
+END;
+
+DOUBLE FUNC f( ULONG x )
+ULONG x;
+BEGIN
+x:= x * x;
+RETURN (y);
+POST:(x <> 0);
+END;
+
+ULONG entero1, entero2;
+ULONG entero1;
+
+DOUBLE doble1, doble1;
+
+ULONG FUNC (ULONG) a, b;
+
+**Inicio del main
+BEGIN
+
+entero1 := CALL funcion_x(10);
+
+
+entero2 := CALL f(param) + variable;
+
+END

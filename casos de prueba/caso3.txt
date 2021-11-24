@@ -3,20 +3,21 @@ ProgramaEjemplo3;
 ULONG FUNC prec ( ULONG param )
 ULONG x;
 BEGIN
+PRINT(%entro a la funcion prec%);
 x:= param -1 + 27;
 RETURN (x);
-POST:(param>0);
+POST:(param>2);
 END;
 
 ULONG FUNC suc ( ULONG param )
 ULONG x;
 BEGIN
+PRINT(%entro a la funcion suc%);
 x:= param +1;
 RETURN (x);
 END;
 
 ULONG entero1, entero2;
-ULONG FUNC (ULONG) funcion_v ;
 DOUBLE doble1;
 DOUBLE doble1;
 
@@ -28,28 +29,26 @@ entero1 := 2;
 
 IF ( entero1 <= 10 && entero2 <=100 ) THEN
 	BEGIN
+		PRINT(%entro al if%);
 		entero2 := CALL suc(entero1);
 		WHILE(DOUBLE(entero2) <= doble1) DO
 		BEGIN
-			entero2 := entero1 + entero2 * 3 - 1;
-			BREAK;
+			entero2 := entero2 * 3;
+			PRINT(%entro al while%);
 		END
-	END
-ELSE
-	BEGIN
-	TRY
-		entero2 := CALL prec(entero1);
-	CATCH
-	BEGIN
-		WHILE(entero1 <= 10) DO
-		BEGIN
-			PRINT(%prec es predecesor y +
-+ suc es sucesor%);
-			BREAK;
-		END
-	END
-	entero2:=10;
 	END
 ENDIF;
-entero2:=0;
+
+TRY
+	entero2 := CALL prec(entero1) * 5 + entero1;
+CATCH
+BEGIN
+	PRINT(%entro al catch%);
+	WHILE(entero1 <= 10) DO
+	BEGIN
+		PRINT(%entro al segundo while%);
+		BREAK;
+	END
+END
+
 END

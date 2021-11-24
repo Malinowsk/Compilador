@@ -1,0 +1,37 @@
+ProgramaEjemplo4;
+
+ULONG FUNC f( ULONG param )
+ULONG x;
+BEGIN
+x:= param +1;
+RETURN (x);
+END;
+
+ULONG entero1;
+DOUBLE FUNC (ULONG) a;
+ULONG FUNC (DOUBLE) b;
+DOUBLE FUNC (DOUBLE) c;
+DOUBLE doble1;
+
+**Inicio del main
+BEGIN
+
+entero1 := 2;
+doble1 := 2.0;
+
+IF(entero1==doble1)THEN
+	PRINT(%entro al if%);
+ENDIF;
+
+a := f;
+b := f;
+c := f;
+
+doble1 := CALL f(entero1);
+entero1:= CALL f(doble1);
+doble1 := CALL f(doble1);
+
+entero1:= doble1 + 1;
+doble1:= entero1 * 1.1;
+
+END
