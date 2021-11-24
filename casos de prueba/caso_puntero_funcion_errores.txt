@@ -1,0 +1,33 @@
+ProgramaEjemplo4;
+
+ULONG FUNC suc ( ULONG param )
+ULONG x;
+BEGIN
+x:= param +1;
+RETURN (x);
+END;
+
+ULONG entero1;
+ULONG FUNC (ULONG) a ;
+DOUBLE FUNC (ULONG) b ;
+ULONG FUNC (DOUBLE) c ;
+
+**Inicio del main
+BEGIN
+
+a := 3; ** genera error
+
+a := entero1 + 3; ** genera error
+
+a := suc; ** no genera error
+b := suc; ** genera error
+c := suc; ** genera error
+
+entero1:= a; ** genera error
+
+entero1:= CALL suc(1); ** no genera error
+entero1:= CALL a(1); ** no genera error, pero en ejecucion "a" apunta a basura
+entero1:= CALL b(1); ** genera error
+entero1:= CALL c(entero1); ** genera error
+
+END

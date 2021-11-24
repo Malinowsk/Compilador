@@ -1,0 +1,44 @@
+ProgramaEjemplo9;
+
+ULONG FUNC f1( ULONG parametro )
+
+ULONG y;
+
+DOUBLE FUNC f3( ULONG b )
+DOUBLE c;
+BEGIN
+c:= DOUBLE(b);
+RETURN(c);
+END;
+
+	BEGIN	
+		y:= CALL f2(parametro) * 10; ** error de alcance
+		RETURN (y);
+	END;
+
+
+
+ULONG FUNC f2( ULONG x )
+ULONG y;
+
+	BEGIN
+		y:= parametro; ** error de alcance
+		x:= entero1;
+		RETURN (y);
+		POST:(x <> 0);
+	END;
+
+
+ULONG entero1, entero2;
+DOUBLE doble1;
+DOUBLE FUNC (ULONG) a;
+
+**Inicio del main
+
+BEGIN
+
+doble1 := CALL f3(10);
+
+a:=f3;
+
+END

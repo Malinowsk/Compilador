@@ -1,0 +1,24 @@
+ProgramaEjemplo4;
+
+ULONG FUNC suc ( ULONG param )
+ULONG x;
+BEGIN
+PRINT(%ENTRO A LA FUNCION SUC%);
+x:= param +1;
+RETURN (x);
+END;
+
+ULONG entero1;
+ULONG FUNC (ULONG) a ;
+ULONG FUNC (ULONG) b ;
+
+
+**Inicio del main
+BEGIN
+
+a := suc;
+b:= a;
+
+entero1:= CALL suc(1) + CALL a(1) + CALL b(1); 
+
+END

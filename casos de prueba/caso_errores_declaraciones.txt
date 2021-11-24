@@ -1,10 +1,10 @@
 ProgramaEjemplo5;
 
 ULONG FUNC f( ULONG param )
-ULONG x;
+ULONG param;
 BEGIN
-x:= param +1;
-RETURN (x);
+param:= param +1;
+RETURN (param);
 END;
 
 ULONG FUNC f( ULONG parametro )

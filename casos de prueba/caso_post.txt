@@ -7,7 +7,7 @@ BEGIN
 x:= 2;
 
 RETURN (x);
-POST:(x==2);
+POST:(x==param);
 END;
 
 ULONG FUNC uno ( ULONG param )
@@ -17,7 +17,7 @@ BEGIN
 x:= 2;
 
 RETURN (x);
-POST:(x==2);
+
 END;
 
 ULONG entero1;
@@ -32,21 +32,16 @@ TRY
 CATCH
 BEGIN
  entero1:= 0;
+ PRINT(%Entro al CATCH 1%); ** entra
 END
 
 TRY
- entero1:= 1 + CALL dos(0);
+ entero1:= 1 + CALL dos(2);
 CATCH
 BEGIN
  entero1:= 0;
+ PRINT(%Entro al CATCH 2%); ** no entra
 END
 
-**Este tiene error
-TRY
- entero1:= 1 + CALL uno(0);
-CATCH
-BEGIN
- entero1:= 0;
-END
 
 END

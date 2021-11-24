@@ -1,5 +1,0 @@
-programa;
-ULONG identificador;
-BEGIN
-identificador := - 2 * 5 + 1 ;
-END
