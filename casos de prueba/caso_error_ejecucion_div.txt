@@ -1,0 +1,10 @@
+programa;
+
+ULONG entero1;
+ULONG entero2;
+
+BEGIN
+
+entero1:= entero2 / 0;
+
+END

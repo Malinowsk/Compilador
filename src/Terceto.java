@@ -46,6 +46,8 @@ public class Terceto {
             stringT1="BI";
         if(t1.ival==-3)
             stringT1="BT";
+        if(t1.ival==-4)
+            stringT1="ENDFUNC";
 
         if(t2.ival==0) {
             stringT2 = String.valueOf(this.t2.dval);

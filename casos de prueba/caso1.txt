@@ -1,0 +1,42 @@
+Programa_Ejemplo;
+DOUBLE aux;
+ULONG aux2;
+ULONG FUNC (ULONG) f2 ;
+
+ULONG FUNC f1 ( ULONG y )
+ULONG Z;
+BEGIN
+Z := y;
+RETURN (Z);
+POST:(Z > 0);
+END;
+
+BEGIN
+
+aux := 1.5E+2 ;
+aux2 := 1;
+
+IF ( aux >= DOUBLE(aux2+1)) THEN
+BEGIN
+
+	PRINT(%Entra al if%);
+	WHILE (aux > DOUBLE(aux2)) DO
+	BEGIN
+		PRINT(%Entra al while%);
+        	BREAK;
+	END
+END
+ENDIF;
+
+TRY
+    aux2 := 1 / CALL f1( aux2 );
+CATCH
+BEGIN
+		PRINT(%Entra al CATCH%);**No entra porque la postcondicion da verdadero
+		aux2 := 0;
+END
+
+PRINT(%todo +
++ perfecto %);
+
+END

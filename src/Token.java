@@ -1,21 +1,30 @@
 public class Token {
-    private Integer numero;//numero de token
 
+    private Integer numero;//numero de token
     private String lexema;//contenido
 
     private String uso = null;//indica si es variable, parametro, funcion, etc.
     private String tipo = null;//tipo de variable
-    private String tipoParametro = null;
+    private String tipoParametro = null;//tipo del parametro, si el token es una funcion
+    private String parametro = null;//En caso de ser una funcion este atributo tendra el id del parametro
 
+    private String nombre = null;//En caso de ser una constante o una cadena se guarda el nombre que se usara para referenciarla en el codigo assembler
 
     Token(Integer n, String l){
         this.numero= n;
         this.lexema= l;
+
     }
 
     @Override
     public String toString() {
-        return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo;
+        if(nombre != null) {
+            return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo + ", nombre= " + nombre;
+        }else {
+            if(tipoParametro!=null)
+                return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo + ", tipoParametro= " + tipoParametro + ", parametro= " + parametro;
+            return "numero=" + numero + ", lexema= " + lexema + ", uso= " + uso + ", tipo= " + tipo;
+        }
     }
 
     @Override
@@ -58,5 +67,21 @@ public class Token {
 
     public void setTipoParametro(String tipoParametro) {
         this.tipoParametro = tipoParametro;
+    }
+
+    public String getParametro() {
+        return parametro;
+    }
+
+    public void setParametro(String parametro) {
+        this.parametro = parametro;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 }

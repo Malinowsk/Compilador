@@ -1,0 +1,53 @@
+Programa_Ejemplo2;
+ULONG entero;
+DOUBLE doble;
+ULONG entero2;
+
+DOUBLE FUNC funcion ( ULONG y )
+DOUBLE x;
+BEGIN
+PRINT(%Entra a la funcion%);
+x := 10.99;
+IF(y>10)THEN
+	x := DOUBLE(y-10);
+ENDIF;
+RETURN (x);
+END;
+
+DOUBLE FUNC (ULONG) f1;
+
+**Inicio del main
+BEGIN
+
+doble := 1.1E4 + 2.0;
+entero := 2;
+
+f1:=funcion;
+
+IF ( doble <= DOUBLE(10)) THEN
+    WHILE (doble > DOUBLE(entero)) DO
+        BREAK;
+ELSE
+	BEGIN
+	PRINT(%Entra al else%);
+	entero2 := 10;
+	WHILE (doble <> DOUBLE(entero)) DO
+		BEGIN
+		PRINT(%Entra al while%);
+		doble := CALL f1(entero2);
+		IF(doble > DOUBLE(entero))THEN
+			BEGIN
+			doble := doble * 2.0;
+			PRINT(%Entra al segundo if%);
+			END
+		ENDIF;
+		BREAK;
+		PRINT(%Esto no se imprime%);
+		END
+	END
+ENDIF;
+
+PRINT(%No hay try catch, +
++ porque la funcion es sin post condicion%);
+
+END

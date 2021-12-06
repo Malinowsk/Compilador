@@ -1,0 +1,20 @@
+programa;
+
+ULONG entero1;
+ULONG entero2;
+ULONG error;
+
+ULONG FUNC f1 ( ULONG param )
+ULONG x;
+
+BEGIN
+	PRINT(%ENTRO A LA FUNCION SUC%);
+	x:= CALL f1(param);
+	RETURN (x);
+END;
+
+BEGIN
+
+entero1:= CALL f1(entero2)
+
+END

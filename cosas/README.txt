@@ -1,0 +1,3 @@
+IMPORTANTE:
+Para la utilizacion del programa se requiere ejecutar el archivo compilador.jar a través del comando por consola (en el directorio donde se encuentre el mismo) "java -jar compilador.jar" esto nos dejará escribir el nombre del codigo a compilar. Por ejemplo "tp1caso1.txt", luego podrá elegir las diferentes opciones del menu entrando el numero correspondiente por consola.
+Para instrucciones más detalladas se puede ver el anexo del informe.

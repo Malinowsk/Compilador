@@ -13,7 +13,7 @@ public class Main {
         Scanner s = new Scanner (System.in);
         String codigo = s.nextLine();
         al.leerNuevoArchivo(codigo);
-        parser.setAnalizadorLexico(al);
+        parser.setAnalizadorLexico(al); // setea el analizadorLexico y tambla de simbolos al parser
         parser.yyparse();
         ConversorTercetoAssembler conversor = new ConversorTercetoAssembler(parser.getTercetos(), al.getTablaSimbolo());
         menu(al, parser, conversor);
@@ -23,43 +23,62 @@ public class Main {
         int opcion ;
         Scanner s = new Scanner (System.in);
         do {
-            System.out.println(" ");
+            System.out.println("\n");
             System.out.println("Elija una opcion del menu:");
             System.out.println("0- Imprimir codigo");
-            System.out.println("1- Listar Tokens");
-            System.out.println("2- Listar tabla de simbolos");
-            System.out.println("3- Listar estructuras");
-            System.out.println("4- Listar errores");
-            System.out.println("5- Listar tercetos");
-            System.out.println("6- Listar instrucciones");
-            System.out.println("7- Salir");
+            System.out.println("1- Listar tabla de simbolos");
+            System.out.println("2- Listar errores");
+            System.out.println("3- Listar tercetos");
+            System.out.println("4- Generar y mostrar el archivo assembler");
+            System.out.println("5- Salir");
             System.out.println("Ingrese una opción");
             opcion = s.nextInt();
             switch (opcion) {
-                case 0: {al.imprimirCodigo(); break;}
-                case 1: {al.imprimirTokens(); break;}
-                case 2: {al.getTablaSimbolo().imprimirTabla();break;}
-                case 3: {p.imprimirEstructuras(); break;}
-                case 4: {
-                            al.imprimirWarningsLexicos();
-                            p.imprimirWarningsSemanticos();
-                            al.imprimirErroresLexicos();
-                            p.imprimirErroresSintacticos();
-                            p.imprimirErroresSemanticos();
-                            break;}
-                case 5: {if(!al.hayError() && !p.hayError())
-                            p.imprimirTercetos();
-                         else
-                            System.out.println("No se listan los tercetos debido a que hay al menos un error, revisar el listado de errores con la opcion 4.");
-                         break;}
-                case 6: {
-                        System.out.println(c.getConversionAssembler());
-                        break;
+                case 0: {
+                    al.imprimirCodigo();
+                    break;
                 }
-                case 7: {System.out.println("Fin de la ejecución."); break;}
+
+                case 1: {
+                    al.getTablaSimbolo().imprimirTabla();
+                    break;
+                }
+
+                case 2: {
+                    al.imprimirWarningsLexicos();         // caso de que un identificador se pase de los 22 caractenes
+                    p.imprimirWarningsSemanticos();       // caso en el que se redeclara con el mismo nombre de variables
+                    al.imprimirErroresLexicos();          // un error de caracter invalido o que se pase de rango los numeros
+                    p.imprimirErroresSintacticos();
+                    p.imprimirErroresSemanticos();
+                    break;
+                }
+
+                case 3: {
+                    if(!al.hayError() && !p.hayError())
+                        p.imprimirTercetos();
+                    else
+                        System.out.println("No se listan los tercetos debido a que hay al menos un error, revisar el listado de errores con la opcion 2");
+                    break;
+                }
+
+                case 4: {
+                    if(!al.hayError() && !p.hayError())
+                        System.out.println(c.getConversionAssembler());
+                    else
+                        System.out.println("No se listan las instrucciones assembler debido a que hay al menos un error, revisar el listado de errores con la opcion 2");
+                    break;
+                }
+
+                case 5: {
+                    System.out.println("Fin de la ejecución.");
+                    break;
+                }
+
+                case 6: {al.imprimirTokens(); break;}//no se muestran en el menu porque son de la primera parte
+                case 7: {p.imprimirEstructuras(); break;}//no se muestran en el menu porque son de la primera parte
             }
             sleep(2000);
-        } while ( opcion != 7);
+        } while ( opcion != 5);
     }
 
 }

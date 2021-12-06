@@ -1,0 +1,15 @@
+programa;
+
+ULONG entero1;
+ULONG entero2;
+ULONG error;
+
+BEGIN
+
+entero1 := 4294967290;
+entero2 := 10 ;
+
+error:= entero1 + entero2 ;
+
+
+END

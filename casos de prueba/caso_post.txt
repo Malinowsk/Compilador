@@ -1,0 +1,47 @@
+ProgramaEjemplo4;
+
+ULONG FUNC dos ( ULONG param )
+ULONG x;
+BEGIN
+
+x:= 2;
+
+RETURN (x);
+POST:(x==param);
+END;
+
+ULONG FUNC uno ( ULONG param )
+ULONG x;
+BEGIN
+
+x:= 2;
+
+RETURN (x);
+
+END;
+
+ULONG entero1;
+ULONG FUNC (ULONG) a;
+
+
+**Inicio del main
+BEGIN
+
+TRY
+ entero1:= 1 + CALL uno(0) + CALL dos(0);
+CATCH
+BEGIN
+ entero1:= 0;
+ PRINT(%Entro al CATCH 1%); ** entra
+END
+
+TRY
+ entero1:= 1 + CALL dos(2);
+CATCH
+BEGIN
+ entero1:= 0;
+ PRINT(%Entro al CATCH 2%); ** no entra
+END
+
+
+END
