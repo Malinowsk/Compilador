@@ -24,6 +24,7 @@ public class ConversorTercetoAssembler {
     {
         contadorAuxiliar=0;
         this.code= new StringBuilder();
+
         StringBuilder assembler = new StringBuilder();
         assembler.append(this.getEncabezadoAssembler());
         assembler.append("\n");
@@ -149,6 +150,7 @@ public class ConversorTercetoAssembler {
         String retornoFuncion=""; //variable utilizada para guardar la instruccion de retorno de una funcion temporalmente
         Stack<String> pilaFunciones = new Stack<String>(); //Pila utilizada para las etiquetas de las funciones
 
+        // agregamos codigo assembler para generar metodos comprovacion de errores
         this.funcionErrorDivisonPorCero("ULONG");
         this.funcionErrorDivisonPorCero("DOUBLE");
         this.funcionErrorOverflowSumaEntero();
@@ -292,16 +294,20 @@ public class ConversorTercetoAssembler {
 
                 case "FUNC":{
                     if(tablaDeSimbolos.obtenerValor(tercetos.get(i+1).getT1().ival)!="FUNC") {//no hay declaracion de funciones dentro de la funcion
+                        //Se pone la etiqueta:
                         this.code.append(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".", "_") + ":" + "\n" + "\n");
-                        //Una vez declarada la etiqueta cambio la funcion actual en el assembler se guarda el parametro
+
+                        //Una vez declarada la etiqueta cambio la funcion actual, en el assembler se guarda el parametro
                         String parametroFuncion = "_" + tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getParametro().replace(".","_");//Variable del parametro
                         if(tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getTipoParametro()=="ULONG")
                             this.code.append("MOV " + parametroFuncion+ ", EAX" + "\n");
                         else
                             this.code.append("FSTP " + parametroFuncion + "\n");
+
                         //Se actualiza la funcion actual
                         this.code.append("MOV EAX, "+tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".", "_")  + "\n");
                         this.code.append("MOV _funcion_actual, EAX" + "\n" + "\n");
+
                     }else {//hay declaracion de funciones dentro de la funcion, entonces guardamos la etiqueta en la pila
                         pilaFunciones.push(tablaDeSimbolos.obtenerValor(tercetoActual.getT2().ival).replace(".", "_") + ":" + "\n");
                     }break;
@@ -337,6 +343,7 @@ public class ConversorTercetoAssembler {
                 }
 
                 case "CALL": { //TODO: NO AGREGAR LLAMADO A FUNCION A ERROR EN EL MAIN (por cuestiones de tiempo queda pendiente ya que no genera ningun)
+
                     String parametro= this.devuelveOperando(tercetoActual.getT3());//parametro con el que se invoca a la func
                     String etiquetaFuncion = tablaDeSimbolos.obtenerToken(tercetoActual.getT2().ival).getLexema().replace(".","_");//nombre de la etiqueta de la func
 

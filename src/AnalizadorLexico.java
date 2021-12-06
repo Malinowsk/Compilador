@@ -33,7 +33,7 @@ public class AnalizadorLexico {
         this.warnings = new ArrayList< String >();
     }
 
-    //Metodo que lee un codigo para generar la lista de tokens respectiva
+    //Metodo que lee un codigo para generar una lista con cada una de las lineas de codigo (siendo cada linea un string)
     public void leerNuevoArchivo(String path) throws FileNotFoundException {
         Scanner scannan = new Scanner(new File(path));
         while(scannan.hasNext()){
@@ -46,26 +46,26 @@ public class AnalizadorLexico {
     }
 
     public Dupla<Integer, Integer> nextToken() {
-        for (int l = this.nroLinea - 1; l < this.codigo.size(); l++) {
-            String linea = this.codigo.get(l);
-            for (int i = this.charActual; i < linea.length(); i++) {
-                char caracter = linea.charAt(i);
-                int proximoEstado = this.automata.getProximoEstado(this.estadoActual, caracter);
-                if (proximoEstado == -1) {
-                    this.errores.add("Linea " + this.nroLinea + ", caracter invalido:" + caracter);
+        for (int l = this.nroLinea - 1; l < this.codigo.size(); l++) {        // recorro todas las lineas
+            String linea = this.codigo.get(l);                                // obtengo linea de codigo
+            for (int i = this.charActual; i < linea.length(); i++) {          // recorro caracter por caracter de la linea
+                char caracter = linea.charAt(i);                              // obtengo caracter
+                int proximoEstado = this.automata.getProximoEstado(this.estadoActual, caracter);   // obtengo el proximo estado
+                if (proximoEstado == -1) {       // si el proximo estado es -1 quiere decir que hubo un error lexico
+                    this.errores.add("Linea " + this.nroLinea + ", caracter invalido:" + caracter);   // agrego a la lista de errores
                     while ((caracter != ';') && (i != linea.length())) //avanza de caracteres hasta llegar al punto y coma o hasta el final de la linea y poder seguir leyendo las siguientes lineas
                         caracter = linea.charAt(i++);
                 } else {
                     boolean reutilizarCaracter; //booleano que indica si el caracter se debe seguir utilizando
                     int cantidadTokens= this.tokens.size();
-                    reutilizarCaracter = this.ejecutarAS(this.automata.getAccionSemantica(this.estadoActual, caracter), caracter);
-                    this.estadoActual = proximoEstado;
-                    if(this.tokens.size()>cantidadTokens) {//Si se agrego un nuevo token
+                    reutilizarCaracter = this.ejecutarAS(this.automata.getAccionSemantica(this.estadoActual, caracter), caracter); // ejecuta la accion y devuelve un boleano
+                    this.estadoActual = proximoEstado;  // estado actual toma el valor del proximo estado
+                    if(this.tokens.size()>cantidadTokens) {// verifico si se agrego un nuevo token con la AS realizada
                         if(!reutilizarCaracter)
                             this.charActual=i+1;//como no se reutiliza el caracter se precisa pasar al siguiente
                         else
                             this.charActual=i;//como se reutiliza el caracter se precisa quedarse en el actual
-                        return this.tokens.get(this.tokens.size()-1);
+                        return this.tokens.get(this.tokens.size()-1);  // retorno el token al parser
                     }
                     if (reutilizarCaracter)
                         i--;//se resta uno para que el for sume uno y vuelva a utilizar el caracter
@@ -81,11 +81,11 @@ public class AnalizadorLexico {
                 return new Dupla<Integer, Integer>(0, null); // se devuelve 0 porque se termino el codigo
             } else {
                 int cantidadTokens= tokens.size();
-                this.ejecutarAS(this.automata.getAccionSemantica(this.estadoActual, nl), nl);
-                this.estadoActual = proximoEstado;
+                this.ejecutarAS(this.automata.getAccionSemantica(this.estadoActual, nl), nl); //se ejecuta la AS
+                this.estadoActual = proximoEstado; // se actualiza al proximo estado
                 if(this.tokens.size()>cantidadTokens) {//Si se agrego un nuevo token
                     this.nroLinea++;//se avanza de linea
-                    return this.tokens.get(this.tokens.size()-1);
+                    return this.tokens.get(this.tokens.size()-1); // retorno el token al parser
                 }
             }
             this.nroLinea++;//se avanza de linea

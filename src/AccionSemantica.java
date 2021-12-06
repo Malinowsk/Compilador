@@ -43,21 +43,21 @@ devuelvo el token correspondiente. Sino doy de alta y devuelvo el token.
  */
 public static boolean accion1(ArrayList< Dupla<Integer, Integer> > tokens, TablaSimbolo tablaDeSimbolo, ArrayList<Integer> lineas, int nroLinea, ArrayList< String > warnings){
     if (auxiliar.length() > 22) {//se pasa de la cantidad de caracteres permitidas
-        warnings.add("Linea " + nroLinea + ", Identificador fuera de rango:" + auxiliar +", el mismo acorto a 22 caracteres");
+        warnings.add("Linea " + nroLinea + ", Identificador fuera de rango:" + auxiliar +", el mismo acorto a 22 caracteres");  //Agregamos warning a la lista
         auxiliar=auxiliar.substring(0, 22);//acortamos el identificador
     }
-    if(!tablaDeSimbolo.existeToken(auxiliar)){
+    if(!tablaDeSimbolo.existeToken(auxiliar)){    // si no esta la palabra la agrego a la tabla y el token a la lista de tokens
         tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_IDENTIFICADOR);//se agrega identificador a la tabla
         tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_IDENTIFICADOR, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
     }
-    else{
+    else{  // si esta la palabra y es una palabra reservada , agrego el token a la lista de token
         int numeroClaveTabla= tablaDeSimbolo.obtenerReferenciaTabla(auxiliar);
         if( ((PRIMER_PALABRA_RESERVADA <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA))
             || ((PRIMER_PALABRA_RESERVADA2 <= numeroClaveTabla)  && (numeroClaveTabla <= ULTIMA_PALABRA_RESERVADA2))
             || PRIMER_PALABRA_RESERVADA3 == numeroClaveTabla ){ //es una palabra reservada
             tokens.add(new Dupla<Integer, Integer>(numeroClaveTabla, null));
         }
-        else{//es un identificador que ya estaba en la tabla
+        else{//es un identificador que ya estaba en la tabla, se agrega igual
             tablaDeSimbolo.agregarToken(auxiliar, CLAVE_TOKEN_IDENTIFICADOR);//se agrega identificador a la tabla
             tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_IDENTIFICADOR, tablaDeSimbolo.refUltimoToken()));
         }
@@ -93,7 +93,7 @@ public static boolean accion4(ArrayList< Dupla<Integer, Integer> > tokens, int c
     return false; //no se reutiliza el caracter
 }
 
-/*
+/*                                                                              accion para enteros
 - Devuelvo el último carácter leido a la entrada.
 - Verifico que el numero obtenido no supere el rango de enteros esperado.
 - Busco en la Tabla de Símbolo si el léxema ya existe,
@@ -109,7 +109,7 @@ public static boolean accion5(ArrayList< Dupla<Integer, Integer> > tokens, Tabla
     tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_CONSTANTE, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
     lineas.add(nroLinea);
     }else{
-        errores.add("Linea " + nroLinea + ", ULong fuera de rango:"+ auxiliar);
+        errores.add("Linea " + nroLinea + ", ULong fuera de rango:"+ auxiliar);    // error lexico
     }
     return true;//se reutiliza el caracter
 }
@@ -222,7 +222,7 @@ public static boolean accion15(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
         tokens.add(new Dupla<Integer, Integer>(CLAVE_TOKEN_DOUBLE, tablaDeSimbolo.obtenerReferenciaTabla(auxiliar)));
         lineas.add(nroLinea);
     }else{
-        errores.add("Linea " + nroLinea + ", Double fuera de rango:"+ auxiliar);
+        errores.add("Linea " + nroLinea + ", Double fuera de rango:"+ auxiliar);             //Error lexico
     }
     return true;//se reutiliza el caracter
 }
@@ -237,7 +237,7 @@ public static boolean accion16(char caracter){
     return false;//no se reutiliza el caracter
 }
 
-/*
+/*                                                                // agregar cadena
 - Agrega %
 - Agrega a la tabla de simbolos si no existe
 - Agrega la variable a lista de token
@@ -255,7 +255,7 @@ public static boolean accion17(ArrayList< Dupla<Integer, Integer> > tokens, Tabl
     return false;//no se reutiliza el caracter
 }
 
-/*
+/*                                                      // agregar cadena
 - Agrega +
 - Agrega %
 - Agrega a la tabla de simbolos si no existe

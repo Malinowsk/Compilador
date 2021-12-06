@@ -1,6 +1,6 @@
 public class Token {
-    private Integer numero;//numero de token
 
+    private Integer numero;//numero de token
     private String lexema;//contenido
 
     private String uso = null;//indica si es variable, parametro, funcion, etc.

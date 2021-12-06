@@ -13,7 +13,7 @@ public class Main {
         Scanner s = new Scanner (System.in);
         String codigo = s.nextLine();
         al.leerNuevoArchivo(codigo);
-        parser.setAnalizadorLexico(al);
+        parser.setAnalizadorLexico(al); // setea el analizadorLexico y tambla de simbolos al parser
         parser.yyparse();
         ConversorTercetoAssembler conversor = new ConversorTercetoAssembler(parser.getTercetos(), al.getTablaSimbolo());
         menu(al, parser, conversor);
@@ -45,9 +45,9 @@ public class Main {
                 }
 
                 case 2: {
-                    al.imprimirWarningsLexicos();
-                    p.imprimirWarningsSemanticos();
-                    al.imprimirErroresLexicos();
+                    al.imprimirWarningsLexicos();         // caso de que un identificador se pase de los 22 caractenes
+                    p.imprimirWarningsSemanticos();       // caso en el que se redeclara con el mismo nombre de variables
+                    al.imprimirErroresLexicos();          // un error de caracter invalido o que se pase de rango los numeros
                     p.imprimirErroresSintacticos();
                     p.imprimirErroresSemanticos();
                     break;
