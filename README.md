@@ -1,12 +1,27 @@
 # Proyecto de Diseño de Compiladores
 
-Este repositorio contiene el código fuente de un proyecto desarrollado para la asignatura de Diseño de Compiladores. El objetivo principal del proyecto es implementar un compilador utilizando el lenguaje Java y la herramienta Yacc, que traduce código de un lenguaje definido por su gramática a código en lenguaje ensamblador utilizando la técnica del triplete.
+Este repositorio contiene el código fuente de un proyecto desarrollado para la asignatura de Diseño de Compiladores. El objetivo principal del proyecto es implementar un compilador utilizando el lenguaje Java y la herramienta Yacc, que traduce código de un lenguaje definido por su gramática a código en lenguaje ensamblador utilizando la técnica tercetos.
 
 ## Descripción del Proyecto
 
-El compilador implementado en este proyecto toma como entrada un programa escrito en un lenguaje definido por una gramática específica y produce como salida el equivalente en lenguaje ensamblador. Para lograr esto, se sigue el enfoque del triplete, que consiste en dividir el proceso de compilación en tres fases principales: análisis léxico, análisis sintáctico y generación de código.
+El compilador implementado en este proyecto toma como entrada un programa escrito en un lenguaje definido por una gramática específica y produce como salida el equivalente en lenguaje ensamblador. Para lograr esto, se sigue el enfoque de los tercetos.
 
-El análisis léxico se encarga de dividir el código fuente en tokens, el análisis sintáctico verifica que la estructura del programa cumpla con la gramática definida y la generación de código produce el código en lenguaje ensamblador a partir de la estructura sintáctica del programa de entrada.
+## Técnica de los Tercetos
+
+La técnica de los tercetos es una estrategia utilizada en el diseño de compiladores para representar las operaciones en un programa de manera más abstracta. Consiste en organizar las operaciones en estructuras de datos llamadas "tercetos", que contienen información sobre las operaciones a realizar y los operandos involucrados.
+
+Cada terceto consta de tres partes: un operador y dos operandos. Estos tercetos se generan durante la fase de análisis semántico del compilador y se utilizan en la fase de generación de código para representar las operaciones de manera más simple antes de ser traducidas al lenguaje ensamblador final.
+
+En el contexto de este proyecto, la técnica de los tercetos se emplea para representar las operaciones del programa antes de ser traducidas al código en lenguaje ensamblador. Esto permite una separación clara entre el análisis del programa y la generación de código, facilitando el proceso de compilación y optimización.
+
+
+### Fases Principales del Compilador
+
+1. **Análisis Léxico:** Esta fase se encarga de dividir el código fuente en tokens, los elementos más básicos del lenguaje.
+
+2. **Análisis Sintáctico:** Verifica que la estructura del programa cumpla con la gramática definida para el lenguaje. Se asegura de que la secuencia de tokens tenga sentido y esté correctamente estructurada.
+
+3. **Generación de Código:** Produce el código en lenguaje ensamblador a partir de la estructura sintáctica del programa de entrada. Se utiliza la técnica de los tercetos para representar las operaciones antes de traducirlas al lenguaje ensamblador final.
 
 ## Estructura del Repositorio
 
