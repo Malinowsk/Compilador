@@ -15,7 +15,7 @@ Cada terceto consta de tres partes: un operador y dos operandos. Estos tercetos 
 En el contexto de este proyecto, la técnica de los tercetos se emplea para representar las operaciones del programa antes de ser traducidas al código en lenguaje ensamblador. Esto permite una separación clara entre el análisis del programa y la generación de código, facilitando el proceso de compilación y optimización.
 
 
-### Fases Principales del Compilador
+## Fases Principales del Compilador
 
 1. **Análisis Léxico:** Esta fase se encarga de dividir el código fuente en tokens, los elementos más básicos del lenguaje.
 
