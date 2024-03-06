@@ -30,3 +30,10 @@ Las contribuciones son bienvenidas. Si deseas contribuir al proyecto, por favor 
 3. Realiza tus cambios y haz commits explicativos (`git commit -am 'Agrega nueva funcionalidad: descripción corta'`).
 4. Sube tus cambios a tu fork (`git push origin feature/nueva-funcionalidad`).
 5. Crea un pull request para que tus cambios sean revisados.
+
+
+## Demostración
+
+¡Mira una demostración del software en acción!
+
+[![Demostración del Software](https://img.youtube.com/vi/fgFy4ipxoTg/maxresdefault.jpg)](https://youtu.be/fgFy4ipxoTg)
